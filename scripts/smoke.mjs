@@ -62,10 +62,20 @@ async function main() {
   if (!html.includes("GBI")) fail("home page does not look like the GBI app");
   console.log("[smoke] home page ok");
 
-  for (const path of ["/guilds/", "/leads/", "/calculator/"]) {
+  for (const path of ["/guilds/", "/leads/", "/calculator/", "/sources/"]) {
     await expectStatus(path, 200);
     console.log(`[smoke] ${path} ok`);
   }
+
+  const catalogPage = await (await expectStatus("/data/intelligence-catalog.json", 200)).json();
+  if (catalogPage.schemaVersion !== 1 || !Array.isArray(catalogPage.sources)) {
+    fail("catalog json missing keys");
+  }
+  console.log(`[smoke] catalog json ok (${catalogPage.sources.length} sources)`);
+
+  const catalogApi = await (await expectStatus("/api/catalog", 200)).json();
+  if (catalogApi.schemaVersion !== 1) fail("catalog api missing keys");
+  console.log("[smoke] catalog api ok");
   await expectStatus("/nope", 404);
   console.log("[smoke] 404 page ok");
 

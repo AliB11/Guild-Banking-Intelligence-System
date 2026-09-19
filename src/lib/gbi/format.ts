@@ -150,24 +150,57 @@ export function jalaliPeriodShort(period: string): string {
   return JALALI_MONTHS[m - 1];
 }
 
+export interface JalaliYmd {
+  year: number;
+  month: number;
+  day: number;
+}
+
+export function jalaliYmd(date: Date = new Date()): JalaliYmd {
+  const [year, month, day] = gregorianToJalali(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+  );
+  return { year, month, day };
+}
+
+export function formatJalaliPeriod(year: number, month: number): string {
+  return `${year}-${String(month).padStart(2, "0")}`;
+}
+
+export function currentJalaliPeriod(date: Date = new Date()): string {
+  const { year, month } = jalaliYmd(date);
+  return formatJalaliPeriod(year, month);
+}
+
+export function parseJalaliPeriod(period: string): { year: number; month: number } | null {
+  const [year, month] = period.split("-").map(Number);
+  if (!year || !month || month < 1 || month > 12) return null;
+  return { year, month };
+}
+
+/** Shift a `YYYY-MM` Jalali period by a (possibly negative) number of months. */
+export function shiftJalaliPeriod(period: string, deltaMonths: number): string {
+  const parsed = parseJalaliPeriod(period);
+  if (!parsed) return period;
+  const absolute = parsed.year * 12 + (parsed.month - 1) + deltaMonths;
+  const year = Math.floor(absolute / 12);
+  const month = (absolute % 12) + 1;
+  return formatJalaliPeriod(year, month);
+}
+
 /**
  * Rolling reporting window — the `count` most recent Jalali months, ending
  * with the month the given date falls in. Keeps "دوره جاری" aligned with the
- * real calendar instead of a hard-coded snapshot, e.g. on ۲۹ شهریور ۱۴۰۵ with
- * count 6 → ["1405-02", "1405-03", "1405-04", "1405-05", "1405-06", "1405-07"].
+ * real calendar instead of a hard-coded snapshot, e.g. on ۲۸ شهریور ۱۴۰۵ with
+ * count 6 → ["1405-01", "1405-02", "1405-03", "1405-04", "1405-05", "1405-06"].
  */
 export function recentJalaliPeriods(count: number, date: Date = new Date()): string[] {
-  const [jy, jm] = gregorianToJalali(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const latest = currentJalaliPeriod(date);
   const periods: string[] = [];
-  let year = jy;
-  let month = jm;
-  for (let i = 0; i < count; i++) {
-    periods.unshift(`${year}-${String(month).padStart(2, "0")}`);
-    month -= 1;
-    if (month === 0) {
-      month = 12;
-      year -= 1;
-    }
+  for (let i = count - 1; i >= 0; i--) {
+    periods.push(shiftJalaliPeriod(latest, -i));
   }
   return periods;
 }

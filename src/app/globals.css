@@ -171,6 +171,10 @@ body {
   background: rgba(245, 200, 96, 0.045) !important;
 }
 
+details summary::-webkit-details-marker {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

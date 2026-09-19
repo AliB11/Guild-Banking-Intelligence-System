@@ -13,15 +13,18 @@ import {
   X,
   ShieldCheck,
   Bell,
+  Library,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { faDigits, formatJalaliDate } from "@/lib/gbi/format";
+import { DataFreshnessBar } from "@/components/layout/data-freshness-bar";
 
 const NAV = [
-  { href: "/", label: "میز کار مدیریتی", latin: "Executive Desk", icon: LayoutDashboard },
-  { href: "/guilds", label: "کاوشگر ماتریس اصناف", latin: "Guild Matrix", icon: Network },
-  { href: "/leads", label: "مدیریت سرنخ‌های شعب", latin: "Lead Pipeline", icon: KanbanSquare },
-  { href: "/calculator", label: "ماشین‌حساب سودآوری", latin: "Profitability Lab", icon: Calculator },
+  { href: "/", label: "میز کار مدیریتی", latin: "میز کار", icon: LayoutDashboard },
+  { href: "/guilds", label: "ماتریس اصناف", latin: "رسته‌ها", icon: Network },
+  { href: "/leads", label: "سرنخ‌های شعب", latin: "قیف فروش", icon: KanbanSquare },
+  { href: "/calculator", label: "ماشین‌حساب سودآوری", latin: "شبیه‌ساز", icon: Calculator },
+  { href: "/sources", label: "منابع و به‌روزرسانی", latin: "تبار داده", icon: Library },
 ];
 
 function LiveClock() {
@@ -139,10 +142,10 @@ function Sidebar({
         <div className="m-4 rounded-xl border border-gold-500/20 bg-gold-500/[0.06] p-4">
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="h-5 w-5 text-gold-400" />
-            <p className="text-xs font-bold text-gold-300">حالت بدون دیتابیس</p>
+            <p className="text-xs font-bold text-gold-300">نمایش بدون دیتابیس</p>
           </div>
           <p className="mt-1.5 text-[11px] leading-5 text-slate-400">
-            داده‌های نمونه به‌صورت درون‌برنامه‌ای محاسبه می‌شوند؛ تغییرات قیف سرنخ فقط در مرورگر شما ذخیره می‌گردد.
+            ارقام واحدها نمونه‌اند. نرخ کارمزد و فهرست منابع از کاتالوگ رسمی می‌آید. جزئیات در «منابع و به‌روزرسانی».
           </p>
         </div>
       </aside>
@@ -167,10 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="hidden items-center gap-2 text-xs text-slate-500 sm:flex">
-              <span className="flex h-2 w-2 animate-pulse-soft rounded-full bg-gold-400" />
-              حالت استاتیک — محاسبه درون‌برنامه‌ای بدون دیتابیس
-            </div>
+            <DataFreshnessBar />
             <div className="flex-1" />
             <div className="text-xs">
               <LiveClock />

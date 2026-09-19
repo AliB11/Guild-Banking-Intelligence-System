@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { DataError, DataLoading } from "@/components/data-state";
 import { ProfitCalculator } from "@/components/calculator/profit-calculator";
+import { ReadingGuide } from "@/components/explain/reading-guide";
 
 export default function CalculatorPage() {
   const {
@@ -36,15 +37,23 @@ export default function CalculatorPage() {
   return (
     <>
       <PageHeader
-        kicker="PROFITABILITY & CREDIT LAB"
+        kicker="شبیه‌ساز"
         title="ماشین‌حساب سودآوری و تسهیلات"
-        description="شبیه‌سازی آنی حاشیه خالص بانک برای هر پذیرنده: رسوب CASA، کارمزد شاپرکی، سقف تسهیلات طرح‌های پذیرنده ملی / سپهر / امید و امتیاز اولویت سرنخ — همه در یک نمای زنده."
+        description="با چند عدد ساده ببینید یک پذیرنده برای بانک چقدر سود می‌سازد و سقف کدام طرح تسهیلاتی را می‌گیرد. کارمزد از پلکان بانک مرکزی است؛ گردش و رسوب را خودتان تنظیم می‌کنید."
         actions={
           <>
-            <Badge variant="gold">موتور Π-Bank نسخه ۱٫۵</Badge>
+            <Badge variant="gold">موتور Π-Bank نسخه ۱٫۶</Badge>
             <Badge variant="persian">پلکان کارمزد بانک مرکزی</Badge>
           </>
         }
+      />
+      <ReadingGuide
+        items={[
+          "از فهرست رسته یک شغل آماده انتخاب کنید یا اسلایدرها را دستی حرکت دهید.",
+          "عدد بزرگ طلایی سود ماهانه بانک است: کارمزد + ارزش رسوب + حاشیه تسهیلات − هزینه دستگاه.",
+          "سه کارت طرح ملی / سپهر / امید سقف پیشنهادی را نشان می‌دهند؛ واجد شرایط نبودن دلیل دارد.",
+          "آزمایشگاه شوک پایین صفحه می‌گوید اگر فروش کم شود، سود و سقف اعتبار چقدر تاب می‌آورد.",
+        ]}
       />
       <ProfitCalculator presets={presets} />
     </>

@@ -9,6 +9,7 @@ import { DataError, DataLoading } from "@/components/data-state";
 import { faDigits, formatToman } from "@/lib/gbi/format";
 import { Factory, Store, ConciergeBell, Wrench } from "lucide-react";
 import { GuildExplorer } from "@/components/guilds/guild-explorer";
+import { ReadingGuide } from "@/components/explain/reading-guide";
 
 const CAT_ICONS = [Factory, Store, ConciergeBell, Wrench];
 
@@ -31,10 +32,18 @@ export default function GuildsPage() {
   return (
     <>
       <PageHeader
-        kicker="GUILD ANALYTICAL MATRIX"
-        title="کاوشگر ماتریس اصناف"
-        description="کالبدشکافی ۱۷ رسته شغلی طبق رده‌بندی اتاق اصناف؛ ضرایب اینتاکد سازمان امور مالیاتی، چرخه تبدیل نقد، کدهای ISIC و MCC شاپرک در کنار شاخص‌های تراکنشی زنده."
-        actions={<Badge variant="gold">گردش کل شبکه: {formatToman(totalVolume)}</Badge>}
+        kicker="رسته‌های شغلی"
+        title="مقایسه اصناف"
+        description="۱۷ رسته را کنار هم ببینید: کدام گردش بیشتری دارد، کدام زودتر نقد می‌شود، و بانک باید روی کدام تمرکز کند. کدهای ISIC، اینتاکد و MCC از طبقه‌بندی رسمی می‌آیند؛ ارقام گردش نمونه‌اند."
+        actions={<Badge variant="gold">گردش نمونه: {formatToman(totalVolume)}</Badge>}
+      />
+      <ReadingGuide
+        items={[
+          "چهار کارت بالا گروه‌های اصلی صنف‌اند: تولیدی، توزیعی، خدماتی و خدمات فنی.",
+          "ماتریس بوستون یک نقشه داخلی است نه استاندارد شاپرک: راست یعنی سهم بیشتر، بالا یعنی رشد بیشتر.",
+          "جدول را می‌توانید بر اساس امتیاز، گردش یا چرخه نقد مرتب کنید. CCC منفی یعنی مشتری زودتر از تأمین‌کننده پول می‌دهد.",
+          "رادار پایین صفحه دو رسته را روی شش سنجه بانکی با هم مقایسه می‌کند.",
+        ]}
       />
 
       <section className="stagger mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

@@ -533,7 +533,7 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             <p className="num text-[10.5px] leading-6 text-slate-500" dir="rtl">
               مدل محاسباتی: حاشیه رسوب = میانگین مانده روزانه × (نرخ تسهیلات {formatDecimal(23, 0)}٪ − سپرده قانونی {formatDecimal(13, 0)}٪) ÷ ۱۲ ·
               کارمزد پذیرندگی طبق پلکان بانک مرکزی · حاشیه تسهیلات = سقف اعتبار × اسپرد ۴٪ ÷ ۱۲ · هزینه پایانه = {formatNum(150_000)} تومان
-              ماهانه برای هر دستگاه. نسخه مدل: {result?.modelVersion ?? "GBI-ΠBank-1.5.0"} · ارقام صرفاً برآوردی و جهت تصمیم‌یار اعتباری شعب است.
+              ماهانه برای هر دستگاه. نسخه مدل: {result?.modelVersion ?? "GBI-ΠBank-1.6.0"} · ارقام صرفاً برآوردی و جهت تصمیم‌یار اعتباری شعب است.
             </p>
           </CardContent>
         </Card>

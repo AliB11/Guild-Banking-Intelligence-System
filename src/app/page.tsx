@@ -12,8 +12,12 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardSummaryClient } from "@/lib/gbi/client-data";
+import { loadCatalogClient } from "@/lib/gbi/sources/load-client";
 import { faDigits, formatToman } from "@/lib/gbi/format";
 import { PageHeader } from "@/components/page-header";
+import { ReadingGuide } from "@/components/explain/reading-guide";
+import { TermTip } from "@/components/explain/term-tip";
+import { MonthlyBriefingCard } from "@/components/sources/monthly-briefing-card";
 import { MetricCard } from "@/components/metric-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +42,10 @@ export default function DashboardPage() {
     queryKey: ["dashboard"],
     queryFn: getDashboardSummaryClient,
   });
+  const catalogQuery = useQuery({
+    queryKey: ["intelligence-catalog"],
+    queryFn: loadCatalogClient,
+  });
 
   if (isPending) return <DataLoading />;
   if (isError || !d) return <DataError onRetry={() => void refetch()} />;
@@ -49,22 +57,35 @@ export default function DashboardPage() {
   return (
     <>
       <PageHeader
-        kicker="EXECUTIVE COMMAND DECK"
-        title="میز کار مدیریتی — نمای کلان اصناف"
-        description={`تصویر یکپارچه از رسوب‌سازی، گردش پذیرندگان و سودآوری خالص شبکه اصناف در دوره ${d.latestPeriodLabel}. کلیه ارقام بر مبنای پایش ماهانه پایانه‌ها و حساب‌های جاری است.`}
+        kicker="میز کار"
+        title="نمای کلی شبکه اصناف"
+        description={`در ${d.latestPeriodLabel} ببینید واحدهای صنفی چقدر خرید کارتی داشته‌اند، چقدر پول در حساب جاری مانده، و این شبکه برای بانک چقدر سود ساخته است. ارقام واحدها نمونه‌اند؛ نرخ کارمزد از مدل رسمی می‌آید.`}
         actions={
           <>
             <Badge variant="persian">دوره جاری: {d.latestPeriodLabel}</Badge>
-            <Badge variant="gold">{faDigits(d.totals.merchantCount)} واحد صنفی فعال</Badge>
+            <Badge variant="gold">{faDigits(d.totals.merchantCount)} واحد نمونه</Badge>
           </>
         }
       />
+      <ReadingGuide
+        items={[
+          "پنج کارت بالا خلاصه ماه است: رسوب یعنی پول مانده در حساب، گردش یعنی مجموع خرید کارتی.",
+          "اتاق هشدار می‌گوید کجا باید سریع اقدام شود؛ گیت کیفیت داده قبل از اعتماد به عدد کنترل می‌شود.",
+          "نمودار شش‌ماهه روند را نشان می‌دهد نه یک عکس ثابت. نقشه استان برای تخصیص پایانه و کارشناس شعبه است.",
+          "برای دیدن اینکه هر عدد از کدام نهاد می‌آید، صفحه «منابع و به‌روزرسانی» را باز کنید.",
+        ]}
+      />
+      {catalogQuery.data && (
+        <section className="mb-5">
+          <MonthlyBriefingCard briefing={catalogQuery.data.briefing} />
+        </section>
+      )}
 
       {/* KPI cards */}
       <section className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard
-          title="رسوب تجمیعی اصناف (CASA)"
-          subtitle="میانگین مانده روزانه حساب‌های جاری"
+          title="رسوب تجمیعی اصناف"
+          subtitle="پولی که از فروش در حساب جاری بانک مانده — داده نمونه"
           value={d.totals.totalFloat}
           format="toman"
           icon="vault"
@@ -74,7 +95,7 @@ export default function DashboardPage() {
         />
         <MetricCard
           title="بازده ماهانه رسوب"
-          subtitle="حاشیه مالی رسوب پس از کسر سپرده قانونی"
+          subtitle="سود بانک از همان مانده، بعد از کسر سپرده قانونی — فرض مدل"
           value={d.totals.monthlyFloatYield}
           format="toman"
           icon="percent"
@@ -84,7 +105,7 @@ export default function DashboardPage() {
         />
         <MetricCard
           title="پایانه‌های فعال"
-          subtitle="کارتخوان‌های تحت پوشش شبکه پذیرندگی"
+          subtitle="تعداد دستگاه کارتخوان در این نمونه"
           value={d.totals.activeTerminals}
           format="num"
           icon="terminal"
@@ -93,7 +114,7 @@ export default function DashboardPage() {
         />
         <MetricCard
           title="گردش ماهانه تراکنش"
-          subtitle={`${faDigits(d.totals.totalTxCount)} تراکنش در ${d.latestPeriodLabel}`}
+          subtitle={`${faDigits(d.totals.totalTxCount)} خرید کارتی در ${d.latestPeriodLabel} — داده نمونه`}
           value={d.totals.totalTxVolume}
           format="toman"
           icon="exchange"
@@ -103,7 +124,7 @@ export default function DashboardPage() {
         />
         <MetricCard
           title="میانگین سبد خرید"
-          subtitle="متوسط مبلغ هر تراکنش کارتخوان"
+          subtitle="متوسط مبلغ هر کشیدن کارت"
           value={d.totals.avgBasket}
           format="toman"
           icon="basket"
@@ -121,7 +142,7 @@ export default function DashboardPage() {
                 <ShieldAlert className="h-4 w-4 text-rose-300" />
                 اتاق هشدار زودهنگام
               </CardTitle>
-              <CardDescription>افت گردش، تمرکز ریسک، شکاف مالیاتی و سرنخ‌های خارج از SLA</CardDescription>
+              <CardDescription>کجا گردش افتاده، ریسک بالا رفته، مالیات ناقص است یا سرنخ بی‌پاسخ مانده</CardDescription>
             </div>
             <Badge variant={d.alerts.some((alert) => alert.severity === "critical") ? "rose" : "slate"}>
               {faDigits(d.alerts.length)} سیگنال
@@ -156,7 +177,9 @@ export default function DashboardPage() {
                 <TrendingUp className="h-4 w-4 text-gold-400" />
                 روند شش‌ماهه گردش و رسوب
               </CardTitle>
-              <CardDescription>مقایسه منحنی گردش تراکنش پایانه‌ها با رسوب‌سازی روزانه در دوره‌های جلالی</CardDescription>
+              <CardDescription>
+                خط طلایی گردش خرید است؛ خط فیروزه‌ای <TermTip id="float">رسوب حساب جاری</TermTip> است
+              </CardDescription>
             </div>
             <Badge variant="gold">{faDigits(d.trend.length)} دوره</Badge>
           </CardHeader>

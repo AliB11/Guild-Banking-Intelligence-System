@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { LeadKanban } from "@/components/leads/lead-kanban";
 import { resetLeadStageOverrides } from "@/lib/gbi/client-data";
+import { ReadingGuide } from "@/components/explain/reading-guide";
 
 export default function LeadsPage() {
   const queryClient = useQueryClient();
@@ -18,9 +19,9 @@ export default function LeadsPage() {
   return (
     <>
       <PageHeader
-        kicker="BRANCH LEAD PIPELINE"
-        title="مدیریت سرنخ‌های شعب"
-        description="قیف بازاریابی پذیرندگان بر اساس موتور امتیازدهی GBI؛ اقدام بعدی، دلیل پیشنهاد و SLA هر سرنخ را ببینید، کارت‌ها را جابه‌جا کنید و وضعیت را به‌صورت آنی ثبت کنید."
+        kicker="قیف شعب"
+        title="سرنخ‌هایی که باید پیگیری شوند"
+        description="لیست واحدهایی که برای کارتخوان، سرمایه در گردش یا اعتبار اسنادی مناسب‌اند. کارت را بکشید تا مرحله عوض شود. امتیاز از رسوب، گردش، تناسب اعتباری و مالیات ساخته می‌شود."
         actions={
           <>
             <Badge variant="gold">امتیازدهی خودکار فعال</Badge>
@@ -35,6 +36,14 @@ export default function LeadsPage() {
             </button>
           </>
         }
+      />
+      <ReadingGuide
+        items={[
+          "هر کارت یک واحد صنفی است که شعبه باید با او کار کند. امتیاز بالاتر یعنی اولویت بیشتر.",
+          "روی کارت، اقدام بعدی و مهلت نوشته شده. دلیل پیشنهاد را هم همان‌جا می‌بینید.",
+          "کارت را بکشید و در ستون بعد رها کنید. این تغییر فقط در همین مرورگر ذخیره می‌شود.",
+          "اگر کارتخوان به سامانه مؤدیان وصل نباشد، مدل اول شفافیت مالیاتی می‌خواهد نه تسهیلات.",
+        ]}
       />
       <LeadKanban />
     </>

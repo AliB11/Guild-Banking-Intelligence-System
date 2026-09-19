@@ -115,7 +115,7 @@ export function GuildExplorer({ overview }: { overview: GuildsOverview }) {
               <Badge variant="violet">BCG تصمیم‌یار</Badge>
             </CardTitle>
             <CardDescription>
-              محور افقی سهم نسبی گردش، محور عمودی رشد تراکنش و اندازه حباب حاشیه خالص بانک را نشان می‌دهد.
+              راست = سهم بیشتر از گردش، بالا = رشد بیشتر نسبت به ماه قبل، حباب بزرگ‌تر = سود بیشتر برای بانک. این نقشه داخلی است نه بخشنامه شاپرک.
             </CardDescription>
           </div>
           <Badge variant="rose">استاندارد رسمی BCG شاپرک نیست</Badge>
