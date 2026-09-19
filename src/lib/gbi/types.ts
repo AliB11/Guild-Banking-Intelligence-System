@@ -141,6 +141,44 @@ export interface SubGuildSummary {
   tier: "S" | "A" | "B" | "C";
 }
 
+export type BcgQuadrant = "STAR" | "CASH_COW" | "QUESTION_MARK" | "DOG";
+
+export interface BcgGuildPoint {
+  id: string;
+  title: string;
+  categoryName: string;
+  merchantCount: number;
+  volume: number;
+  marketSharePct: number;
+  relativeSharePct: number;
+  growthPct: number;
+  paymentContribution: number;
+  bankNetMargin: number;
+  marginPct: number;
+  isProfitable: boolean;
+  profitabilityLabel: "سودده" | "مرزی" | "زیان‌ده";
+  quadrant: BcgQuadrant;
+}
+
+export interface BcgMatrixAssumptions {
+  smallTransactionFeeRials: number;
+  smallTransactionThresholdRials: number;
+  transactionFeeRate: number;
+  transactionFeeCapRials: number;
+  terminalMonthlyCostRials: number;
+  lendingRate: number;
+  reserveRatio: number;
+}
+
+export interface BcgMatrix {
+  points: BcgGuildPoint[];
+  shareCutoffPct: number;
+  growthCutoffPct: number;
+  latestPeriod: string;
+  methodology: string;
+  assumptions: BcgMatrixAssumptions;
+}
+
 export interface GuildsOverview {
   categories: Array<{
     id: string;
@@ -153,6 +191,7 @@ export interface GuildsOverview {
     float: number;
   }>;
   subGuilds: SubGuildSummary[];
+  bcgMatrix: BcgMatrix;
   latestPeriod: string;
 }
 

@@ -17,6 +17,11 @@ export const FLOAT_BENCHMARK_RIALS = 1_000_000_000;
 export const VOLUME_BENCHMARK_RIALS = 50_000_000_000;
 /** هزینه ماهانه نگهداری هر پایانه (رول، سوئیچ، پشتیبانی PSP) — ۱۵۰ هزار تومان */
 export const TERMINAL_MONTHLY_COST_RIALS = 1_500_000;
+/** پارامترهای کارمزد خرید کارتی؛ قابل جایگزینی با ابلاغیه/قرارداد فعال در production */
+export const CBI_POS_FEE_SMALL_TX_RIALS = 1_200;
+export const CBI_POS_FEE_SMALL_TX_THRESHOLD_RIALS = 6_000_000;
+export const CBI_POS_FEE_RATE = 0.0002;
+export const CBI_POS_FEE_CAP_RIALS = 40_000;
 /** حاشیه خالص تسهیلات (Spread) بین نرخ اعطا و نرخ تمام‌شده منابع */
 export const FACILITY_SPREAD = 0.04;
 /** روزهای مبنای محاسبه ماه */
@@ -33,8 +38,8 @@ export const DAYS_IN_MONTH = 30;
  */
 export function cbiPosFee(amountRials: number): number {
   if (amountRials <= 0) return 0;
-  if (amountRials < 6_000_000) return 1_200;
-  return Math.min(40_000, Math.round(amountRials * 0.0002));
+  if (amountRials < CBI_POS_FEE_SMALL_TX_THRESHOLD_RIALS) return CBI_POS_FEE_SMALL_TX_RIALS;
+  return Math.min(CBI_POS_FEE_CAP_RIALS, Math.round(amountRials * CBI_POS_FEE_RATE));
 }
 
 /* ------------------------------------------------------------------ */

@@ -16,14 +16,23 @@ import {
 } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import {
+  CBI_POS_FEE_CAP_RIALS,
+  CBI_POS_FEE_RATE,
+  CBI_POS_FEE_SMALL_TX_RIALS,
+  CBI_POS_FEE_SMALL_TX_THRESHOLD_RIALS,
+  LENDING_RATE,
   MODEL_VERSION,
+  RESERVE_RATIO,
+  TERMINAL_MONTHLY_COST_RIALS,
   VOLUME_BENCHMARK_RIALS,
   FLOAT_BENCHMARK_RIALS,
+  cbiPosFee,
   clampScore,
   computeLeadScore,
   creditSuitabilityScore,
   floatMarginMonthly,
   marketingTier,
+  round1,
 } from "./engine";
 import { getDemoCorpus } from "./demo-data";
 import { actionNeedsAttention, recommendNextAction } from "./operations";
@@ -35,6 +44,7 @@ import {
 } from "./service-ops";
 import { jalaliPeriodLabel, jalaliPeriodShort } from "./format";
 import type {
+  BcgMatrix,
   DashboardSummary,
   GuildCompareResult,
   GuildsOverview,
@@ -172,6 +182,94 @@ function buildSubGuildSummaries(corpus: Corpus): SubGuildSummary[] {
       tier: marketingTier(avgScore),
     };
   });
+}
+
+function median(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+}
+
+function buildBcgMatrix(corpus: Corpus, summaries: SubGuildSummary[]): BcgMatrix {
+  const merchantById = new Map(corpus.merchants.map((merchant) => [merchant.id, merchant]));
+  const currentVolumeBySub = new Map<string, number>();
+  const currentStandardFeeBySub = new Map<string, number>();
+  const currentSupportCostBySub = new Map<string, number>();
+  const previousVolumeBySub = new Map<string, number>();
+  for (const metric of corpus.metrics) {
+    const merchant = merchantById.get(metric.merchantId);
+    if (!merchant) continue;
+    const subId = merchant.subGuildId;
+    if (metric.reportingPeriod === corpus.latestPeriod) {
+      currentVolumeBySub.set(subId, (currentVolumeBySub.get(subId) ?? 0) + metric.monthlyTxVolume);
+      const averageBasket = metric.monthlyTxCount > 0 ? metric.monthlyTxVolume / metric.monthlyTxCount : 0;
+      const standardFee = metric.monthlyTxCount > 0 ? cbiPosFee(averageBasket) * metric.monthlyTxCount : metric.acquiringFeeEarned;
+      currentStandardFeeBySub.set(subId, (currentStandardFeeBySub.get(subId) ?? 0) + standardFee);
+      currentSupportCostBySub.set(subId, (currentSupportCostBySub.get(subId) ?? 0) + metric.operatingSupportCost);
+    }
+    if (metric.reportingPeriod === corpus.prevPeriod && corpus.prevPeriod !== corpus.latestPeriod) {
+      previousVolumeBySub.set(subId, (previousVolumeBySub.get(subId) ?? 0) + metric.monthlyTxVolume);
+    }
+  }
+  const totalVolume = Math.max(1, summaries.reduce((total, summary) => total + summary.volume, 0));
+  const maxVolume = Math.max(1, ...summaries.map((summary) => summary.volume));
+  const rawPoints = summaries.map((summary) => {
+    const currentVolume = currentVolumeBySub.get(summary.id) ?? summary.volume;
+    const previousVolume = previousVolumeBySub.get(summary.id) ?? 0;
+    const growthPct = previousVolume > 0 ? ((currentVolume - previousVolume) / previousVolume) * 100 : 0;
+    const supportCost = currentSupportCostBySub.get(summary.id) ?? summary.terminals * TERMINAL_MONTHLY_COST_RIALS;
+    const standardFee = currentStandardFeeBySub.get(summary.id) ?? summary.fees;
+    const paymentContribution = standardFee - supportCost;
+    const floatYield = floatMarginMonthly(summary.float);
+    const bankNetMargin = paymentContribution + floatYield;
+    const revenue = Math.max(1, standardFee + floatYield);
+    const marginPct = (bankNetMargin / revenue) * 100;
+    return {
+      id: summary.id,
+      title: summary.title,
+      categoryName: summary.categoryName,
+      merchantCount: summary.merchantCount,
+      volume: currentVolume,
+      marketSharePct: (currentVolume / totalVolume) * 100,
+      relativeSharePct: (currentVolume / maxVolume) * 100,
+      growthPct,
+      paymentContribution,
+      bankNetMargin,
+      marginPct,
+      isProfitable: bankNetMargin > 0,
+      profitabilityLabel: bankNetMargin > 0 ? "سودده" as const : bankNetMargin > -supportCost ? "مرزی" as const : "زیان‌ده" as const,
+    };
+  });
+  const shareCutoffPct = 50;
+  const growthCutoffPct = median(rawPoints.map((point) => point.growthPct));
+  const points = rawPoints
+    .map((point) => {
+      const highShare = point.relativeSharePct >= shareCutoffPct;
+      const highGrowth = point.growthPct >= growthCutoffPct;
+      const quadrant = highShare
+        ? highGrowth ? "STAR" as const : "CASH_COW" as const
+        : highGrowth ? "QUESTION_MARK" as const : "DOG" as const;
+      return { ...point, quadrant, marginPct: round1(point.marginPct), growthPct: round1(point.growthPct), marketSharePct: round1(point.marketSharePct), relativeSharePct: round1(point.relativeSharePct) };
+    })
+    .sort((a, b) => b.volume - a.volume);
+
+  return {
+    points,
+    shareCutoffPct,
+    growthCutoffPct: round1(growthCutoffPct),
+    latestPeriod: corpus.latestPeriod,
+    methodology: "سهم نسبی داخلی = گردش رسته نسبت به بزرگ‌ترین رسته؛ رشد = تغییر گردش نسبت به دوره قبل؛ سوددهی = کارمزد خرید کارتی + ارزش رسوب CASA − هزینه پشتیبانی پایانه. کارمزد خرید کارتی برای تراکنش کمتر از ۶ میلیون ریال ۱٬۲۰۰ ریال و برای مبالغ بالاتر ۰٫۰۲٪ تا سقف ۴۰٬۰۰۰ ریال در نظر گرفته شده است.",
+    assumptions: {
+      smallTransactionFeeRials: CBI_POS_FEE_SMALL_TX_RIALS,
+      smallTransactionThresholdRials: CBI_POS_FEE_SMALL_TX_THRESHOLD_RIALS,
+      transactionFeeRate: CBI_POS_FEE_RATE,
+      transactionFeeCapRials: CBI_POS_FEE_CAP_RIALS,
+      terminalMonthlyCostRials: TERMINAL_MONTHLY_COST_RIALS,
+      lendingRate: LENDING_RATE,
+      reserveRatio: RESERVE_RATIO,
+    },
+  };
 }
 
 function percentageChange(current: number, previous: number, hasPrevious: boolean): number {
@@ -402,6 +500,7 @@ export async function getGuildsOverview(): Promise<GuildsOverview> {
   return {
     categories,
     subGuilds: subSummaries.sort((a, b) => b.avgScore - a.avgScore),
+    bcgMatrix: buildBcgMatrix(corpus, subSummaries),
     latestPeriod: corpus.latestPeriod,
   };
 }

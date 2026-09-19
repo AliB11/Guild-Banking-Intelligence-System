@@ -8,6 +8,7 @@ import { faDigits, formatDecimal, formatToman } from "@/lib/gbi/format";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GuildRadar } from "@/components/charts/guild-radar";
+import { BcgMatrix } from "@/components/charts/bcg-matrix";
 import { useCompareStore } from "@/lib/store";
 import type { GuildCompareResult, GuildsOverview, SubGuildSummary } from "@/lib/gbi/types";
 
@@ -105,6 +106,24 @@ export function GuildExplorer({ overview }: { overview: GuildsOverview }) {
 
   return (
     <div className="space-y-5">
+      <Card className="animate-fade-up">
+        <CardHeader>
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              ماتریس بوستون سوددهی رسته‌ها
+              <Badge variant="violet">BCG تصمیم‌یار</Badge>
+            </CardTitle>
+            <CardDescription>
+              محور افقی سهم نسبی گردش، محور عمودی رشد تراکنش و اندازه حباب حاشیه خالص بانک را نشان می‌دهد.
+            </CardDescription>
+          </div>
+          <Badge variant="rose">استاندارد رسمی BCG شاپرک نیست</Badge>
+        </CardHeader>
+        <CardContent>
+          <BcgMatrix data={overview.bcgMatrix} />
+        </CardContent>
+      </Card>
+
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-3 animate-fade-up">
         <div className="flex items-center gap-1.5 rounded-xl border border-white/[0.07] bg-white/[0.02] p-1">
