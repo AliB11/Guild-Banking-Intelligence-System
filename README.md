@@ -3,7 +3,7 @@
 [![Deploy to GitHub Pages](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/pages.yml/badge.svg)](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/pages.yml)
 [![CI](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/ci.yml/badge.svg)](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/ci.yml)
 
-میز کار شاپرک، اطلس رسته، ماشین‌حساب کارمزد کارتخوان، دفترچه منابع و به‌روزرسانی ماهانه پس از انتشار گزارش شاپرک.
+میز کار شاپرک، نامه یک‌صفحه‌ای ستاد، اطلس رسته با طبقه‌بندی سیاست کارمزد/اینتا (نه سود شاپرک)، ماشین‌حساب کارمزد کارتخوان، دفترچه منابع و به‌روزرسانی ماهانه پس از انتشار گزارش شاپرک.
 
 > **حالت اصلی: کاملاً بدون دیتابیس.** برنامه یک وب‌اپ استاتیک است که جمعِ منتشرشدهٔ شاپرک/بانک مرکزی/اینتا را به‌صورت درون‌برنامه‌ای محاسبه می‌کند؛ بدون PostgreSQL، بدون سرور Node، بدون متغیر محیطی — روی GitHub Pages با یک کلیک. نام پذیرنده و رسوب CASA در منبع عمومی نیست و ساخته نمی‌شود.
 

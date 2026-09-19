@@ -12,6 +12,7 @@ import {
   X,
   ShieldCheck,
   Library,
+  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { faDigits, formatJalaliDate } from "@/lib/gbi/format";
@@ -19,6 +20,7 @@ import { DataFreshnessBar } from "@/components/layout/data-freshness-bar";
 
 const NAV = [
   { href: "/", label: "میز کار شاپرک", latin: "میز کار", icon: LayoutDashboard },
+  { href: "/brief", label: "نامه ستاد", latin: "ستاد", icon: ScrollText },
   { href: "/guilds", label: "اطلس رسته‌ها", latin: "رسته‌ها", icon: Network },
   { href: "/calculator", label: "ماشین‌حساب کارمزد", latin: "شبیه‌ساز", icon: Calculator },
   { href: "/sources", label: "منابع و به‌روزرسانی", latin: "تبار داده", icon: Library },

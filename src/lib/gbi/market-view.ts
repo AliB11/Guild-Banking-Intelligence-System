@@ -165,6 +165,106 @@ export function getGuildKnowledge() {
   };
 }
 
+export type GuildPolicyClass = "FEE_EXEMPT" | "INTA_CITED" | "CODE_ONLY";
+
+export const GUILD_POLICY_LABEL: Record<GuildPolicyClass, { title: string; hint: string }> = {
+  FEE_EXEMPT: {
+    title: "هزینه کارمزد روی بانک",
+    hint: "پذیرنده معاف است؛ بانک می‌پردازد. سود شاپرک رسته نیست.",
+  },
+  INTA_CITED: {
+    title: "ضریب مالیاتی نقل‌شده",
+    hint: "نسبت سود اینتا برای مالیات است، نه حاشیه بانک.",
+  },
+  CODE_ONLY: {
+    title: "فقط کد مرجع",
+    hint: "ISIC/MCC هست؛ گردش و اینتا در این نسخه نیست.",
+  },
+};
+
+export function guildPolicyClass(row: GuildTaxonomyRow): GuildPolicyClass {
+  if (row.feeExempt) return "FEE_EXEMPT";
+  if (row.intaProfitRatio > 0) return "INTA_CITED";
+  return "CODE_ONLY";
+}
+
+/** Overlapping tags: سوپرمارکت هم معاف کارمزد است هم ضریب اینتا دارد. */
+export function guildPolicyTags(row: GuildTaxonomyRow): GuildPolicyClass[] {
+  if (row.feeExempt && row.intaProfitRatio > 0) return ["FEE_EXEMPT", "INTA_CITED"];
+  return [guildPolicyClass(row)];
+}
+
+export function rowMatchesPolicy(row: GuildTaxonomyRow, policy: GuildPolicyClass | "all"): boolean {
+  if (policy === "all") return true;
+  if (policy === "FEE_EXEMPT") return row.feeExempt;
+  if (policy === "INTA_CITED") return row.intaProfitRatio > 0;
+  return !row.feeExempt && row.intaProfitRatio === 0;
+}
+
+export interface StaffAction {
+  title: string;
+  detail: string;
+}
+
+export interface StaffLetter {
+  periodLabel: string;
+  reportNo: number | null;
+  headline: string;
+  kpis: { label: string; value: string; note: string }[];
+  actions: StaffAction[];
+  closing: string;
+}
+
+export function getStaffLetter(): StaffLetter {
+  const market = getMarketDashboard();
+  const internet = market.instruments.find((row) => row.key === "internet");
+  return {
+    periodLabel: market.latestPeriodLabel,
+    reportNo: market.reportNo,
+    headline: `نامه ستاد — ماهنامه شاپرک ${market.latestPeriodLabel}`,
+    kpis: [
+      {
+        label: "گردش شبکه",
+        value: formatToman(market.totals.volume),
+        note: `MoM مبلغ ${formatPercent(market.citedMom.valuePct)}`,
+      },
+      {
+        label: "تعداد تراکنش",
+        value: formatCount(market.totals.txCount),
+        note: `MoM تعداد ${formatPercent(market.citedMom.countPct)}`,
+      },
+      {
+        label: "سبد کارتخوان",
+        value: formatToman(market.totals.posBasket),
+        note: "رقم اعلامی مرداد",
+      },
+      {
+        label: "ملت × شبکه",
+        value: formatToman(market.mellat.impliedVolume),
+        note: `${formatPercent(market.mellat.valuePct, 2)} مبلغ`,
+      },
+    ],
+    actions: [
+      {
+        title: "۱. سبد شبکه سنگین‌تر شده است",
+        detail: `فاصله رشد مبلغ و تعداد ${formatPercent(market.ticketGapPct)} است. این یعنی میانگین خرید بالا رفته، نه اینکه الزاماً فروشگاه جدیدی آمده. کمپین پوشش کارتخوان را روی سبد اعلامی ${formatToman(market.totals.posBasket)} تنظیم کنید — پرونده پذیرنده نسازید.`,
+      },
+      {
+        title: "۲. اینترنت سبد درشت دارد اما کارمزد کارتخوان ندارد",
+        detail: internet
+          ? `سبد اینترنت حدود ${formatToman(internet.basketRials)} است (تقسیم مبلغ÷تعداد اعلامی)، چند برابر کارتخوان. پلکان بانک مرکزی به اینترنت اعمال نمی‌شود. محصول اینترنت را با قرارداد PSP جدا ببینید.`
+          : "تفکیک اینترنت در این دوره نیست.",
+      },
+      {
+        title: "۳. نانوایی و سوپرمارکت هزینه کارمزد را به بانک می‌دهند",
+        detail: `${market.feeExemptHint} تا مانده CASA از هسته بانک نرسد، سقف اعتبار و قیف شعبه نسازید. ضریب اینتا فقط برای سوپرمارکت (۸٫۵٪)، رستوران (۱۴٪) و اغذیه (۱۵٪ کف) نقل شده و سود بانکی رسته نیست.`,
+      },
+    ],
+    closing:
+      "شهریور در تقویم است اما گزارش شاپرک ندارد. این نامه تصمیم‌یار است و جایگزین بخشنامه، قرارداد PSP یا کمیته اعتباری نیست.",
+  };
+}
+
 function toneForDelta(delta: number): "gold" | "persian" | "rose" | "slate" {
   if (delta <= -5) return "rose";
   if (delta >= 5) return "persian";

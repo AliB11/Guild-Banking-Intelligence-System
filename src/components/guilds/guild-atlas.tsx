@@ -5,16 +5,31 @@ import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { faDigits, formatDecimal } from "@/lib/gbi/format";
-import { getGuildAtlas, GUILD_CATEGORY_LABEL } from "@/lib/gbi/market-view";
+import {
+  getGuildAtlas,
+  GUILD_CATEGORY_LABEL,
+  GUILD_POLICY_LABEL,
+  guildPolicyTags,
+  rowMatchesPolicy,
+  type GuildPolicyClass,
+} from "@/lib/gbi/market-view";
 import type { GuildTaxonomyRow } from "@/lib/gbi/published-market";
 import { cn } from "@/lib/utils";
 
 type CategoryFilter = "all" | keyof typeof GUILD_CATEGORY_LABEL;
+type PolicyFilter = "all" | GuildPolicyClass;
+
+const POLICY_BADGE: Record<GuildPolicyClass, "persian" | "violet" | "slate"> = {
+  FEE_EXEMPT: "persian",
+  INTA_CITED: "violet",
+  CODE_ONLY: "slate",
+};
 
 export function GuildAtlas() {
   const atlas = useMemo(() => getGuildAtlas(), []);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("all");
+  const [policy, setPolicy] = useState<PolicyFilter>("all");
 
   const counts = useMemo(() => {
     const next: Record<string, number> = { all: atlas.length };
@@ -28,10 +43,11 @@ export function GuildAtlas() {
     const q = query.trim();
     return atlas.filter((row) => {
       if (category !== "all" && row.category !== category) return false;
+      if (!rowMatchesPolicy(row, policy)) return false;
       if (!q) return true;
       return `${row.title} ${row.isicCode} ${row.intaCode} ${row.defaultMcc} ${row.citation}`.includes(q);
     });
-  }, [atlas, category, query]);
+  }, [atlas, category, policy, query]);
 
   const citedInta = atlas.filter((row) => row.intaProfitRatio > 0).length;
   const exempt = atlas.filter((row) => row.feeExempt).length;
@@ -63,8 +79,8 @@ export function GuildAtlas() {
           <div>
             <CardTitle>جدول مرجع رسته‌ها</CardTitle>
             <CardDescription>
-              گردش ماهانه رسته در شاپرک عمومی نیست. {faDigits(citedInta)} رسته ضریب اینتا نقل‌شده دارند و{" "}
-              {faDigits(exempt)} رسته معاف کارمزد پذیرنده‌اند.
+              ستون سیاست از بخشنامه کارمزد و جدول اینتا است، نه از سود شاپرک. {faDigits(citedInta)} رسته ضریب مالیاتی
+              نقل‌شده دارند و {faDigits(exempt)} رسته معاف کارمزد پذیرنده‌اند.
             </CardDescription>
           </div>
           <Badge variant="slate">{faDigits(rows.length)} رسته</Badge>
@@ -80,10 +96,28 @@ export function GuildAtlas() {
                 className="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] py-2 pl-3 pr-9 text-[12px] text-slate-200 placeholder:text-slate-600 focus:border-gold-500/40 focus:outline-none focus:ring-2 focus:ring-gold-500/15"
               />
             </div>
+            <div className="flex flex-wrap gap-1.5">
+              {(["all", "FEE_EXEMPT", "INTA_CITED", "CODE_ONLY"] as const).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setPolicy(key)}
+                  className={cn(
+                    "rounded-lg border px-2.5 py-1.5 text-[10.5px] font-bold",
+                    policy === key
+                      ? "border-gold-500/40 bg-gold-500/10 text-gold-200"
+                      : "border-white/10 text-slate-400 hover:text-slate-200",
+                  )}
+                >
+                  {key === "all" ? "همه سیاست‌ها" : GUILD_POLICY_LABEL[key].title}
+                </button>
+              ))}
+            </div>
             <button
               type="button"
               onClick={() => {
                 setCategory("all");
+                setPolicy("all");
                 setQuery("");
               }}
               className="rounded-lg border border-white/10 px-3 py-2 text-[11px] font-bold text-slate-400 hover:text-slate-200"
@@ -92,11 +126,12 @@ export function GuildAtlas() {
             </button>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[820px] border-collapse text-right">
+            <table className="w-full min-w-[960px] border-collapse text-right">
               <thead>
                 <tr className="border-b border-white/[0.06] text-[10.5px] font-bold text-slate-500">
                   <th className="px-3 py-2">رسته</th>
                   <th className="px-3 py-2">گروه</th>
+                  <th className="px-3 py-2 text-center">سیاست</th>
                   <th className="px-3 py-2 text-center">ISIC</th>
                   <th className="px-3 py-2 text-center">اینتاکد</th>
                   <th className="px-3 py-2 text-center">ضریب اینتا</th>
@@ -128,6 +163,15 @@ function AtlasRow({ row }: { row: GuildTaxonomyRow }) {
         <p className="mt-1 max-w-sm text-[10.5px] leading-5 text-slate-500">{row.citation}</p>
       </td>
       <td className="px-3 py-3 text-slate-400">{GUILD_CATEGORY_LABEL[row.category]}</td>
+      <td className="px-3 py-3 text-center">
+        <div className="flex flex-wrap justify-center gap-1">
+          {guildPolicyTags(row).map((tag) => (
+            <Badge key={tag} variant={POLICY_BADGE[tag]}>
+              {GUILD_POLICY_LABEL[tag].title}
+            </Badge>
+          ))}
+        </div>
+      </td>
       <td className="num px-3 py-3 text-center text-slate-300" dir="ltr">
         {row.isicCode}
       </td>

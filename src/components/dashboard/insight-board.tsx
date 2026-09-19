@@ -1,6 +1,7 @@
 "use client";
 
-import { Printer } from "lucide-react";
+import Link from "next/link";
+import { Printer, ScrollText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { faDigits, formatCount, formatDecimal, formatPercent, formatToman } from "@/lib/gbi/format";
@@ -15,14 +16,23 @@ export function InsightBoard({ market }: { market: MarketDashboard }) {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3 print-hide">
         <p className="text-[12px] font-extrabold text-slate-300">خوانش از روی همان ارقام — بدون پرونده جدید</p>
-        <button
-          type="button"
-          onClick={() => window.print()}
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[11px] font-bold text-slate-300 transition hover:border-gold-500/30 hover:text-gold-200"
-        >
-          <Printer className="h-3.5 w-3.5" />
-          چاپ ماهنامه یک‌صفحه‌ای
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/brief/"
+            className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-3 py-1.5 text-[11px] font-bold text-gold-200 transition hover:border-gold-400/50"
+          >
+            <ScrollText className="h-3.5 w-3.5" />
+            نامه ستاد
+          </Link>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[11px] font-bold text-slate-300 transition hover:border-gold-500/30 hover:text-gold-200"
+          >
+            <Printer className="h-3.5 w-3.5" />
+            چاپ میز کار
+          </button>
+        </div>
       </div>
 
       <section className="stagger grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

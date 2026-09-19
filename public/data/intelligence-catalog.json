@@ -174,6 +174,7 @@
       ],
       "screens": [
         "میز کار",
+        "نامه ستاد",
         "منابع اطلاعاتی"
       ],
       "licenseNote": "گزارش عمومی شاپرک؛ نقل با ذکر منبع.",
@@ -314,7 +315,9 @@
         "ماشین‌حساب کارمزد"
       ],
       "screens": [
-        "ماشین‌حساب"
+        "ماشین‌حساب",
+        "اطلس رسته‌ها",
+        "نامه ستاد"
       ],
       "licenseNote": "بخشنامه عمومی کارمزد؛ باید با ابلاغیه جاری تطبیق شود.",
       "howWeUse": "فرمول کارمزد مدل دقیقاً همان پلکان اعلام‌شده است و در کاتالوگ به‌صورت فرض نسخه‌بندی‌شده ذخیره می‌شود. تغییر بخشنامه → هشدار بازبینی انسانی.",
@@ -408,7 +411,8 @@
       ],
       "screens": [
         "اطلس رسته‌ها",
-        "ماشین‌حساب"
+        "ماشین‌حساب",
+        "نامه ستاد"
       ],
       "licenseNote": "جداول عمومی ضرایب سود فعالیت.",
       "howWeUse": "هر رسته یک اینتاکد و ضریب سود دارد. جاب سالانه (اوایل سال) تغییر صفحه را تشخیص می‌دهد و پرچم بازبینی انسانی می‌زند؛ ضریب را خودکار جایگزین نمی‌کند.",
@@ -500,7 +504,7 @@
       ],
       "licenseNote": "طبقه‌بندی صنفی عمومی.",
       "howWeUse": "عنوان رسته‌ها با ادبیات اتاق اصناف هم‌خوان شده است تا شعبه همان زبانی را ببیند که جواز کسب دارد.",
-      "limitation": "اتاق استانی ممکن است زیررسته محلی داشته باشد که در نمونه نیست.",
+      "limitation": "اتاق استانی ممکن است زیررسته محلی داشته باشد. شمار واحد صنفی در نقل‌های عمومی متناقض است (صمت ۱۴۰۰ در برابر نقل ۱۴۰۵ اتاق) و به‌عنوان KPI جاری استفاده نمی‌شود.",
       "expectedPeriod": "1405-06",
       "expectedPeriodLabel": "شهریور ۱۴۰۵",
       "publicationState": "current",
@@ -924,7 +928,8 @@
       "field": "totals.volume",
       "label": "گردش ماهانه شبکه شاپرک",
       "screens": [
-        "میز کار"
+        "میز کار",
+        "نامه ستاد"
       ],
       "origin": "official",
       "sourceIds": [
@@ -987,7 +992,8 @@
       "field": "ticketGap",
       "label": "فاصله رشد مبلغ و تعداد مرداد",
       "screens": [
-        "میز کار"
+        "میز کار",
+        "نامه ستاد"
       ],
       "origin": "model",
       "sourceIds": [
@@ -999,7 +1005,8 @@
       "field": "instrumentBasket",
       "label": "سبد ابزار (اعلامی یا تقسیم)",
       "screens": [
-        "میز کار"
+        "میز کار",
+        "نامه ستاد"
       ],
       "origin": "model",
       "sourceIds": [
@@ -1011,7 +1018,8 @@
       "field": "mellatImplied",
       "label": "حاصل‌ضرب سهم ملت در جمع شبکه",
       "screens": [
-        "میز کار"
+        "میز کار",
+        "نامه ستاد"
       ],
       "origin": "model",
       "sourceIds": [
@@ -1068,6 +1076,19 @@
         "shaparak-mcc"
       ],
       "note": "کد چهاررقمی متعارف پذیرندگی؛ جدول قرارداد PSP بانک مقدم است."
+    },
+    {
+      "field": "guildPolicy",
+      "label": "طبقه‌بندی سیاست رسته",
+      "screens": [
+        "اطلس رسته‌ها"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "cbi-pos-fee",
+        "inta-coefficients"
+      ],
+      "note": "معاف کارمزد / ضریب اینتا نقل‌شده / فقط کد. سود شاپرک رسته نیست چون گردش MCC منتشر نشده."
     }
   ],
   "briefing": {
@@ -1137,6 +1158,13 @@
   },
   "changelog": [
     {
+      "at": "2026-09-19T20:22:42.679Z",
+      "jalali": "۲۸ شهریور ۱۴۰۵",
+      "kind": "probe",
+      "title": "واکشی دوره‌ای منابع",
+      "detail": "پنجره گزارش و اثرانگشت منابع با اجرای جاب همگام شد."
+    },
+    {
       "at": "2026-09-19T20:07:57.525Z",
       "jalali": "۲۸ شهریور ۱۴۰۵",
       "kind": "probe",
@@ -1193,7 +1221,7 @@
       "detail": "گزارش اقتصادی ماهانه شاپرک (مرداد ۱۴۰۵)؛ آینه خبری کشف انتشار گزارش شاپرک (مرداد ۱۴۰۵)"
     }
   ],
-  "generatedAt": "2026-09-19T20:07:57.525Z",
+  "generatedAt": "2026-09-19T20:22:42.679Z",
   "jalaliGenerated": "۲۸ شهریور ۱۴۰۵",
   "contentFingerprint": "GBI-ΠBank-1.8.0::1405-05::0.23::0.0002::shaparak-monthly:unreachable:due|shaparak-terms:unreachable:current|shaparak-mcc:unreachable:current|cbi-pos-fee:unreachable:current|cbi-reserve-lending:unreachable:current|inta-coefficients:unreachable:current|isic-amar:unreachable:current|chamber-guilds:unreachable:current|tax-moodian:unreachable:current|bank-internal-pos:skipped:current|bank-casa-float:skipped:current|shaparak-news-mirror:unreachable:due::مرداد ۱۴۰۵: رشد مبلغ شبکه شاپرک"
 }

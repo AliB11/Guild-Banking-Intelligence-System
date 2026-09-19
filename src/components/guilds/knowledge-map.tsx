@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { faDigits, formatDecimal } from "@/lib/gbi/format";
-import { getGuildKnowledge, GUILD_CATEGORY_LABEL } from "@/lib/gbi/market-view";
+import { getGuildKnowledge, GUILD_CATEGORY_LABEL, GUILD_POLICY_LABEL } from "@/lib/gbi/market-view";
 import type { GuildTaxonomyRow } from "@/lib/gbi/published-market";
 
 export function GuildKnowledgeMap() {
@@ -12,23 +12,23 @@ export function GuildKnowledgeMap() {
   return (
     <section className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
       <KnowledgeColumn
-        title="معاف کارمزد پذیرنده"
-        hint="بانک پذیرنده می‌پردازد — بخشنامه بانک مرکزی"
+        title={GUILD_POLICY_LABEL.FEE_EXEMPT.title}
+        hint={GUILD_POLICY_LABEL.FEE_EXEMPT.hint}
         tone="persian"
         rows={exempt}
         empty="رسته معافی در این نسخه نیست"
       />
       <KnowledgeColumn
-        title="ضریب اینتا نقل‌شده"
-        hint="فقط جایی که جدول سازمان مالیاتی نقل شده"
+        title={GUILD_POLICY_LABEL.INTA_CITED.title}
+        hint={GUILD_POLICY_LABEL.INTA_CITED.hint}
         tone="violet"
         rows={citedInta}
         empty="ضریب نقل‌شده‌ای نیست"
         showInta
       />
       <KnowledgeColumn
-        title="فقط کد مرجع"
-        hint="ISIC و MCC هست؛ گردش ماهانه و اینتا نیست"
+        title={GUILD_POLICY_LABEL.CODE_ONLY.title}
+        hint={GUILD_POLICY_LABEL.CODE_ONLY.hint}
         tone="slate"
         rows={codeOnly}
         empty="—"
@@ -36,10 +36,10 @@ export function GuildKnowledgeMap() {
       <Card className="lg:col-span-3">
         <CardHeader>
           <div>
-            <CardTitle>چی می‌دانیم، چی نمی‌دانیم</CardTitle>
+            <CardTitle>سیاست کارمزد و مالیات — نه سود شاپرک</CardTitle>
             <CardDescription>
               {faDigits(exempt.length)} رسته معاف · {faDigits(citedInta.length)} ضریب اینتا · {faDigits(codeOnly.length)} فقط کد.
-              هیچ‌کدام گردش شاپرک ندارند.
+              هیچ‌کدام گردش شاپرک ندارند. سوپرمارکت در دو ستون اول تکرار می‌شود چون هم معاف است هم اینتا دارد.
             </CardDescription>
           </div>
         </CardHeader>

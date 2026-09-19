@@ -199,6 +199,21 @@ details summary::-webkit-details-marker {
     box-shadow: none !important;
     transform: none !important;
   }
+  .letter-sheet {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    border-radius: 0 !important;
+    max-width: none !important;
+    padding: 8mm !important;
+    color: #111 !important;
+    box-shadow: none !important;
+  }
+  .letter-sheet * {
+    color: #111 !important;
+    border-color: #ddd !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

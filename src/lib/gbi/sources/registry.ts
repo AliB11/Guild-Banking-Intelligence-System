@@ -20,7 +20,7 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     },
     fields: ["گردش شبکه پرداخت", "تعداد تراکنش", "تعداد ابزار پذیرش", "سهم کارتخوان"],
     usedFor: ["زمینه کلان گردش پرداخت", "تقویم انتشار ماهانه اصناف"],
-    screens: ["میز کار", "منابع اطلاعاتی"],
+    screens: ["میز کار", "نامه ستاد", "منابع اطلاعاتی"],
     licenseNote: "گزارش عمومی شاپرک؛ نقل با ذکر منبع.",
     howWeUse:
       "KPI میز کار (گردش، تعداد، ترکیب ابزار مرداد ۱۴۰۵) از بازتاب گزارش اقتصادی شاپرک با ذکر منبع پر می‌شود. جاب GitHub صفحه رسمی را واکشی می‌کند؛ اگر PDF از رانر نرسد، ارقام نقل‌شدهٔ همین corpus باقی می‌ماند و اثرانگشت unreachable ثبت می‌شود.",
@@ -79,7 +79,7 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
       "سقف ۴۰ هزار ریال",
     ],
     usedFor: ["موتور Π-Bank", "ماشین‌حساب کارمزد"],
-    screens: ["ماشین‌حساب"],
+    screens: ["ماشین‌حساب", "اطلس رسته‌ها", "نامه ستاد"],
     licenseNote: "بخشنامه عمومی کارمزد؛ باید با ابلاغیه جاری تطبیق شود.",
     howWeUse:
       "فرمول کارمزد مدل دقیقاً همان پلکان اعلام‌شده است و در کاتالوگ به‌صورت فرض نسخه‌بندی‌شده ذخیره می‌شود. تغییر بخشنامه → هشدار بازبینی انسانی.",
@@ -116,7 +116,7 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     },
     fields: ["intaCode", "intaProfitRatio"],
     usedFor: ["شناسه فعالیت مالیاتی رسته", "ضریب سود تبصره ۱۰۰"],
-    screens: ["اطلس رسته‌ها", "ماشین‌حساب"],
+    screens: ["اطلس رسته‌ها", "ماشین‌حساب", "نامه ستاد"],
     licenseNote: "جداول عمومی ضرایب سود فعالیت.",
     howWeUse:
       "هر رسته یک اینتاکد و ضریب سود دارد. جاب سالانه (اوایل سال) تغییر صفحه را تشخیص می‌دهد و پرچم بازبینی انسانی می‌زند؛ ضریب را خودکار جایگزین نمی‌کند.",
@@ -154,7 +154,8 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     screens: ["اطلس رسته‌ها"],
     licenseNote: "طبقه‌بندی صنفی عمومی.",
     howWeUse: "عنوان رسته‌ها با ادبیات اتاق اصناف هم‌خوان شده است تا شعبه همان زبانی را ببیند که جواز کسب دارد.",
-    limitation: "اتاق استانی ممکن است زیررسته محلی داشته باشد که در نمونه نیست.",
+    limitation:
+      "اتاق استانی ممکن است زیررسته محلی داشته باشد. شمار واحد صنفی در نقل‌های عمومی متناقض است (صمت ۱۴۰۰ در برابر نقل ۱۴۰۵ اتاق) و به‌عنوان KPI جاری استفاده نمی‌شود.",
   },
   {
     id: "tax-moodian",
@@ -243,7 +244,7 @@ export const FIELD_LINEAGE: LineageRow[] = [
   {
     field: "totals.volume",
     label: "گردش ماهانه شبکه شاپرک",
-    screens: ["میز کار"],
+    screens: ["میز کار", "نامه ستاد"],
     origin: "official",
     sourceIds: ["shaparak-monthly"],
     note: "جمع گزارش اقتصادی شاپرک (آخرین ماه نقل‌شده: مرداد ۱۴۰۵ / گزارش ۱۳۴).",
@@ -283,7 +284,7 @@ export const FIELD_LINEAGE: LineageRow[] = [
   {
     field: "ticketGap",
     label: "فاصله رشد مبلغ و تعداد مرداد",
-    screens: ["میز کار"],
+    screens: ["میز کار", "نامه ستاد"],
     origin: "model",
     sourceIds: ["shaparak-monthly"],
     note: "تفریق دو درصد نقل‌شده MoM (۷٫۲۶ − ۲٫۹۷). منبع تازه نیست.",
@@ -291,7 +292,7 @@ export const FIELD_LINEAGE: LineageRow[] = [
   {
     field: "instrumentBasket",
     label: "سبد ابزار (اعلامی یا تقسیم)",
-    screens: ["میز کار"],
+    screens: ["میز کار", "نامه ستاد"],
     origin: "model",
     sourceIds: ["shaparak-monthly"],
     note: "کارتخوان رقم اعلامی ۶۹۴ هزار تومان است. اینترنت و سایر حاصل تقسیم مبلغ÷تعداد همان ماه‌اند.",
@@ -299,7 +300,7 @@ export const FIELD_LINEAGE: LineageRow[] = [
   {
     field: "mellatImplied",
     label: "حاصل‌ضرب سهم ملت در جمع شبکه",
-    screens: ["میز کار"],
+    screens: ["میز کار", "نامه ستاد"],
     origin: "model",
     sourceIds: ["shaparak-monthly", "shaparak-news-mirror"],
     note: "شاپرک رقم مطلق ملت را جدا نداده؛ این ضرب سهم اعلامی در جمع شبکه است.",
@@ -335,5 +336,13 @@ export const FIELD_LINEAGE: LineageRow[] = [
     origin: "official",
     sourceIds: ["shaparak-mcc"],
     note: "کد چهاررقمی متعارف پذیرندگی؛ جدول قرارداد PSP بانک مقدم است.",
+  },
+  {
+    field: "guildPolicy",
+    label: "طبقه‌بندی سیاست رسته",
+    screens: ["اطلس رسته‌ها"],
+    origin: "official",
+    sourceIds: ["cbi-pos-fee", "inta-coefficients"],
+    note: "معاف کارمزد / ضریب اینتا نقل‌شده / فقط کد. سود شاپرک رسته نیست چون گردش MCC منتشر نشده.",
   },
 ];

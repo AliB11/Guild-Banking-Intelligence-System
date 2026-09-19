@@ -62,7 +62,7 @@ async function main() {
   if (!html.includes("GBI")) fail("home page does not look like the GBI app");
   console.log("[smoke] home page ok");
 
-  for (const path of ["/guilds/", "/calculator/", "/sources/"]) {
+  for (const path of ["/brief/", "/guilds/", "/calculator/", "/sources/"]) {
     await expectStatus(path, 200);
     console.log(`[smoke] ${path} ok`);
   }
