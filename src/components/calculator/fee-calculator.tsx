@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { BadgePercent, Info, Wallet, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { faDigits, formatDecimal, formatNum, formatToman } from "@/lib/gbi/format";
@@ -19,6 +19,7 @@ import {
   cbiPosFee,
 } from "@/lib/gbi/engine";
 import { CALCULATOR_PRESETS } from "@/lib/gbi/published-market";
+import { getMarketDashboard } from "@/lib/gbi/market-view";
 
 function ControlSlider({
   label,
@@ -110,6 +111,7 @@ export function FeeCalculator() {
 
   const selected = CALCULATOR_PRESETS.find((row) => row.id === presetId);
   const smallTx = inputs.avgBasketRials <= CBI_POS_FEE_SMALL_TX_THRESHOLD_RIALS;
+  const publishedBaskets = getMarketDashboard().instruments;
 
   return (
     <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">

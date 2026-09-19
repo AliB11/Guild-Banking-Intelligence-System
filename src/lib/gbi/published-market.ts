@@ -113,6 +113,31 @@ export const MORDAD_INSTRUMENTS: InstrumentSplit[] = [
 /** Quoted POS ticket for Mordad 1405: ~694 thousand toman = 6.94 million rials. */
 export const MORDAD_POS_BASKET_RIALS = 6_940_000;
 
+/** Reprint MoM / YoY for Mordad 1405 (EcoIran of Shaparak #134) — not recomputed. */
+export const MORDAD_CITED_MOM = {
+  countPct: 2.97,
+  valuePct: 7.26,
+} as const;
+
+export const MORDAD_CITED_YOY = {
+  countPct: 3.85,
+  valueNominalPct: 93.72,
+  valueRealApproxPct: 2.5,
+} as const;
+
+/**
+ * Khordad 1405 (#132) service mix — separate cut from Mordad instrument mix.
+ * Purchase + bill = 100% of count; مانده‌گیری is published as its own count share.
+ */
+export const KHORDAD_SERVICE_MIX = {
+  purchaseCountPct: 98.82,
+  purchaseValuePct: 90.33,
+  billCountPct: 1.18,
+  billValuePct: 4.65,
+  balanceInquiryCountPct: 5.02,
+  uptimePct: 99.98,
+} as const;
+
 export const MELLAT_MORDAD_ACQUIRER_SHARE = {
   countPct: 18.79,
   valuePct: 19.95,

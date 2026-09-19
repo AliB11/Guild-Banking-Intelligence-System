@@ -154,11 +154,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative z-10 min-h-screen">
-      <Sidebar open={open} onClose={() => setOpen(false)} />
+      <div className="print-hide">
+        <Sidebar open={open} onClose={() => setOpen(false)} />
+      </div>
 
-      <div className="lg:mr-72">
+      <div className="lg:mr-72 print:mr-0">
         {/* Top header */}
-        <header className="sticky top-0 z-30 border-b border-white/[0.05] bg-night-950/70 backdrop-blur-xl">
+        <header className="print-hide sticky top-0 z-30 border-b border-white/[0.05] bg-night-950/70 backdrop-blur-xl">
           <div className="flex h-16 items-center gap-4 px-5 sm:px-8">
             <button
               onClick={() => setOpen(true)}

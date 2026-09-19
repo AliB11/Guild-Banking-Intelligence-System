@@ -8,7 +8,7 @@ export function ReadingGuide({
   title?: string;
 }) {
   return (
-    <details className="group mb-6 rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-3 animate-fade-up">
+    <details className="reading-guide group mb-6 rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-3 animate-fade-up">
       <summary className="flex cursor-pointer list-none items-center gap-2 text-[12.5px] font-extrabold text-slate-200">
         <CircleHelp className="h-4 w-4 text-gold-400" />
         {title}

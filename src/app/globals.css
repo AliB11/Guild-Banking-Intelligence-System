@@ -175,6 +175,32 @@ details summary::-webkit-details-marker {
   display: none;
 }
 
+@media print {
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .print-hide,
+  aside,
+  header,
+  .reading-guide,
+  details {
+    display: none !important;
+  }
+  main {
+    margin: 0 !important;
+    max-width: none !important;
+    padding: 12px !important;
+  }
+  .glass,
+  .glass-hover {
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

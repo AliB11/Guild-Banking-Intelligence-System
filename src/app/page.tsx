@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { TrendChart } from "@/components/charts/trend-chart";
 import { ShareDonut } from "@/components/charts/share-donut";
+import { InsightBoard } from "@/components/dashboard/insight-board";
 
 export default function DashboardPage() {
   const d = getMarketDashboard();
@@ -47,16 +48,20 @@ export default function DashboardPage() {
       <ReadingGuide
         items={[
           "پنج کارت بالا جمع شبکه شاپرک است، نه پرونده شعبه یا پذیرنده.",
-          "نمودار روند فقط ماه‌هایی را دارد که مبلغ مطلق‌شان نقل شده: خرداد، تیر، مرداد ۱۴۰۵.",
-          "ترکیب ابزار فقط برای مرداد منتشر شده است. سبد کارتخوان رقم اعلامی است، نه میانگین ساخته‌شده.",
-          "کارمزد، رسوب حساب و گردش رسته در این صفحه نیست چون در ماهنامه عمومی نیست — کارمزد در ماشین‌حساب سناریو است.",
+          "خوانش‌ها (فاصله مبلغ/تعداد، سبد اینترنت، ملت×شبکه) حاصل تقسیم و ضرب همان ارقام‌اند و منبع تازه‌ای نیستند.",
+          "ترکیب ابزار فقط برای مرداد است؛ ترکیب خدمت برای خرداد. این دو را با هم جمع نکنید.",
+          "کارمزد فقط در ماشین‌حساب سناریو است و به اینترنت اعمال نمی‌شود.",
         ]}
       />
       {catalogQuery.data && (
-        <section className="mb-5">
+        <section className="mb-5 print-brief">
           <MonthlyBriefingCard briefing={catalogQuery.data.briefing} />
         </section>
       )}
+
+      <section className="mb-5">
+        <InsightBoard market={d} />
+      </section>
 
       <section className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard
@@ -159,6 +164,7 @@ export default function DashboardPage() {
                     <th className="px-3 py-2">ابزار</th>
                     <th className="px-3 py-2">گردش</th>
                     <th className="px-3 py-2">تعداد</th>
+                    <th className="px-3 py-2">سبد</th>
                     <th className="px-3 py-2">سهم مبلغ</th>
                   </tr>
                 </thead>
@@ -170,6 +176,12 @@ export default function DashboardPage() {
                       <td className="num px-3 py-2.5 text-slate-300">
                         {formatCount(row.txCount, 0)}
                         {row.countIsApproximate ? " ≈" : ""}
+                      </td>
+                      <td className="num px-3 py-2.5 text-slate-200">
+                        {formatToman(row.basketRials)}
+                        <span className="mr-1 text-[10px] text-slate-600">
+                          {row.basketKind === "cited" ? "اعلامی" : "تقسیم"}
+                        </span>
                       </td>
                       <td className="num px-3 py-2.5 text-persian-200">{formatPercent(row.sharePct, 1)}</td>
                     </tr>
@@ -197,13 +209,12 @@ export default function DashboardPage() {
           <CardContent className="space-y-3 text-[12px] leading-6 text-slate-400">
             <p>
               بانک ملت به‌عنوان بانک پذیرنده در مرداد ۱۴۰۵: {formatPercent(d.mellat.countPct, 2)} تعداد و{" "}
-              {formatPercent(d.mellat.valuePct, 2)} مبلغ.
+              {formatPercent(d.mellat.valuePct, 2)} مبلغ — حاصل‌ضرب در جمع شبکه حدود {formatToman(d.mellat.impliedVolume)}.
             </p>
-            <ul className="space-y-1 text-[11.5px] text-slate-500">
-              {d.khordadNotes.map((note) => (
-                <li key={note}>• {note}</li>
-              ))}
-            </ul>
+            <p className="text-[11.5px] text-slate-500">
+              رشد اسمی سالانه مبلغ {formatPercent(d.citedYoy.valueNominalPct)} در برابر رشد واقعی حدود{" "}
+              {formatPercent(d.citedYoy.valueRealApproxPct)}.
+            </p>
             <p className="border-t border-white/[0.06] pt-3 text-[11px] text-slate-500">{d.feeExemptHint}</p>
             <p className="text-[10.5px] text-slate-600">{d.citation}</p>
           </CardContent>

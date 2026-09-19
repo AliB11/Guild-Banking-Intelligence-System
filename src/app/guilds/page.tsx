@@ -3,6 +3,7 @@
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { GuildAtlas } from "@/components/guilds/guild-atlas";
+import { GuildKnowledgeMap } from "@/components/guilds/knowledge-map";
 import { ReadingGuide } from "@/components/explain/reading-guide";
 import { OriginChip } from "@/components/explain/origin-chip";
 import { faDigits } from "@/lib/gbi/format";
@@ -26,12 +27,13 @@ export default function GuildsPage() {
       />
       <ReadingGuide
         items={[
-          "این صفحه فهرست کد است نه سهم بازار. ستون مبلغ رسته وجود ندارد چون منبع ندارد.",
+          "سه ستون بالا نقشه دانش است نه سهم بازار: معاف کارمزد، اینتا نقل‌شده، فقط کد.",
           "ضریب تبصره ۱۰۰ فقط جایی پر است که جدول اینتا نقل شده: سوپرمارکت ۸٫۵٪، رستوران ۱۴٪، اغذیه ۱۵٪ کف.",
           "نانوایی و سوپرمارکت معاف کارمزد پذیرنده‌اند؛ بانک پذیرنده کارمزد را می‌پردازد.",
           "برای سناریوی کارمزد یک پایانه به ماشین‌حساب بروید.",
         ]}
       />
+      <GuildKnowledgeMap />
       <GuildAtlas />
     </>
   );
