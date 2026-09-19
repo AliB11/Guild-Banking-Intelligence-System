@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { GuildRadar } from "@/components/charts/guild-radar";
 import { BcgMatrix } from "@/components/charts/bcg-matrix";
 import { useCompareStore } from "@/lib/store";
+import { getGuildCompareClient } from "@/lib/gbi/client-data";
 import type { GuildCompareResult, GuildsOverview, SubGuildSummary } from "@/lib/gbi/types";
 
 const TIER_STYLE: Record<string, string> = {
@@ -223,12 +224,12 @@ function ComparePanel({ overview }: { overview: GuildsOverview }) {
     if (selB && bId !== selB) setB(selB);
   }, [aId, bId, selA, selB, setA, setB]);
 
-  const { data, isFetching, isError } = useQuery<GuildCompareResult>({
+  const { data, isFetching, isError } = useQuery<GuildCompareResult | null>({
     queryKey: ["guild-compare", selA, selB],
     queryFn: async () => {
-      const res = await fetch(`/api/guilds/compare?a=${selA}&b=${selB}`);
-      if (!res.ok) throw new Error("compare failed");
-      return res.json();
+      const result = await getGuildCompareClient(selA, selB);
+      if (!result) throw new Error("compare failed");
+      return result;
     },
     enabled: Boolean(selA && selB && selA !== selB),
   });

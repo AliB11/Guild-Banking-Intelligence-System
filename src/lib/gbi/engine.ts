@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type { RecommendedProduct, RiskStatus } from "@/db/schema";
 
 /* ------------------------------------------------------------------ */
@@ -285,6 +286,20 @@ export interface CalculatorInput {
   isTaxCompliant: boolean;
   riskStatus: RiskStatus;
 }
+
+/**
+ * Shared input validation for the calculator — used by the JSON API server
+ * profile and by the browser data layer (`client-data.ts`).
+ */
+export const calculatorInputSchema = z.object({
+  dailyTxCount: z.number().int().min(0).max(10_000),
+  avgBasketRials: z.number().int().min(0).max(2_000_000_000),
+  retentionDays: z.number().min(0).max(60),
+  posUnits: z.number().int().min(1).max(50),
+  cccDays: z.number().int().min(-30).max(180),
+  isTaxCompliant: z.boolean(),
+  riskStatus: z.enum(["LOW", "MEDIUM", "HIGH"]),
+});
 
 export interface CalculatorResult {
   monthlyTxCount: number;

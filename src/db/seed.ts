@@ -22,6 +22,7 @@ import {
   computeLeadScore,
   recommendProduct,
 } from "../lib/gbi/engine";
+import { recentJalaliPeriods } from "../lib/gbi/format";
 
 /* ------------------------------------------------------------------ */
 /* Deterministic RNG                                                   */
@@ -148,7 +149,10 @@ const TAXONOMY: Array<{
   },
 ];
 
-const PERIODS = ["1403-06", "1403-07", "1403-08", "1403-09", "1403-10", "1403-11"];
+/** Rolling window: six most recent Jalali months ending with the current one. */
+const PERIODS = recentJalaliPeriods(6);
+/** Jalali year of the latest reporting period (used in license numbers). */
+const LATEST_JALALI_YEAR = Number(PERIODS[PERIODS.length - 1].split("-")[0]);
 
 /* ------------------------------------------------------------------ */
 /* Seed                                                                */
@@ -239,7 +243,7 @@ async function main() {
         .insert(merchantBusinesses)
         .values({
           subGuildId: sub.id,
-          businessLicenseNumber: `پک/${1403}/${licenseSeq}`,
+          businessLicenseNumber: `پک/${LATEST_JALALI_YEAR}/${licenseSeq}`,
           nationalId,
           businessName: `${sub.namePattern} ${family}`,
           ownerName: owner,
@@ -249,10 +253,10 @@ async function main() {
           assignedBranchCode: `${geo.branch}-${intBetween(1000, 9499)}`,
           isTaxCompliant: rand() < 0.66,
           riskStatus: rand() < 0.55 ? "LOW" : rand() < 0.72 ? "MEDIUM" : "HIGH",
-          // Jalali ۱۴۰۳–۱۴۰۴ maps to Gregorian ۲۰۲۴–۲۰۲۵; using UTC keeps
-          // the generated timestamps stable across developer machines.
+          // Onboarding history spans the two Gregorian years preceding the
+          // current reporting window; UTC keeps generated timestamps stable.
           createdAt: new Date(
-            Date.UTC(rand() < 0.5 ? 2024 : 2025, intBetween(0, 11), intBetween(1, 28)),
+            Date.UTC(rand() < 0.5 ? 2025 : 2026, intBetween(0, 11), intBetween(1, 28)),
           ),
         })
         .returning();

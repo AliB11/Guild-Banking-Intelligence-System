@@ -1,3 +1,5 @@
+"use client";
+
 import {
   TrendingUp,
   PieChart as PieChartIcon,
@@ -8,12 +10,14 @@ import {
   ShieldAlert,
   Database,
 } from "lucide-react";
-import { getDashboardSummary } from "@/lib/gbi/service";
+import { useQuery } from "@tanstack/react-query";
+import { getDashboardSummaryClient } from "@/lib/gbi/client-data";
 import { faDigits, formatToman } from "@/lib/gbi/format";
 import { PageHeader } from "@/components/page-header";
 import { MetricCard } from "@/components/metric-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DataError, DataLoading } from "@/components/data-state";
 import { TrendChart } from "@/components/charts/trend-chart";
 import { ShareDonut } from "@/components/charts/share-donut";
 import { ProfitRankChart } from "@/components/charts/profit-rank-chart";
@@ -24,10 +28,20 @@ import { BranchOpportunityList } from "@/components/dashboard/branch-opportunity
 import { EarlyWarningPanel } from "@/components/dashboard/early-warning-panel";
 import { DataQualityCard } from "@/components/dashboard/data-quality-card";
 
-export const dynamic = "force-dynamic";
+export default function DashboardPage() {
+  const {
+    data: d,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: getDashboardSummaryClient,
+  });
 
-export default async function DashboardPage() {
-  const d = await getDashboardSummary();
+  if (isPending) return <DataLoading />;
+  if (isError || !d) return <DataError onRetry={() => void refetch()} />;
+
   const sparkVolume = d.trend.map((t) => ({ label: t.short, value: t.volume }));
   const sparkFloat = d.trend.map((t) => ({ label: t.short, value: t.float }));
   const sparkFees = d.trend.map((t) => ({ label: t.short, value: t.fees }));

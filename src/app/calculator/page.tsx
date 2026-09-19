@@ -1,12 +1,26 @@
-import { getGuildsOverview } from "@/lib/gbi/service";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { getGuildsOverviewClient } from "@/lib/gbi/client-data";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
+import { DataError, DataLoading } from "@/components/data-state";
 import { ProfitCalculator } from "@/components/calculator/profit-calculator";
 
-export const dynamic = "force-dynamic";
+export default function CalculatorPage() {
+  const {
+    data: overview,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["guilds"],
+    queryFn: getGuildsOverviewClient,
+  });
 
-export default async function CalculatorPage() {
-  const overview = await getGuildsOverview();
+  if (isPending) return <DataLoading label="در حال آماده‌سازی پیش‌تنظیم‌های رسته‌ها…" />;
+  if (isError || !overview) return <DataError onRetry={() => void refetch()} />;
+
   const presets = overview.subGuilds
     .filter((s) => s.merchantCount > 0)
     .map((s) => ({

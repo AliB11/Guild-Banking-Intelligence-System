@@ -1,17 +1,31 @@
-import { getGuildsOverview } from "@/lib/gbi/service";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { getGuildsOverviewClient } from "@/lib/gbi/client-data";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { DataError, DataLoading } from "@/components/data-state";
 import { faDigits, formatToman } from "@/lib/gbi/format";
 import { Factory, Store, ConciergeBell, Wrench } from "lucide-react";
 import { GuildExplorer } from "@/components/guilds/guild-explorer";
 
-export const dynamic = "force-dynamic";
-
 const CAT_ICONS = [Factory, Store, ConciergeBell, Wrench];
 
-export default async function GuildsPage() {
-  const overview = await getGuildsOverview();
+export default function GuildsPage() {
+  const {
+    data: overview,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["guilds"],
+    queryFn: getGuildsOverviewClient,
+  });
+
+  if (isPending) return <DataLoading label="در حال محاسبه ماتریس اصناف…" />;
+  if (isError || !overview) return <DataError onRetry={() => void refetch()} />;
+
   const totalVolume = overview.categories.reduce((a, c) => a + c.volume, 0);
 
   return (
