@@ -24,14 +24,17 @@ export function MerchantsTable({
           <div className="min-w-0 flex-1">
             <p className="flex items-center gap-1.5 truncate text-[12px] font-extrabold text-slate-100">
               {m.businessName}
-              {m.isTaxCompliant ? (
-                <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-persian-400" aria-label="متصل به سامانه مؤدیان" />
-              ) : (
-                <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-rose-400" aria-label="غیرمتصل به سامانه مؤدیان" />
-              )}
+              {m.branchCode !== "SHAPARAK" && m.branchCode !== "POLICY" ? (
+                m.isTaxCompliant ? (
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-persian-400" aria-label="متصل به سامانه مؤدیان" />
+                ) : (
+                  <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-rose-400" aria-label="غیرمتصل به سامانه مؤدیان" />
+                )
+              ) : null}
             </p>
             <p className="truncate text-[10px] text-slate-500">
-              {m.subGuildTitle} · {m.province} · شعبه {m.branchCode}
+              {m.subGuildTitle} · {m.province}
+              {m.branchCode === "SHAPARAK" || m.branchCode === "POLICY" ? "" : ` · شعبه ${m.branchCode}`}
             </p>
           </div>
           <div className="text-left">

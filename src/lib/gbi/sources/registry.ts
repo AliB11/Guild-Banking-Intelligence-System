@@ -2,9 +2,9 @@ import type { LineageRow, SourceDefinition } from "./types";
 
 /**
  * Governed registry of every information source the GBI model is allowed to
- * cite. Numbers in the demo UI are still synthetic; this registry is the
- * contract for *where* a production bank should read each field, and what
- * the monthly GitHub Action actually probes.
+ * cite. Dashboard KPIs are published Shaparak/CBI/INTA aggregates; named
+ * merchants and CASA remain internal-only gaps. This is also the contract
+ * the monthly GitHub Action probes.
  */
 export const SOURCE_REGISTRY: SourceDefinition[] = [
   {
@@ -23,9 +23,9 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     screens: ["میز کار", "منابع اطلاعاتی"],
     licenseNote: "گزارش عمومی شاپرک؛ نقل با ذکر منبع.",
     howWeUse:
-      "پس از انتشار گزارش ماه، جاب GitHub صفحه رسمی را واکشی می‌کند، اثرانگشت محتوا را ذخیره می‌کند و دوره پوشش را جلو می‌برد. ارقام نمونه داشبورد از این فایل جایگزین نمی‌شوند مگر در حالت بانک واقعی.",
+      "KPI میز کار (گردش، تعداد، ترکیب ابزار مرداد ۱۴۰۵) از بازتاب گزارش اقتصادی شاپرک با ذکر منبع پر می‌شود. جاب GitHub صفحه رسمی را واکشی می‌کند؛ اگر PDF از رانر نرسد، ارقام نقل‌شدهٔ همین corpus باقی می‌ماند و اثرانگشت unreachable ثبت می‌شود.",
     limitation:
-      "سایت شاپرک API عمومی پایدار ندارد و اغلب به‌صورت PDF منتشر می‌شود؛ از رانرهای خارج از ایران ممکن است در دسترس نباشد.",
+      "سایت شاپرک API عمومی پایدار ندارد و اغلب به‌صورت PDF منتشر می‌شود؛ از رانرهای خارج از ایران ممکن است در دسترس نباشد. تفکیک رسته/MCC و فهرست پذیرنده در گزارش عمومی نیست.",
   },
   {
     id: "shaparak-terms",
@@ -59,7 +59,7 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     screens: ["ماتریس اصناف", "ماشین‌حساب"],
     licenseNote: "کد چهاررقمی متعارف پذیرندگی.",
     howWeUse: "هر رسته در طبقه‌بندی داخلی یک MCC پیش‌فرض دارد تا به سوییچ پذیرندگی نگاشت شود.",
-    limitation: "نگاشت نمونه است؛ بانک باید جدول MCC قرارداد PSP خود را جایگزین کند.",
+    limitation: "MCC رسته‌ها از استاندارد پذیرندگی است نه از فایل ماهانه شاپرک؛ جدول عملیاتی PSP بانک باید جایگزین شود.",
   },
   {
     id: "cbi-pos-fee",
@@ -83,7 +83,7 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     licenseNote: "بخشنامه عمومی کارمزد؛ باید با ابلاغیه جاری تطبیق شود.",
     howWeUse:
       "فرمول کارمزد مدل دقیقاً همان پلکان اعلام‌شده است و در کاتالوگ به‌صورت فرض نسخه‌بندی‌شده ذخیره می‌شود. تغییر بخشنامه → هشدار بازبینی انسانی.",
-    limitation: "سهم بانک/PSP/پذیرنده در قرارداد ممکن است با سقف اعلامی متفاوت باشد.",
+    limitation: "نانوایی و سوپرمارکت معاف‌اند و بانک پذیرنده می‌پردازد. سهم بانک/PSP در قرارداد ممکن است با سقف اعلامی متفاوت باشد.",
   },
   {
     id: "cbi-reserve-lending",
@@ -120,7 +120,7 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     licenseNote: "جداول عمومی ضرایب سود فعالیت.",
     howWeUse:
       "هر رسته یک اینتاکد و ضریب سود دارد. جاب سالانه (اوایل سال) تغییر صفحه را تشخیص می‌دهد و پرچم بازبینی انسانی می‌زند؛ ضریب را خودکار جایگزین نمی‌کند.",
-    limitation: "ضرایب معمولاً سالانه است نه ماهانه؛ ارقام فعلی نمونه آموزشی‌اند.",
+    limitation: "فقط ضرایبی که در جدول عمومی نقل شده‌اند وارد شده‌اند (سوپرمارکت ۸٫۵٪، رستوران معمولی ۱۴٪، اغذیه ۱۵–۲۰٪). بقیه رسته‌ها خالی‌اند نه inventشده.",
   },
   {
     id: "isic-amar",
@@ -171,7 +171,7 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     usedFor: ["امتیاز انطباق ۲۰٪", "قفل اعتبار در صورت عدم اتصال"],
     screens: ["میز کار", "سرنخ‌ها", "ماشین‌حساب"],
     licenseNote: "وضعیت اتصال مودی؛ داده حساس.",
-    howWeUse: "در حالت بانک واقعی از استعلام اتصال پایانه به سامانه مؤدیان خوانده می‌شود. در دمو به‌صورت پرچم نمونه است.",
+    howWeUse: "در حالت بانک واقعی از استعلام اتصال پایانه به سامانه مؤدیان خوانده می‌شود. در حالت استاتیک پرچم کمپین رسته است نه وضعیت یک فروشگاه حقیقی.",
     limitation: "این سامانه لاگین می‌خواهد و از GitHub واکشی نمی‌شود.",
   },
   {
@@ -193,9 +193,9 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     ],
     usedFor: ["KPI میز کار", "رتبه رسته‌ها", "امتیاز سرنخ"],
     screens: ["میز کار", "ماتریس اصناف", "سرنخ‌ها", "ماشین‌حساب"],
-    licenseNote: "داده اختصاصی بانک؛ در حالت استاتیک با corpus نمونه جایگزین شده است.",
+    licenseNote: "داده اختصاصی بانک؛ در حالت استاتیک با جمع شبکه شاپرک جایگزین شده نه با پرونده شعبه.",
     howWeUse:
-      "پس از بستن ماه (حدود روز ۳ ماه بعد) باید از انبار داده بانک وارد شود. در GitHub Pages به‌جایش داده دترمینیستیک شش‌ماهه جلالی تولید می‌شود.",
+      "پس از بستن ماه باید از انبار داده بانک وارد شود. در GitHub Pages به‌جایش جمع ماهنامه شاپرک نمایش داده می‌شود — نه تراکنش شعبه.",
     limitation: "بدون DATABASE_URL هیچ رقم واقعی شعبه وارد سامانه نمی‌شود.",
   },
   {
@@ -213,7 +213,7 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     screens: ["میز کار", "ماشین‌حساب"],
     licenseNote: "داده اختصاصی بانک.",
     howWeUse: "میانگین مانده روزانه حساب جاری در دوره گزارش.",
-    limitation: "در دمو از الگوی رسته (تراکنش × سبد × روز ماندگاری) ساخته می‌شود.",
+    limitation: "در حالت استاتیک نمایش داده نمی‌شود؛ ساختن رسوب از روی الگوی رسته حذف شد.",
   },
   {
     id: "shaparak-news-mirror",
@@ -223,16 +223,16 @@ export const SOURCE_REGISTRY: SourceDefinition[] = [
     cadence: "monthly",
     lagDaysAfterMonthEnd: 10,
     urls: {
-      primary: "https://way2pay.ir",
-      mirrors: ["https://peivast.com"],
+      primary: "https://www.ecoiran.com",
+      mirrors: ["https://banker.ir", "https://way2pay.ir"],
     },
-    fields: ["سیگنال «گزارش شاپرک منتشر شد»"],
-    usedFor: ["تقویم انتشار؛ نه ورود رقم به مدل"],
-    screens: ["منابع اطلاعاتی"],
-    licenseNote: "خبر؛ منبع آماری محسوب نمی‌شود.",
+    fields: ["بازتاب گزارش اقتصادی شاپرک"],
+    usedFor: ["خواندن ارقام ماهنامه وقتی PDF شاپرک از رانر نرسد"],
+    screens: ["منابع اطلاعاتی", "میز کار"],
+    licenseNote: "خبر؛ منبع آماری مستقل نیست — فقط نقل گزارش شاپرک.",
     howWeUse:
-      "اگر سایت شاپرک از رانر GitHub در دسترس نباشد، تغییر عنوان/هش آینه‌های خبری فقط زنگ «احتمالاً گزارش جدید آمده» می‌زند.",
-    limitation: "هیچ عددی از آینه خبری وارد KPI یا ماشین‌حساب نمی‌شود.",
+      "بازتاب EcoIran و banker.ir متن گزارش اقتصادی شاپرک را نقل می‌کند. KPI به شماره گزارش شاپرک استناد می‌شود نه به خبر به عنوان منبع مستقل. واحد «همت» در خبرها گاهی غلط است و با چند بازتاب کنترل می‌شود.",
+    limitation: "خبر می‌تواند واحد را اشتباه کند؛ رقم وارد مدل نمی‌شود مگر با سازگاری MoM/YoY و ذکر شماره گزارش.",
   },
 ];
 
@@ -244,17 +244,17 @@ export const FIELD_LINEAGE: LineageRow[] = [
     field: "totals.totalTxVolume",
     label: "گردش ماهانه تراکنش",
     screens: ["میز کار"],
-    origin: "sample",
-    sourceIds: ["bank-internal-pos", "shaparak-monthly"],
-    note: "در دمو از corpus نمونه؛ در بانک از سوئیچ پایانه. گزارش شاپرک فقط زمینه کلان است.",
+    origin: "official",
+    sourceIds: ["shaparak-monthly"],
+    note: "جمع گزارش اقتصادی شاپرک (آخرین ماه نقل‌شده: مرداد ۱۴۰۵ / گزارش ۱۳۴). در بانک واقعی با سوئیچ پایانه جایگزین می‌شود.",
   },
   {
     field: "totals.totalFloat",
     label: "رسوب تجمیعی CASA",
     screens: ["میز کار"],
-    origin: "sample",
+    origin: "internal",
     sourceIds: ["bank-casa-float"],
-    note: "میانگین مانده روزانه حساب جاری — فقط از هسته بانک قابل اتکا است.",
+    note: "در منابع عمومی منتشر نشده؛ میز کار آن را صفرِ غایب نشان می‌دهد نه صفرِ اندازه‌گیری‌شده.",
   },
   {
     field: "totals.monthlyFloatYield",
@@ -276,33 +276,33 @@ export const FIELD_LINEAGE: LineageRow[] = [
     field: "subGuild.intaProfitRatio",
     label: "ضریب سود اینتاکد",
     screens: ["ماتریس اصناف"],
-    origin: "sample",
+    origin: "official",
     sourceIds: ["inta-coefficients"],
-    note: "ساختار فیلد رسمی است؛ عدد فعلی نمونه آموزشی است و با جدول سالانه سازمان مالیاتی جایگزین می‌شود.",
+    note: "فقط رسته‌هایی که ضریب‌شان در جدول عمومی نقل شده پر شده‌اند؛ بقیه خالی‌اند.",
   },
   {
     field: "subGuild.isicCode",
     label: "کد ISIC رسته",
     screens: ["ماتریس اصناف"],
-    origin: "sample",
+    origin: "official",
     sourceIds: ["isic-amar", "chamber-guilds"],
-    note: "کد طبقه‌بندی فعالیت؛ با جواز کسب و پرونده مالیاتی باید یکی باشد.",
+    note: "کد طبقه‌بندی فعالیت اقتصادی؛ با جواز کسب و پرونده مالیاتی باید یکی باشد.",
   },
   {
     field: "subGuild.defaultMcc",
     label: "کد MCC شاپرک",
     screens: ["ماتریس اصناف"],
-    origin: "sample",
+    origin: "official",
     sourceIds: ["shaparak-mcc"],
-    note: "نگاشت رسته به پذیرندگی؛ جدول عملیاتی از PSP/شاپرک می‌آید.",
+    note: "کد چهاررقمی متعارف پذیرندگی؛ جدول قرارداد PSP بانک مقدم است.",
   },
   {
     field: "merchant.isTaxCompliant",
     label: "اتصال به سامانه مؤدیان",
     screens: ["سرنخ‌ها", "میز کار", "ماشین‌حساب"],
-    origin: "sample",
+    origin: "internal",
     sourceIds: ["tax-moodian"],
-    note: "در دمو پرچم نمونه است؛ در بانک باید از استعلام رسمی خوانده شود.",
+    note: "وضعیت اتصال فروشگاه حقیقی در منبع عمومی نیست؛ کمپین رسته فرض سیاست است نه استعلام مؤدیان.",
   },
   {
     field: "leadScore",
@@ -310,14 +310,14 @@ export const FIELD_LINEAGE: LineageRow[] = [
     screens: ["سرنخ‌ها", "ماشین‌حساب"],
     origin: "model",
     sourceIds: ["bank-casa-float", "bank-internal-pos", "tax-moodian"],
-    note: "ترکیب وزنی رسوب ۳۵٪ + گردش ۲۵٪ + تناسب اعتباری ۲۰٪ + مالیات ۲۰٪.",
+    note: "در ماشین‌حساب همان وزن رسوب/گردش/اعتبار/مالیات. در حالت استاتیک کارت سرنخ اولویت سیاستی رسته است چون CASA عمومی نیست.",
   },
   {
     field: "bcgMatrix",
     label: "ماتریس بوستون رسته‌ها",
     screens: ["ماتریس اصناف"],
     origin: "model",
-    sourceIds: ["bank-internal-pos", "cbi-pos-fee", "cbi-reserve-lending", "shaparak-terms"],
-    note: "تصمیم‌یار داخلی است نه استاندارد شاپرک. محورها از گردش داخلی و کارمزد مدل ساخته می‌شوند.",
+    sourceIds: ["shaparak-monthly", "cbi-pos-fee", "shaparak-terms"],
+    note: "تصمیم‌یار داخلی است نه استاندارد شاپرک. در حالت استاتیک فقط روی ابزارهای اعلام‌شده مرداد ۱۴۰۵ است.",
   },
 ];

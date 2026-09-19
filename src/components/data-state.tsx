@@ -25,7 +25,7 @@ export function DataError({ onRetry }: { onRetry?: () => void }) {
         <AlertTriangle className="mx-auto h-10 w-10 text-rose-300" />
         <h2 className="mt-4 text-lg font-black text-white">دریافت داده‌ها ناموفق بود</h2>
         <p className="mt-2 text-[12px] leading-6 text-slate-400">
-          محاسبه‌ی داده‌های نمونه خطا داد. یک‌بار دیگر تلاش کنید یا صفحه را بازنشانی کنید.
+          محاسبه لایه داده خطا داد. یک‌بار دیگر تلاش کنید یا صفحه را بازنشانی کنید.
         </p>
         {onRetry && (
           <button

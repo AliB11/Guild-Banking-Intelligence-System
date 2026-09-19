@@ -22,7 +22,7 @@ export function MonthlyBriefingCard({ briefing }: { briefing: MonthlyBriefing })
             {briefing.headline}
           </CardTitle>
           <CardDescription>
-            ماهنامه خودکار پس از بستن ماه جلالی — ارقام واحدها نمونه‌اند؛ تقویم انتشار رسمی است.
+            ماهنامه از آخرین گزارش منتشرشده شاپرک — نه از پرونده شعبه. رسوب CASA در منبع عمومی نیست.
           </CardDescription>
         </div>
         <Badge variant="gold">{briefing.periodLabel}</Badge>

@@ -37,13 +37,12 @@ interface CalculatorState extends CalculatorInputs {
 }
 
 export const useCalculatorStore = create<CalculatorState>((set) => ({
-  dailyTxCount: 220,
-  // The UI slider is expressed in toman and converts to rials at the API boundary.
-  // ۳٫۵ میلیون تومان = ۳۵ میلیون ریال.
-  avgBasketRials: 35_000_000,
-  retentionDays: 3,
-  posUnits: 2,
-  cccDays: 10,
+  dailyTxCount: 80,
+  // Default basket = published POS average for Mordad 1405 (694 thousand toman).
+  avgBasketRials: 6_940_000,
+  retentionDays: 1,
+  posUnits: 1,
+  cccDays: 0,
   isTaxCompliant: true,
   riskStatus: "LOW",
   set: (patch) => set(patch),

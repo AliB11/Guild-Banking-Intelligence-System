@@ -1,5 +1,11 @@
 import { getDashboardFromCorpus, getGuildsOverviewFromCorpus, type Corpus } from "../compute";
-import { formatPercent, formatToman, jalaliPeriodLabel } from "../format";
+import { formatCount, formatPercent, formatToman, jalaliPeriodLabel } from "../format";
+import {
+  CBI_FEE_EXEMPT_HINT,
+  DATA_GAPS,
+  MELLAT_MORDAD_ACQUIRER_SHARE,
+  MORDAD_INSTRUMENTS,
+} from "../published-market";
 import type { BriefingMover, MonthlyBriefing } from "./types";
 
 function toneForDelta(delta: number): "gold" | "persian" | "rose" | "slate" {
@@ -9,9 +15,8 @@ function toneForDelta(delta: number): "gold" | "persian" | "rose" | "slate" {
 }
 
 /**
- * Auto-generated monthly intelligence brief from the active corpus.
- * This is what the dashboard and sources page show after each Jalali month
- * rolls — even when official PDFs are unreachable from GitHub.
+ * Monthly intelligence brief from the published Shaparak window.
+ * CASA and named merchants are gaps, not zeros-as-facts.
  */
 export function buildMonthlyBriefing(
   corpus: Corpus,
@@ -22,10 +27,11 @@ export function buildMonthlyBriefing(
   const period = corpus.latestPeriod;
   const periodLabel = jalaliPeriodLabel(period);
   const volumeDelta = dashboard.totals.volumeDeltaPct;
-  const floatDelta = dashboard.totals.floatDeltaPct;
+  const pos = MORDAD_INSTRUMENTS.find((row) => row.key === "pos");
+  const internet = MORDAD_INSTRUMENTS.find((row) => row.key === "internet");
 
   const movers: BriefingMover[] = [...guilds.bcgMatrix.points]
-    .sort((a, b) => Math.abs(b.growthPct) - Math.abs(a.growthPct))
+    .sort((a, b) => b.volume - a.volume)
     .slice(0, 5)
     .map((point) => ({
       id: point.id,
@@ -36,34 +42,34 @@ export function buildMonthlyBriefing(
       profitabilityLabel: point.profitabilityLabel,
     }));
 
-  const watchouts = dashboard.alerts
-    .filter((alert) => alert.severity !== "info")
-    .map((alert) => `${alert.title}: ${alert.detail}`);
-
-  const stars = guilds.bcgMatrix.points.filter((point) => point.quadrant === "STAR").length;
-  const dogs = guilds.bcgMatrix.points.filter((point) => point.quadrant === "DOG").length;
+  const watchouts = [
+    ...dashboard.alerts.filter((alert) => alert.severity !== "info").map((alert) => `${alert.title}: ${alert.detail}`),
+    ...DATA_GAPS.slice(0, 3),
+  ];
 
   const narrative = [
-    `دوره جاری ${periodLabel} است. گردش نمونه شبکه ${formatToman(dashboard.totals.totalTxVolume)} و رسوب جاری ${formatToman(dashboard.totals.totalFloat)} ثبت شده است.`,
+    `آخرین ماهنامه منتشرشده شاپرک ${periodLabel} (گزارش ۱۳۴) است. گردش شبکه ${formatToman(dashboard.totals.totalTxVolume)} و تعداد تراکنش ${formatCount(dashboard.totals.totalTxCount)} نقل شده است. شهریور در تقویم جاری است اما گزارش آن منتشر نشده.`,
     volumeDelta === 0
-      ? "برای این دوره هنوز مبنای مقایسه ماه قبل در دسترس نیست یا تغییر گردش صفر است."
-      : `گردش نسبت به ${jalaliPeriodLabel(corpus.prevPeriod)} ${volumeDelta >= 0 ? "افزایش" : "کاهش"} ${formatPercent(Math.abs(volumeDelta))} داشته است.`,
-    `حاشیه خالص ماهانه بانک در این نمونه ${formatToman(dashboard.totals.netMargin)} است؛ ${stars} رسته در ربع ستاره و ${dogs} رسته در ربع سگ قرار دارند.`,
-    "ارقام واحدها نمونه آموزشی‌اند. نرخ کارمزد و تقویم انتشار از منابع رسمی فهرست‌شده در همین صفحه پیروی می‌کند.",
-  ];
+      ? "برای این دوره مبنای مقایسه ماه قبل در دسترس نیست."
+      : `نسبت به ${jalaliPeriodLabel(corpus.prevPeriod)} مبلغ ${volumeDelta >= 0 ? "افزایش" : "کاهش"} ${formatPercent(Math.abs(volumeDelta))} داشته است (بازتاب MoM مرداد: تعداد ۲٫۹۷٪ و مبلغ ۷٫۲۶٪).`,
+    pos && internet
+      ? `کارتخوان حدود ${formatCount(pos.txCount, 0)} تراکنش / ${formatToman(pos.volumeRials)} و اینترنت ${formatCount(internet.txCount, 0)} / ${formatToman(internet.volumeRials)} است. سبد اعلامی کارتخوان حدود ۶۹۴ هزار تومان است.`
+      : "",
+    `سهم بانک ملت به‌عنوان بانک پذیرنده در همین ماه ${formatPercent(MELLAT_MORDAD_ACQUIRER_SHARE.countPct, 2)} تعداد و ${formatPercent(MELLAT_MORDAD_ACQUIRER_SHARE.valuePct, 2)} مبلغ است. ${CBI_FEE_EXEMPT_HINT} رسوب CASA و فهرست پذیرنده حقیقی در منبع عمومی نیست.`,
+  ].filter(Boolean);
 
   const comparedToPreviousBriefing =
     previous && previous.period !== period
-      ? `خلاصه قبلی مربوط به ${previous.periodLabel} بود؛ پنجره گزارش یک ماه جلو آمده است.`
+      ? `خلاصه قبلی مربوط به ${previous.periodLabel} بود.`
       : previous && previous.period === period
-        ? "همان دوره قبلی دوباره محاسبه شد؛ پنجره جلالی عوض نشده است."
+        ? "همان دوره منتشرشده دوباره محاسبه شد."
         : null;
 
   const headline =
     volumeDelta <= -5
-      ? `هشدار ${periodLabel}: افت گردش شبکه اصناف`
+      ? `هشدار ${periodLabel}: افت گردش شبکه شاپرک`
       : volumeDelta >= 5
-        ? `${periodLabel}: رشد گردش و فرصت توسعه پایانه`
+        ? `${periodLabel}: رشد مبلغ شبکه شاپرک`
         : `ماهنامه هوش اصناف — ${periodLabel}`;
 
   return {
@@ -73,24 +79,24 @@ export function buildMonthlyBriefing(
     narrative,
     highlights: [
       {
-        title: "گردش شبکه",
+        title: "گردش شاپرک",
         detail: `${formatToman(dashboard.totals.totalTxVolume)} (${formatPercent(volumeDelta)} نسبت به ماه قبل)`,
         tone: toneForDelta(volumeDelta),
       },
       {
-        title: "رسوب جاری",
-        detail: `${formatToman(dashboard.totals.totalFloat)} (${formatPercent(floatDelta)} نسبت به ماه قبل)`,
-        tone: toneForDelta(floatDelta),
+        title: "تعداد تراکنش",
+        detail: formatCount(dashboard.totals.totalTxCount),
+        tone: "gold",
       },
       {
-        title: "حاشیه خالص بانک",
-        detail: formatToman(dashboard.totals.netMargin),
-        tone: dashboard.totals.netMargin >= 0 ? "gold" : "rose",
+        title: "برآورد کارمزد کارتخوان",
+        detail: `${formatToman(dashboard.totals.totalFees)} — پلکان بانک مرکزی × سبد اعلامی؛ رقم شاپرک نیست`,
+        tone: dashboard.totals.totalFees >= 0 ? "gold" : "rose",
       },
       {
-        title: "کیفیت داده",
-        detail: `${dashboard.dataQuality.score} از ۱۰۰`,
-        tone: dashboard.dataQuality.score >= 95 ? "persian" : "rose",
+        title: "شکاف داده",
+        detail: "CASA، نام پذیرنده و گردش رسته در گزارش عمومی نیست",
+        tone: "slate",
       },
     ],
     movers,

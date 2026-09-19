@@ -44,24 +44,34 @@ function GuildRow({ s, rank }: { s: SubGuildSummary; rank: number }) {
       <td className="num px-3 py-3.5 text-center text-[11px] text-slate-400" dir="ltr">{s.isicCode}</td>
       <td className="num px-3 py-3.5 text-center text-[11px] text-slate-400" dir="ltr">{s.intaCode}</td>
       <td className="px-3 py-3.5 text-center">
-        <span className="num text-[11.5px] font-bold text-violet-300">{formatDecimal(s.intaProfitRatio, 0)}٪</span>
-      </td>
-      <td className="px-3 py-3.5 text-center">
-        <span className="num text-[11.5px] font-bold text-slate-200">{formatDecimal(s.avgGrossMargin, 0)}٪</span>
-      </td>
-      <td className="px-3 py-3.5 text-center">
-        <span className={cn("num inline-flex items-center gap-1 text-[11.5px] font-black", cccTone(s.cccDays))}>
-          <CalendarClock className="h-3.5 w-3.5 opacity-70" />
-          {s.cccDays < 0 ? `${formatDecimal(Math.abs(s.cccDays), 0)}−` : formatDecimal(s.cccDays, 0)}
-          <span className="text-[9px] font-medium text-slate-500">روز</span>
+        <span className="num text-[11.5px] font-bold text-violet-300">
+          {s.intaProfitRatio > 0 ? `${formatDecimal(s.intaProfitRatio, 1)}٪` : "—"}
         </span>
+      </td>
+      <td className="px-3 py-3.5 text-center">
+        <span className="num text-[11.5px] font-bold text-slate-200">
+          {s.avgGrossMargin > 0 ? `${formatDecimal(s.avgGrossMargin, 0)}٪` : "—"}
+        </span>
+      </td>
+      <td className="px-3 py-3.5 text-center">
+        {s.cccDays === 0 ? (
+          <span className="text-[11px] text-slate-600">—</span>
+        ) : (
+          <span className={cn("num inline-flex items-center gap-1 text-[11.5px] font-black", cccTone(s.cccDays))}>
+            <CalendarClock className="h-3.5 w-3.5 opacity-70" />
+            {s.cccDays < 0 ? `${formatDecimal(Math.abs(s.cccDays), 0)}−` : formatDecimal(s.cccDays, 0)}
+            <span className="text-[9px] font-medium text-slate-500">روز</span>
+          </span>
+        )}
       </td>
       <td className="px-3 py-3.5 text-center">
         <span className="num rounded-md border border-white/10 bg-white/[0.03] px-1.5 py-0.5 text-[10px] font-bold text-slate-300" dir="ltr">
           {s.defaultMcc}
         </span>
       </td>
-      <td className="num px-3 py-3.5 text-center text-[11.5px] font-bold text-slate-300">{faDigits(s.merchantCount)}</td>
+      <td className="num px-3 py-3.5 text-center text-[11.5px] font-bold text-slate-300">
+        {s.volume > 0 ? faDigits(s.merchantCount) : "—"}
+      </td>
       <td className="num whitespace-nowrap px-3 py-3.5 text-left text-[11.5px] font-bold text-gold-200">
         {s.volume > 0 ? formatToman(s.volume, { decimals: 0 }) : "—"}
       </td>
@@ -115,7 +125,7 @@ export function GuildExplorer({ overview }: { overview: GuildsOverview }) {
               <Badge variant="violet">BCG تصمیم‌یار</Badge>
             </CardTitle>
             <CardDescription>
-              راست = سهم بیشتر از گردش، بالا = رشد بیشتر نسبت به ماه قبل، حباب بزرگ‌تر = سود بیشتر برای بانک. این نقشه داخلی است نه بخشنامه شاپرک.
+              فقط ابزارهایی که مبلغ مرداد ۱۴۰۵ دارند. راست = سهم از گردش شبکه، بالا = رشد نسبت به ماه قبل (تفکیک ابزار برای ماه قبل منتشر نشده پس رشد صفر است). این نقشه داخلی است نه بخشنامه شاپرک.
             </CardDescription>
           </div>
           <Badge variant="rose">استاندارد رسمی BCG شاپرک نیست</Badge>
@@ -333,10 +343,16 @@ function ComparePanel({ overview }: { overview: GuildsOverview }) {
                     </span>
                     <span className="num text-left font-bold text-slate-200" dir="ltr">{s.intaCode}</span>
                     <span className="text-slate-500">ضریب سود</span>
-                    <span className="num text-left font-bold text-slate-200">{formatDecimal(s.intaProfitRatio, 0)}٪</span>
+                    <span className="num text-left font-bold text-slate-200">
+                      {s.intaProfitRatio > 0 ? `${formatDecimal(s.intaProfitRatio, 1)}٪` : "منتشر نشده"}
+                    </span>
                     <span className="text-slate-500">چرخه نقد (CCC)</span>
-                    <span className={cn("num text-left font-bold", cccTone(s.cccDays))}>
-                      {s.cccDays < 0 ? `${formatDecimal(Math.abs(s.cccDays), 0)}−` : formatDecimal(s.cccDays, 0)} روز
+                    <span className={cn("num text-left font-bold", s.cccDays === 0 ? "text-slate-500" : cccTone(s.cccDays))}>
+                      {s.cccDays === 0
+                        ? "منتشر نشده"
+                        : s.cccDays < 0
+                          ? `${formatDecimal(Math.abs(s.cccDays), 0)}− روز`
+                          : `${formatDecimal(s.cccDays, 0)} روز`}
                     </span>
                     <span className="text-slate-500">امتیاز جذابیت</span>
                     <span className="num text-left font-black text-gold-200">{formatDecimal(s.avgScore, 1)}</span>

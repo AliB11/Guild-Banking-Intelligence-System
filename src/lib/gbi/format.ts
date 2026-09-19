@@ -63,7 +63,10 @@ export function formatToman(
 
   let value: string;
   let unit: string;
-  if (toman >= 1_000_000_000) {
+  if (toman >= 1_000_000_000_000) {
+    value = formatDecimal(toman / 1_000_000_000_000, decimals);
+    unit = "همت";
+  } else if (toman >= 1_000_000_000) {
     value = formatDecimal(toman / 1_000_000_000, decimals);
     unit = "میلیارد تومان";
   } else if (toman >= 1_000_000) {
@@ -79,6 +82,19 @@ export function formatToman(
   return `${sign}${value}${withUnit ? ` ${unit}` : ""}`;
 }
 
+/** Compact count for billion-scale Shaparak totals. */
+export function formatCount(n: number, decimals = 2): string {
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "−" : "";
+  if (abs >= 1_000_000_000) {
+    return `${sign}${formatDecimal(abs / 1_000_000_000, decimals)} میلیارد`;
+  }
+  if (abs >= 1_000_000) {
+    return `${sign}${formatDecimal(abs / 1_000_000, decimals)} میلیون`;
+  }
+  return `${sign}${formatNum(abs)}`;
+}
+
 /** نمایش فشرده عدد ریال خام (برای تولتیپ‌ها) */
 export function formatRial(rials: number): string {
   return `${formatNum(rials)} ریال`;
@@ -87,6 +103,7 @@ export function formatRial(rials: number): string {
 /** برچسب کوتاه برای محور نمودارها (تومان فشرده) */
 export function chartMoneyTick(rials: number): string {
   const toman = rialToToman(Math.abs(rials));
+  if (toman >= 1_000_000_000_000) return `${formatDecimal(toman / 1_000_000_000_000, 0)} همت`;
   if (toman >= 1_000_000_000) return `${formatDecimal(toman / 1_000_000_000, 0)} م.ت`;
   if (toman >= 1_000_000) return `${formatDecimal(toman / 1_000_000, 0)} م.م`;
   return faDigits(Math.round(toman));

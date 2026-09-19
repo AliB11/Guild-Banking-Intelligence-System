@@ -100,7 +100,7 @@ export function SourcesExplorer({ catalog }: { catalog: IntelligenceCatalog }) {
               مسیر داده از منبع تا صفحه
             </CardTitle>
             <CardDescription>
-              هیچ عددی بدون تبار نیست. رنگ برچسب می‌گوید رقم نمونه است، فرض مدل است، یا از نهاد رسمی می‌آید.
+              هیچ عددی بدون تبار نیست. فیروزه‌ای رسمی است، طلایی فرض مدل، بنفش داخلی بانک (اینجا غایب).
             </CardDescription>
           </div>
         </CardHeader>
@@ -284,7 +284,7 @@ export function SourcesExplorer({ catalog }: { catalog: IntelligenceCatalog }) {
               طبقه‌بندی رسته‌ها و کدهای مرجع
             </CardTitle>
             <CardDescription>
-              هر رسته از چهار کد زنده است: ISIC، اینتاکد، ضریب تبصره ۱۰۰ و MCC شاپرک. اعداد ضریب در این نمایش نمونه‌اند.
+              ISIC و MCC از طبقه‌بندی عمومی‌اند. ضریب تبصره ۱۰۰ فقط جایی پر است که جدول اینتا نقل شده؛ بقیه خالی‌اند.
             </CardDescription>
           </div>
         </CardHeader>
@@ -312,7 +312,9 @@ export function SourcesExplorer({ catalog }: { catalog: IntelligenceCatalog }) {
                     <td className="num px-3 py-2.5 text-center text-slate-300" dir="ltr">
                       {row.intaCode}
                     </td>
-                    <td className="num px-3 py-2.5 text-center text-violet-300">{faDigits(row.intaProfitRatio)}٪</td>
+                    <td className="num px-3 py-2.5 text-center text-violet-300">
+                      {row.intaProfitRatio > 0 ? `${faDigits(row.intaProfitRatio)}٪` : "—"}
+                    </td>
                     <td className="num px-3 py-2.5 text-center text-slate-300" dir="ltr">
                       {row.defaultMcc}
                     </td>

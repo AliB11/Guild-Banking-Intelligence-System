@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </div>
         {/*
           The deployed artifact is the static profile: data is computed in the
-          browser from the bundled sample corpus, so the shell always reports
+          browser from the published-market corpus, so the shell always reports
           the database-less mode.
         */}
         <Providers>

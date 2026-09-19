@@ -4,7 +4,7 @@
  * All computation lives in `compute.ts` (pure, browser-safe). This module is
  * the Node.js/PostgreSQL facade used by the optional full-stack profile
  * (`src/server/server.ts`). Without `DATABASE_URL` it transparently falls back
- * to the in-memory demo corpus, so the API stays available in dev and in
+ * to the published-market corpus, so the API stays available in dev and in
  * database-less containers.
  */
 import { allowDemoMode, db, hasDatabaseConfig } from "@/db";

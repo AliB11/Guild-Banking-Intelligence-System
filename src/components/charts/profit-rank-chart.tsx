@@ -20,7 +20,7 @@ export function ProfitRankChart({
 }: {
   data: DashboardSummary["categoryProfit"];
 }) {
-  const sorted = [...data].sort((a, b) => a.margin - b.margin);
+  const sorted = [...data].sort((a, b) => a.volume - b.volume);
   if (sorted.length === 0) {
     return <div className="flex h-72 items-center justify-center text-sm text-slate-500">داده‌ای برای رتبه‌بندی سودآوری وجود ندارد.</div>;
   }
@@ -48,19 +48,19 @@ export function ProfitRankChart({
                 <div dir="rtl" className="rounded-xl border border-white/10 bg-night-900/95 p-3 text-[11px] shadow-2xl backdrop-blur-xl">
                   <p className="mb-1.5 font-extrabold text-slate-100">{d.name}</p>
                   <p className="text-slate-400">
-                    حاشیه خالص ماهانه:{" "}
-                    <span className="num font-bold text-gold-300">{formatToman(d.margin)}</span>
+                    گردش:{" "}
+                    <span className="num font-bold text-gold-300">{formatToman(d.volume)}</span>
                   </p>
-                  <p className="mt-1 text-slate-400">
-                    گردش: <span className="num font-bold text-slate-200">{formatToman(d.volume)}</span>
-                    <span className="mx-1.5 text-slate-600">|</span>
-                    کارمزد: <span className="num font-bold text-persian-300">{formatToman(d.fees)}</span>
-                  </p>
+                  {d.fees > 0 && (
+                    <p className="mt-1 text-slate-400">
+                      برآورد کارمزد مدل: <span className="num font-bold text-persian-300">{formatToman(d.fees)}</span>
+                    </p>
+                  )}
                 </div>
               );
             }}
           />
-          <Bar dataKey="margin" name="حاشیه سود" radius={[4, 4, 4, 4]} barSize={26} animationDuration={1300}>
+          <Bar dataKey="volume" name="گردش" radius={[4, 4, 4, 4]} barSize={26} animationDuration={1300}>
             {sorted.map((_, i) => (
               <Cell key={i} fill={COLORS[sorted.length - 1 - i] ?? COLORS[0]} fillOpacity={0.9} />
             ))}

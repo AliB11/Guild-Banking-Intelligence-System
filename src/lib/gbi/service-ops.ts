@@ -41,7 +41,10 @@ export function buildDataQuality(
   const latestMerchantIds = new Set(
     metrics.filter((metric) => metric.reportingPeriod === latestPeriod).map((metric) => metric.merchantId),
   );
-  const merchantsWithoutLatest = merchants.filter((merchant) => !latestMerchantIds.has(merchant.id)).length;
+  const reportingMerchantIds = new Set(metrics.map((metric) => metric.merchantId));
+  const merchantsWithoutLatest = merchants.filter(
+    (merchant) => reportingMerchantIds.has(merchant.id) && !latestMerchantIds.has(merchant.id),
+  ).length;
 
   const check = (
     code: string,
@@ -165,6 +168,16 @@ export function buildEarlyWarnings(input: {
   const warnings: EarlyWarning[] = [];
   const currentVolume = input.latestRows.reduce((total, row) => total + row.monthlyTxVolume, 0);
   const previousVolume = input.previousRows.reduce((total, row) => total + row.monthlyTxVolume, 0);
+  const currentFloat = input.latestRows.reduce((total, row) => total + row.avgDailyFloatBalance, 0);
+  if (currentVolume > 0 && currentFloat === 0) {
+    warnings.push({
+      code: "CASA_UNPUBLISHED",
+      severity: "info",
+      title: "رسوب حساب جاری در منابع عمومی نیست",
+      detail:
+        "مانده CASA پذیرنده در گزارش اقتصادی شاپرک منتشر نمی‌شود. کارت رسوب روی میز کار صفر است چون رقم وجود ندارد، نه چون رسوب شبکه صفر است.",
+    });
+  }
   if (previousVolume > 0) {
     const delta = ((currentVolume - previousVolume) / previousVolume) * 100;
     if (delta <= -5) {

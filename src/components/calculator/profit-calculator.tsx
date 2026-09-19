@@ -38,6 +38,7 @@ export interface GuildPreset {
   intaProfitRatio: number;
   avgBasket: number;
   avgDailyTx: number;
+  note?: string;
 }
 
 /* --------------------------------------------------------------------- */
@@ -203,10 +204,11 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
     setGuildId(id);
     const g = presets.find((p) => p.id === id);
     if (g && g.avgBasket > 0) {
+      const basketToman = Math.min(50_000_000, Math.max(100_000, Math.round(g.avgBasket / 10)));
       inputs.applyGuildPreset(
         g.cccDays,
-        Math.min(50_000_000, Math.max(500_000, g.avgBasket / 10)),
-        Math.min(1200, Math.max(5, g.avgDailyTx)),
+        basketToman * 10,
+        g.avgDailyTx > 0 ? Math.min(1200, Math.max(5, g.avgDailyTx)) : inputs.dailyTxCount,
       );
     }
   };
@@ -248,8 +250,8 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             </select>
             {selectedGuild && (
               <p className="num mt-2 text-[10px] leading-5 text-slate-400">
-                CCC: {formatDecimal(selectedGuild.cccDays, 0)} روز · ضریب اینتاکد: {formatDecimal(selectedGuild.intaProfitRatio, 0)}٪
-                · سبد متوسط رسته: {formatToman(selectedGuild.avgBasket, { decimals: 1 })}
+                {selectedGuild.note ??
+                  `ضریب اینتاکد: ${selectedGuild.intaProfitRatio > 0 ? `${formatDecimal(selectedGuild.intaProfitRatio, 1)}٪` : "نقل نشده"} · سبد: ${formatToman(selectedGuild.avgBasket, { decimals: 1 })}`}
               </p>
             )}
           </div>
@@ -269,9 +271,9 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             hint="متوسط مبلغ هر تراکنش"
             value={inputs.avgBasketRials / 10}
             display={formatToman(inputs.avgBasketRials, { decimals: 1 })}
-            min={500_000}
+            min={100_000}
             max={50_000_000}
-            step={500_000}
+            step={10_000}
             onChange={(v) => updateInputs({ avgBasketRials: v * 10 })}
           />
           <ControlSlider
@@ -533,7 +535,7 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             <p className="num text-[10.5px] leading-6 text-slate-500" dir="rtl">
               مدل محاسباتی: حاشیه رسوب = میانگین مانده روزانه × (نرخ تسهیلات {formatDecimal(23, 0)}٪ − سپرده قانونی {formatDecimal(13, 0)}٪) ÷ ۱۲ ·
               کارمزد پذیرندگی طبق پلکان بانک مرکزی · حاشیه تسهیلات = سقف اعتبار × اسپرد ۴٪ ÷ ۱۲ · هزینه پایانه = {formatNum(150_000)} تومان
-              ماهانه برای هر دستگاه. نسخه مدل: {result?.modelVersion ?? "GBI-ΠBank-1.6.0"} · ارقام صرفاً برآوردی و جهت تصمیم‌یار اعتباری شعب است.
+              ماهانه برای هر دستگاه. نسخه مدل: {result?.modelVersion ?? "GBI-ΠBank-1.7.0"} · ارقام سناریوی شعبه است نه پرونده یک پذیرنده حقیقی.
             </p>
           </CardContent>
         </Card>

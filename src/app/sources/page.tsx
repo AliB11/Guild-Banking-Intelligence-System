@@ -23,7 +23,7 @@ export default function SourcesPage() {
       <PageHeader
         kicker="DATA PROVENANCE"
         title="منابع اطلاعاتی و به‌روزرسانی ماهانه"
-        description="این صفحه می‌گوید هر عدد از کجا می‌آید، کدام منبع رسمی است، کدام نمونه آموزشی است، و جاب ماهانه بعد از انتشار گزارش اصناف چه چیزی را واکشی می‌کند."
+        description="این صفحه می‌گوید هر عدد از کجا می‌آید، کدام رقم از ماهنامه شاپرک است، کدام فرض مدل است، و چه چیزی عمداً خالی مانده چون در منبع عمومی نیست."
         actions={
           <>
             <Badge variant="gold">{data.reporting.latestPeriodLabel}</Badge>
