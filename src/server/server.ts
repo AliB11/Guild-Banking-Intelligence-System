@@ -163,8 +163,9 @@ async function handleHealth(res: ServerResponse): Promise<void> {
   }
   try {
     const result = await db.execute(sql`select to_regclass('public.guild_categories') as table_name`);
-    const row = Array.isArray(result) ? (result as Array<{ table_name?: string }>)[0] : undefined;
-    if (!row?.table_name) {
+    // node-postgres QueryResult exposes the rows array.
+    const rows = (result as { rows?: Array<{ table_name?: string }> }).rows ?? [];
+    if (!rows[0]?.table_name) {
       sendJson(res, 503, { ok: false, mode: "postgres", database: "schema-not-migrated" });
     } else {
       sendJson(res, 200, { ok: true, mode: "postgres", database: "reachable" });
@@ -285,6 +286,17 @@ function serveStatic(res: ServerResponse, url: URL, method: string): void {
   } catch {
     sendJson(res, 400, { error: "not found" });
     return;
+  }
+
+  // Exported route directories (guilds/, leads/) — redirect the slash-less
+  // form so deep links behave like the static host does.
+  if (!pathname.endsWith("/")) {
+    const dirPath = resolve(join(outDir, normalize(pathname)));
+    if (dirPath.startsWith(outDir + "/") && existsSync(dirPath) && statSync(dirPath).isDirectory()) {
+      res.writeHead(308, { Location: `${url.pathname}/`, ...SECURITY_HEADERS });
+      res.end();
+      return;
+    }
   }
 
   // With trailingSlash export, every route is a directory with index.html.

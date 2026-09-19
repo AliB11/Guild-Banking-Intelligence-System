@@ -64,7 +64,7 @@ Workflow `Deploy to GitHub Pages` (.github/workflows/pages.yml) روی هر push
 | `npm run lint` | بررسی ESLint |
 | `npm run typecheck` | بررسی TypeScript |
 | `npm run db:push` | اعمال مستقیم schema با Drizzle برای توسعه؛ نیازمند `DATABASE_URL` |
-| `npm run db:generate` | ساخت migration جدید پس از تغییر schema |
+| `npm run db:generate` | ساخت migration جدید پس از تغییر schema؛ نیازمند `DATABASE_URL` در config |
 | `npm run db:migrate` | اعمال migrationهای commit‌شده و امن برای production |
 | `npm run db:seed` | درج corpus نمونه در PostgreSQL؛ عملیات destructive و فقط برای demo |
 | `npm run db:studio` | باز کردن Drizzle Studio |

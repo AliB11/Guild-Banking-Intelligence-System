@@ -43,5 +43,8 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Smoke test (static + API, no database)
+        run: npm run smoke
+
       - name: Audit runtime dependencies
         run: npm audit --omit=dev --audit-level=high
