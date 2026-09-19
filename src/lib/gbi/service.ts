@@ -1,4 +1,4 @@
-import { db, hasDatabaseConfig } from "@/db";
+import { allowDemoMode, db, hasDatabaseConfig } from "@/db";
 import {
   decisionAuditEvents,
   guildCategories,
@@ -77,7 +77,10 @@ let corpusPromise: Promise<Corpus> | null = null;
  * imported operational data fresh. Lead mutations explicitly invalidate it.
  */
 async function loadCorpus(): Promise<Corpus> {
-  if (!hasDatabaseConfig) return getDemoCorpus();
+  if (!hasDatabaseConfig) {
+    if (allowDemoMode) return getDemoCorpus();
+    throw new Error("DATABASE_URL is required when ALLOW_DEMO_MODE=false");
+  }
 
   const now = Date.now();
   if (corpusCache && corpusCache.expiresAt > now) return corpusCache.value;
@@ -637,7 +640,7 @@ function makeLeadsResponse(leads: LeadDTO[]): LeadsResponse {
 }
 
 export async function getLeads(): Promise<LeadsResponse> {
-  if (!hasDatabaseConfig) {
+  if (!hasDatabaseConfig && allowDemoMode) {
     const corpus = getDemoCorpus();
     const merchantById = new Map(corpus.merchants.map((merchant) => [merchant.id, merchant]));
     const subById = new Map(corpus.subs.map((sub) => [sub.id, sub]));

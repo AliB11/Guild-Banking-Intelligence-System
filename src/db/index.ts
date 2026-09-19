@@ -8,6 +8,11 @@ import { Pool } from "pg";
  */
 export const databaseUrl = process.env.DATABASE_URL?.trim() ?? "";
 export const hasDatabaseConfig = databaseUrl.length > 0;
+/**
+ * Demo mode is useful for GitHub/Vercel previews, but production can opt out
+ * so a missing database fails closed instead of silently serving in-memory data.
+ */
+export const allowDemoMode = process.env.ALLOW_DEMO_MODE !== "false";
 
 const globalForDb = globalThis as typeof globalThis & {
   __arenaNextJsPostgresqlPool?: Pool;

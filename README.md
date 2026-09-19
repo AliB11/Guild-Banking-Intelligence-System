@@ -26,9 +26,61 @@ npm run dev
 | `npm run start` | اجرای build تولیدی |
 | `npm run lint` | بررسی ESLint |
 | `npm run typecheck` | بررسی TypeScript |
-| `npm run db:push` | اعمال schema با Drizzle؛ نیازمند `DATABASE_URL` |
-| `npm run db:seed` | درج corpus نمونه در PostgreSQL |
+| `npm run db:push` | اعمال مستقیم schema با Drizzle برای توسعه؛ نیازمند `DATABASE_URL` |
+| `npm run db:generate` | ساخت migration جدید پس از تغییر schema؛ نیازمند `DATABASE_URL` در config |
+| `npm run db:migrate` | اعمال migrationهای commit‌شده و امن برای production |
+| `npm run db:seed` | درج corpus نمونه در PostgreSQL؛ عملیات destructive و فقط برای demo |
 | `npm run db:studio` | باز کردن Drizzle Studio |
+| `npm run start:container` | اجرای Next standalone داخل Docker و migration اختیاری |
+
+## استقرار از GitHub
+
+این پروژه یک Next.js full-stack است؛ چون APIهای dynamic، تغییر مرحله سرنخ و PostgreSQL دارد، **GitHub Pages برای آن مناسب نیست**. برای استقرار بدون دردسر از GitHub یکی از این دو مسیر را انتخاب کنید:
+
+### مسیر پیشنهادی: Vercel متصل به GitHub
+
+1. در Vercel گزینه **New Project → Import Git Repository** را بزنید و همین repository را انتخاب کنید. فایل `vercel.json` تنظیمات build را آماده کرده است.
+2. در Environment Variables این مقادیر را ثبت کنید:
+   - `DATABASE_URL`: اتصال PostgreSQL مدیریت‌شده (Neon، Supabase یا سرویس مشابه).
+   - `ALLOW_DEMO_MODE=false`: برای اینکه production بدون دیتابیس به‌صورت ناخواسته با داده حافظه‌ای اجرا نشود.
+   - `DB_POOL_MAX=5`: برای جلوگیری از اشباع connection pool در محیط serverless.
+3. یک‌بار migration را اجرا کنید. می‌توانید secret به نام `DATABASE_URL` را در GitHub بگذارید و از مسیر **Actions → Migrate database → Run workflow**، گزینه تأیید را فعال کنید؛ یا در محیط امن خود اجرا کنید:
+
+   ```bash
+   npm ci
+   DATABASE_URL="postgresql://..." npm run db:migrate
+   ```
+
+4. در Vercel روی هر push به branch متصل، build و deploy خودکار انجام می‌شود. endpoint سلامت `/api/health` باید وضعیت `mode: "postgres"` و `database: "reachable"` برگرداند.
+
+برای Preview بدون دیتابیس، `ALLOW_DEMO_MODE=true` بگذارید؛ داده نمایشی in-memory است و بین instanceها/استقرارها پایدار نیست. **این repository هنوز login، SSO و RBAC ندارد**؛ قبل از اتصال داده واقعی، Vercel/پروکسی سازمانی را با احراز هویت و محدودسازی شبکه جلوی برنامه قرار دهید.
+
+### مسیر Docker / GHCR
+
+Workflow `CI` روی هر push و Pull Request، lint، typecheck، build و audit را اجرا می‌کند. Workflow `Publish container` روی `main` یا tag نسخه، image را در GitHub Container Registry منتشر می‌کند:
+
+```text
+ghcr.io/<owner>/<repository>:latest
+```
+
+برای اجرای محلی full-stack با PostgreSQL:
+
+```bash
+docker compose up --build -d
+docker compose --profile seed run --rm seed   # اختیاری؛ داده demo را جایگزین می‌کند
+```
+
+سرویس container با `RUN_DB_MIGRATIONS=true` migrationهای commit‌شده را هنگام start اجرا می‌کند و `/api/health` healthcheck دارد. در production مقدار `DATABASE_URL` را از secret manager بدهید و seed را اجرا نکنید.
+
+### متغیرهای محیطی
+
+| متغیر | اجباری | توضیح |
+| --- | --- | --- |
+| `DATABASE_URL` | production | connection string PostgreSQL |
+| `ALLOW_DEMO_MODE` | خیر | پیش‌فرض `true`؛ برای production واقعی `false` |
+| `DB_POOL_MAX` | خیر | سقف pool؛ برای serverless معمولاً `5` |
+| `RUN_DB_MIGRATIONS` | Docker | فقط برای اجرای migration در entrypoint container |
+| `ALLOW_DESTRUCTIVE_SEED` | seed | فقط با مقدار `true` و برای reset صریح demo |
 
 ## قرارداد محاسباتی مهم
 

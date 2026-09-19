@@ -4,7 +4,7 @@ import "@fontsource-variable/vazirmatn";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AppShell } from "@/components/layout/app-shell";
-import { hasDatabaseConfig } from "@/db";
+import { allowDemoMode, hasDatabaseConfig } from "@/db";
 
 export const metadata: Metadata = {
   title: "GBI | سامانه هوش بانکداری اصناف",
@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(148,178,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(148,178,255,0.025)_1px,transparent_1px)] bg-[size:52px_52px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,black,transparent)]" />
         </div>
         <Providers>
-          <AppShell demoMode={!hasDatabaseConfig}>{children}</AppShell>
+          <AppShell demoMode={!hasDatabaseConfig && allowDemoMode}>{children}</AppShell>
         </Providers>
       </body>
     </html>
