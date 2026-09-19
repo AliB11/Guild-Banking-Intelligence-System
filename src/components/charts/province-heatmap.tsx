@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils";
 import type { DashboardSummary } from "@/lib/gbi/types";
 
 export function ProvinceHeatmap({ data }: { data: DashboardSummary["provinces"] }) {
+  if (data.length === 0) {
+    return <div className="flex h-40 items-center justify-center text-sm text-slate-500">داده‌ای برای نقشه استانی وجود ندارد.</div>;
+  }
   return (
     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
       {data.map((p) => {

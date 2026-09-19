@@ -4,10 +4,15 @@ import { getGuildCompare } from "@/lib/gbi/service";
 
 export const dynamic = "force-dynamic";
 
-const querySchema = z.object({
-  a: z.string().uuid("شناسه رسته اول معتبر نیست"),
-  b: z.string().uuid("شناسه رسته دوم معتبر نیست"),
-});
+const querySchema = z
+  .object({
+    a: z.string().uuid("شناسه رسته اول معتبر نیست"),
+    b: z.string().uuid("شناسه رسته دوم معتبر نیست"),
+  })
+  .refine((value) => value.a !== value.b, {
+    message: "برای مقایسه، دو رسته متفاوت انتخاب کنید",
+    path: ["b"],
+  });
 
 export async function GET(req: NextRequest) {
   const parsed = querySchema.safeParse({

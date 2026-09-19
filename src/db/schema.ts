@@ -10,6 +10,7 @@ import {
   doublePrecision,
   timestamp,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 /* ------------------------------------------------------------------ */
@@ -140,7 +141,7 @@ export const terminalMetrics = pgTable(
   (t) => [
     index("terminal_metrics_merchant_idx").on(t.merchantId),
     index("terminal_metrics_period_idx").on(t.reportingPeriod),
-    index("terminal_metrics_merchant_period_idx").on(
+    uniqueIndex("terminal_metrics_merchant_period_unique").on(
       t.merchantId,
       t.reportingPeriod,
     ),

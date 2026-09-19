@@ -7,6 +7,10 @@ export function MerchantsTable({
 }: {
   merchants: DashboardSummary["topMerchants"];
 }) {
+  if (merchants.length === 0) {
+    return <p className="py-8 text-center text-sm text-slate-500">پذیرنده‌ای برای رتبه‌بندی وجود ندارد.</p>;
+  }
+
   return (
     <div className="space-y-2">
       {merchants.map((m, i) => (

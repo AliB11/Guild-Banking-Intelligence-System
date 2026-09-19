@@ -7,7 +7,10 @@ import type { DashboardSummary } from "@/lib/gbi/types";
 const COLORS = ["#f5c860", "#3bd6c8", "#a78bfa", "#38bdf8"];
 
 export function ShareDonut({ data }: { data: DashboardSummary["categoryProfit"] }) {
-  const total = data.reduce((a, c) => a + c.volume, 0) || 1;
+  const total = data.reduce((a, c) => a + c.volume, 0);
+  if (data.length === 0 || total === 0) {
+    return <div className="flex h-72 items-center justify-center text-sm text-slate-500">داده‌ای برای نمایش سهم گردش وجود ندارد.</div>;
+  }
   return (
     <div className="flex h-72 flex-col" dir="ltr">
       <div className="relative h-48">

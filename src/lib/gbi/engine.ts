@@ -340,9 +340,11 @@ export function runCalculator(input: CalculatorInput): CalculatorResult {
   const netBankMargin =
     floatMargin + monthlyAcquiringFees + creditFacilityMargin - operatingSupportCost;
 
+  // ROI is net return over the bank's support cost. Gross revenue is shown
+  // separately in the breakdown so the KPI is not overstated by the cost base.
   const roiPercent =
     operatingSupportCost > 0
-      ? ((netBankMargin + operatingSupportCost) / operatingSupportCost) * 100
+      ? (netBankMargin / operatingSupportCost) * 100
       : 0;
 
   return {

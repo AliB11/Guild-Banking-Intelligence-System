@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   MonitorSmartphone,
@@ -155,6 +155,22 @@ function LeadCard({
   );
 }
 
+function calculateLeadStats(leads: LeadDTO[]): LeadsResponse["stats"] {
+  const byStage = leads.reduce(
+    (accumulator, lead) => {
+      accumulator[lead.pipelineStage] = (accumulator[lead.pipelineStage] ?? 0) + 1;
+      return accumulator;
+    },
+    { NEW: 0, CONTACTED: 0, FINANCIAL_EVALUATION: 0, CONVERTED: 0, LOST: 0 } as LeadsResponse["stats"]["byStage"],
+  );
+  return {
+    total: leads.length,
+    byStage,
+    avgScore: leads.length ? leads.reduce((total, lead) => total + lead.leadScore, 0) / leads.length : 0,
+    hotCount: leads.filter((lead) => lead.leadScore >= 75).length,
+  };
+}
+
 export function LeadKanban({ initial }: { initial: LeadsResponse }) {
   const queryClient = useQueryClient();
   const { data } = useQuery<LeadsResponse>({
@@ -167,13 +183,16 @@ export function LeadKanban({ initial }: { initial: LeadsResponse }) {
     initialData: initial,
   });
 
-  const [leads, setLeads] = useState<LeadDTO[]>(initial.leads);
+  // Keep optimistic changes separate from the server snapshot. This avoids a
+  // setState-in-effect feedback loop and lets a failed PATCH roll back cleanly.
+  const [stageOverrides, setStageOverrides] = useState<Record<string, PipelineStage>>({});
   const [dragId, setDragId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<PipelineStage | null>(null);
 
-  useEffect(() => {
-    setLeads(data.leads);
-  }, [data.leads]);
+  const leads = data.leads.map((lead) => ({
+    ...lead,
+    pipelineStage: stageOverrides[lead.id] ?? lead.pipelineStage,
+  }));
 
   const mutation = useMutation({
     mutationFn: async ({ id, stage }: { id: string; stage: PipelineStage }) => {
@@ -185,15 +204,35 @@ export function LeadKanban({ initial }: { initial: LeadsResponse }) {
       if (!res.ok) throw new Error("patch failed");
       return res.json();
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["leads"] }),
+    onMutate: ({ id, stage }) => {
+      setStageOverrides((current) => ({ ...current, [id]: stage }));
+    },
+    onError: (_error, { id, stage }) => {
+      setStageOverrides((current) => {
+        if (current[id] !== stage) return current;
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+    },
+    onSettled: async (_result, _error, { id, stage }) => {
+      await queryClient.invalidateQueries({ queryKey: ["leads"] });
+      setStageOverrides((current) => {
+        if (current[id] !== stage) return current;
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+    },
   });
 
   const move = (id: string, stage: PipelineStage) => {
-    setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, pipelineStage: stage } : l)));
+    const current = leads.find((lead) => lead.id === id);
+    if (!current || current.pipelineStage === stage || mutation.isPending) return;
     mutation.mutate({ id, stage });
   };
 
-  const stats = data.stats;
+  const stats = calculateLeadStats(leads);
 
   return (
     <div className="space-y-5">
@@ -211,6 +250,12 @@ export function LeadKanban({ initial }: { initial: LeadsResponse }) {
           </div>
         ))}
       </div>
+
+      {mutation.isError && (
+        <div role="alert" className="rounded-xl border border-rose-500/25 bg-rose-500/[0.07] px-4 py-3 text-[11px] font-bold text-rose-300">
+          تغییر مرحله ذخیره نشد؛ وضعیت قبلی بازیابی شد.
+        </div>
+      )}
 
       {/* Kanban board */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">

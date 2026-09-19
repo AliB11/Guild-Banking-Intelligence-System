@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Scale, ArrowUpDown, CalendarClock, Landmark, ScanBarcode } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -189,23 +189,29 @@ export function GuildExplorer({ overview }: { overview: GuildsOverview }) {
 /* --------------------------------------------------------------------- */
 
 function ComparePanel({ overview }: { overview: GuildsOverview }) {
-  const { aId, bId, setA, setB, init } = useCompareStore();
+  const { aId, bId, setA, setB } = useCompareStore();
   const ranked = overview.subGuilds;
   const defaultA = ranked[0]?.id ?? "";
   const defaultB = ranked.find((s) => s.id !== defaultA)?.id ?? "";
-  if (!aId && !bId && defaultA && defaultB) init(defaultA, defaultB);
+  const validIds = new Set(ranked.map((s) => s.id));
+  const selA = aId && validIds.has(aId) ? aId : defaultA;
+  const selB = bId && validIds.has(bId) && bId !== selA ? bId : defaultB;
 
-  const selA = aId ?? defaultA;
-  const selB = bId ?? defaultB;
+  // Initialise global comparison state after render, not during render. The
+  // previous implementation could trigger a render loop in React strict mode.
+  useEffect(() => {
+    if (selA && aId !== selA) setA(selA);
+    if (selB && bId !== selB) setB(selB);
+  }, [aId, bId, selA, selB, setA, setB]);
 
-  const { data, isFetching } = useQuery<GuildCompareResult>({
+  const { data, isFetching, isError } = useQuery<GuildCompareResult>({
     queryKey: ["guild-compare", selA, selB],
     queryFn: async () => {
       const res = await fetch(`/api/guilds/compare?a=${selA}&b=${selB}`);
       if (!res.ok) throw new Error("compare failed");
       return res.json();
     },
-    enabled: Boolean(selA && selB),
+    enabled: Boolean(selA && selB && selA !== selB),
   });
 
   const options = overview.categories.map((c) => ({
@@ -247,7 +253,11 @@ function ComparePanel({ overview }: { overview: GuildsOverview }) {
                   {options.map((g) => (
                     <optgroup key={g.label} label={g.label}>
                       {g.items.map((s) => (
-                        <option key={s.id} value={s.id}>
+                        <option
+                          key={s.id}
+                          value={s.id}
+                          disabled={sel.label === "رسته نخست" ? s.id === selB : s.id === selA}
+                        >
                           {s.title}
                         </option>
                       ))}
@@ -261,7 +271,9 @@ function ComparePanel({ overview }: { overview: GuildsOverview }) {
             <GuildRadar compare={data} nameA={data.a.title} nameB={data.b.title} />
           ) : (
             <div className="flex h-[340px] items-center justify-center text-sm text-slate-500">
-              در حال آماده‌سازی رادار مقایسه…
+              {isError
+                ? "دریافت داده‌های مقایسه ناموفق بود؛ دوباره تلاش کنید."
+                : "در حال آماده‌سازی رادار مقایسه…"}
             </div>
           )}
         </CardContent>

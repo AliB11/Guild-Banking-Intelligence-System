@@ -71,6 +71,9 @@ export function GuildTreemap({ data }: { data: DashboardSummary["topSubGuilds"] 
     name: s.title,
     size: Math.max(s.volume, 1),
   }));
+  if (nodes.length === 0) {
+    return <div className="flex h-72 items-center justify-center text-sm text-slate-500">داده‌ای برای نقشه رسته‌ها وجود ندارد.</div>;
+  }
   return (
     <div className="h-72 w-full" dir="ltr">
       <ResponsiveContainer width="100%" height="100%">

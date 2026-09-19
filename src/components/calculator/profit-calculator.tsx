@@ -23,9 +23,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Slider } from "@/components/ui/slider";
 import { ScoreGauge } from "@/components/score-gauge";
 import { AnimatedNumber } from "@/components/animated-number";
-import { useCalculatorStore } from "@/lib/store";
+import { useCalculatorStore, type CalculatorInputs } from "@/lib/store";
 import { PRODUCT_LABELS, RISK_LABELS } from "@/lib/gbi/types";
-import type { CalculatorResult } from "@/lib/gbi/engine";
+import type { CalculatorInput, CalculatorResult } from "@/lib/gbi/engine";
 import type { RiskStatus } from "@/db/schema";
 
 export interface GuildPreset {
@@ -135,19 +135,20 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
   const inputs = useCalculatorStore();
   const [guildId, setGuildId] = useState<string>("");
   const [result, setResult] = useState<CalculatorResult | null>(null);
+  const [calculationError, setCalculationError] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requestSequence = useRef(0);
 
-  const mutation = useMutation({
-    mutationFn: async (payload: unknown) => {
+  const mutation = useMutation<CalculatorResult, Error, CalculatorInput>({
+    mutationFn: async (payload) => {
       const res = await fetch("/api/calculator", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("calc failed");
+      if (!res.ok) throw new Error("محاسبه سودآوری ناموفق بود");
       return (await res.json()) as CalculatorResult;
     },
-    onSuccess: setResult,
   });
 
   const payload = useMemo(
@@ -173,10 +174,28 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
 
   useEffect(() => {
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => mutation.mutate(payload), 240);
+    const requestId = ++requestSequence.current;
+    timer.current = setTimeout(() => {
+      mutation.mutate(payload, {
+        onSuccess: (nextResult) => {
+          // Slider changes can overlap on a slow network. Never let an older
+          // response overwrite the currently visible scenario.
+          if (requestId !== requestSequence.current) return;
+          setResult(nextResult);
+          setCalculationError(null);
+        },
+        onError: () => {
+          if (requestId === requestSequence.current) {
+            setCalculationError("ارتباط با موتور محاسبه برقرار نشد؛ دوباره تلاش کنید.");
+          }
+        },
+      });
+    }, 240);
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
+    // mutation is a stable React Query action; payload is the only input that
+    // should schedule a recalculation.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [payload]);
 
@@ -192,6 +211,10 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
     }
   };
 
+  const updateInputs = (patch: Partial<CalculatorInputs>) => {
+    setGuildId("");
+    inputs.set(patch);
+  };
   const selectedGuild = presets.find((p) => p.id === guildId);
   const feeTier = inputs.avgBasketRials < 6_000_000;
 
@@ -239,7 +262,7 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             min={5}
             max={1200}
             step={5}
-            onChange={(dailyTxCount) => inputs.set({ dailyTxCount })}
+            onChange={(dailyTxCount) => updateInputs({ dailyTxCount })}
           />
           <ControlSlider
             label="مبلغ میانگین خرید (سبد)"
@@ -249,7 +272,7 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             min={500_000}
             max={50_000_000}
             step={500_000}
-            onChange={(v) => inputs.set({ avgBasketRials: v * 10 })}
+            onChange={(v) => updateInputs({ avgBasketRials: v * 10 })}
           />
           <ControlSlider
             label="مدت رسوب وجوه"
@@ -259,7 +282,7 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             min={0}
             max={30}
             step={0.5}
-            onChange={(retentionDays) => inputs.set({ retentionDays })}
+            onChange={(retentionDays) => updateInputs({ retentionDays })}
           />
           <ControlSlider
             label="تعداد دستگاه کارتخوان"
@@ -269,7 +292,7 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             min={1}
             max={12}
             step={1}
-            onChange={(posUnits) => inputs.set({ posUnits })}
+            onChange={(posUnits) => updateInputs({ posUnits })}
           />
           <ControlSlider
             label="چرخه تبدیل نقد (CCC)"
@@ -279,13 +302,13 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             min={-15}
             max={120}
             step={1}
-            onChange={(cccDays) => inputs.set({ cccDays })}
+            onChange={(cccDays) => updateInputs({ cccDays })}
           />
 
           {/* Toggles */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <button
-              onClick={() => inputs.set({ isTaxCompliant: !inputs.isTaxCompliant })}
+              onClick={() => updateInputs({ isTaxCompliant: !inputs.isTaxCompliant })}
               className={cn(
                 "flex items-center justify-between rounded-xl border p-3.5 text-right transition-all",
                 inputs.isTaxCompliant
@@ -311,7 +334,7 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
                 {(["LOW", "MEDIUM", "HIGH"] as RiskStatus[]).map((r) => (
                   <button
                     key={r}
-                    onClick={() => inputs.set({ riskStatus: r })}
+                    onClick={() => updateInputs({ riskStatus: r })}
                     className={cn(
                       "flex-1 rounded-lg border px-1 py-1.5 text-[9.5px] font-bold transition-all",
                       inputs.riskStatus === r
@@ -334,6 +357,11 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
 
       {/* -------------------- Results -------------------- */}
       <div className="space-y-5 xl:col-span-3">
+        {calculationError && (
+          <div role="alert" className="rounded-xl border border-rose-500/25 bg-rose-500/[0.07] px-4 py-3 text-[11px] font-bold text-rose-300">
+            {calculationError}
+          </div>
+        )}
         {/* Hero margin */}
         <Card className="relative overflow-hidden animate-fade-up">
           <div className="pointer-events-none absolute -left-16 -top-16 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(245,200,96,0.14),transparent_65%)]" />
