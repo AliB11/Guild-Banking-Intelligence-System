@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   MonitorSmartphone,
@@ -16,6 +16,8 @@ import {
   Flame,
   ChevronLeft,
   GripVertical,
+  Sparkles,
+  Clock3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDecimal, formatJalaliDate } from "@/lib/gbi/format";
@@ -51,6 +53,13 @@ const STAGE_META: Record<PipelineStage, { dot: string; rail: string; text: strin
   CONVERTED: { dot: "bg-persian-400", rail: "border-persian-500/25", text: "text-persian-300" },
   LOST: { dot: "bg-rose-400", rail: "border-rose-500/20", text: "text-rose-300" },
 };
+
+const ACTION_TONE = {
+  critical: "border-rose-500/30 bg-rose-500/[0.08] text-rose-200",
+  high: "border-gold-500/30 bg-gold-500/[0.08] text-gold-200",
+  normal: "border-persian-500/20 bg-persian-500/[0.06] text-persian-200",
+  low: "border-white/[0.08] bg-white/[0.03] text-slate-300",
+} as const;
 
 function ScoreRing({ score }: { score: number }) {
   const tone = score >= 75 ? "#f5c860" : score >= 55 ? "#3bd6c8" : score >= 40 ? "#a78bfa" : "#64748b";
@@ -117,6 +126,18 @@ function LeadCard({
         {PRODUCT_LABELS[lead.recommendedProduct]}
       </div>
 
+      <div className={cn("mt-3 rounded-lg border px-2.5 py-2", ACTION_TONE[lead.nextAction.urgency])}>
+        <p className="flex items-center gap-1.5 text-[10px] font-extrabold">
+          <Sparkles className="h-3 w-3" />
+          اقدام بعدی: {lead.nextAction.label}
+          <span className="mr-auto inline-flex items-center gap-1 text-[9px] opacity-80">
+            <Clock3 className="h-3 w-3" />
+            {lead.nextAction.dueHours}ساعت
+          </span>
+        </p>
+        <p className="mt-1 text-[9px] leading-4 opacity-75">{lead.nextAction.reason}</p>
+      </div>
+
       <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[9.5px] text-slate-500">
         <span className="inline-flex items-center gap-1">
           <MapPin className="h-3 w-3" />
@@ -155,6 +176,23 @@ function LeadCard({
   );
 }
 
+function calculateLeadStats(leads: LeadDTO[]): LeadsResponse["stats"] {
+  const byStage = leads.reduce(
+    (accumulator, lead) => {
+      accumulator[lead.pipelineStage] = (accumulator[lead.pipelineStage] ?? 0) + 1;
+      return accumulator;
+    },
+    { NEW: 0, CONTACTED: 0, FINANCIAL_EVALUATION: 0, CONVERTED: 0, LOST: 0 } as LeadsResponse["stats"]["byStage"],
+  );
+  return {
+    total: leads.length,
+    byStage,
+    avgScore: leads.length ? leads.reduce((total, lead) => total + lead.leadScore, 0) / leads.length : 0,
+    hotCount: leads.filter((lead) => lead.leadScore >= 75).length,
+    actionRequiredCount: leads.filter((lead) => lead.nextAction.urgency === "critical" || lead.nextAction.urgency === "high").length,
+  };
+}
+
 export function LeadKanban({ initial }: { initial: LeadsResponse }) {
   const queryClient = useQueryClient();
   const { data } = useQuery<LeadsResponse>({
@@ -167,13 +205,16 @@ export function LeadKanban({ initial }: { initial: LeadsResponse }) {
     initialData: initial,
   });
 
-  const [leads, setLeads] = useState<LeadDTO[]>(initial.leads);
+  // Keep optimistic changes separate from the server snapshot. This avoids a
+  // setState-in-effect feedback loop and lets a failed PATCH roll back cleanly.
+  const [stageOverrides, setStageOverrides] = useState<Record<string, PipelineStage>>({});
   const [dragId, setDragId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<PipelineStage | null>(null);
 
-  useEffect(() => {
-    setLeads(data.leads);
-  }, [data.leads]);
+  const leads = data.leads.map((lead) => ({
+    ...lead,
+    pipelineStage: stageOverrides[lead.id] ?? lead.pipelineStage,
+  }));
 
   const mutation = useMutation({
     mutationFn: async ({ id, stage }: { id: string; stage: PipelineStage }) => {
@@ -185,24 +226,45 @@ export function LeadKanban({ initial }: { initial: LeadsResponse }) {
       if (!res.ok) throw new Error("patch failed");
       return res.json();
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["leads"] }),
+    onMutate: ({ id, stage }) => {
+      setStageOverrides((current) => ({ ...current, [id]: stage }));
+    },
+    onError: (_error, { id, stage }) => {
+      setStageOverrides((current) => {
+        if (current[id] !== stage) return current;
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+    },
+    onSettled: async (_result, _error, { id, stage }) => {
+      await queryClient.invalidateQueries({ queryKey: ["leads"] });
+      setStageOverrides((current) => {
+        if (current[id] !== stage) return current;
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+    },
   });
 
   const move = (id: string, stage: PipelineStage) => {
-    setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, pipelineStage: stage } : l)));
+    const current = leads.find((lead) => lead.id === id);
+    if (!current || current.pipelineStage === stage || mutation.isPending) return;
     mutation.mutate({ id, stage });
   };
 
-  const stats = data.stats;
+  const stats = calculateLeadStats(leads);
 
   return (
     <div className="space-y-5">
       {/* Stats strip */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 animate-fade-up">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 animate-fade-up">
         {[
           { label: "کل سرنخ‌ها در قیف", value: formatDecimal(stats.total, 0), tone: "text-slate-100" },
           { label: "میانگین امتیاز", value: formatDecimal(stats.avgScore, 1), tone: "text-gold-300" },
           { label: "سرنخ داغ (۷۵+)", value: formatDecimal(stats.hotCount, 0), tone: "text-rose-300" },
+          { label: "اقدام فوری", value: formatDecimal(stats.actionRequiredCount, 0), tone: "text-orange-300" },
           { label: "تبدیل‌شده", value: formatDecimal(stats.byStage.CONVERTED ?? 0, 0), tone: "text-persian-300" },
         ].map((s) => (
           <div key={s.label} className="glass px-4 py-3.5">
@@ -211,6 +273,12 @@ export function LeadKanban({ initial }: { initial: LeadsResponse }) {
           </div>
         ))}
       </div>
+
+      {mutation.isError && (
+        <div role="alert" className="rounded-xl border border-rose-500/25 bg-rose-500/[0.07] px-4 py-3 text-[11px] font-bold text-rose-300">
+          تغییر مرحله ذخیره نشد؛ وضعیت قبلی بازیابی شد.
+        </div>
+      )}
 
       {/* Kanban board */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">

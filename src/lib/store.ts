@@ -10,7 +10,6 @@ interface CompareState {
   bId: string | null;
   setA: (id: string) => void;
   setB: (id: string) => void;
-  init: (a: string, b: string) => void;
 }
 
 export const useCompareStore = create<CompareState>((set) => ({
@@ -18,11 +17,6 @@ export const useCompareStore = create<CompareState>((set) => ({
   bId: null,
   setA: (aId) => set({ aId }),
   setB: (bId) => set({ bId }),
-  init: (aId, bId) =>
-    set((s) => ({
-      aId: s.aId ?? aId,
-      bId: s.bId ?? bId,
-    })),
 }));
 
 /* ---------- Profitability calculator state (ماشین‌حساب) --------------- */
@@ -44,7 +38,9 @@ interface CalculatorState extends CalculatorInputs {
 
 export const useCalculatorStore = create<CalculatorState>((set) => ({
   dailyTxCount: 220,
-  avgBasketRials: 3_500_000,
+  // The UI slider is expressed in toman and converts to rials at the API boundary.
+  // ۳٫۵ میلیون تومان = ۳۵ میلیون ریال.
+  avgBasketRials: 35_000_000,
   retentionDays: 3,
   posUnits: 2,
   cccDays: 10,

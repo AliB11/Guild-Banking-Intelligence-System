@@ -15,6 +15,9 @@ import { ChartTooltip } from "./chart-tooltip";
 import type { DashboardSummary } from "@/lib/gbi/types";
 
 export function TrendChart({ data }: { data: DashboardSummary["trend"] }) {
+  if (data.length === 0) {
+    return <div className="flex h-72 items-center justify-center text-sm text-slate-500">داده‌ای برای روند وجود ندارد.</div>;
+  }
   return (
     <div className="h-72 w-full" dir="ltr">
       <ResponsiveContainer width="100%" height="100%">
@@ -38,8 +41,17 @@ export function TrendChart({ data }: { data: DashboardSummary["trend"] }) {
             axisLine={false}
             width={56}
             orientation="right"
+            tick={{ fill: "#d9b45a", fontSize: 10 }}
           />
-          <YAxis yAxisId="float" hide />
+          <YAxis
+            yAxisId="float"
+            tickFormatter={chartMoneyTick}
+            tickLine={false}
+            axisLine={false}
+            width={56}
+            orientation="left"
+            tick={{ fill: "#54cfc4", fontSize: 10 }}
+          />
           <Tooltip content={<ChartTooltip />} />
           <Legend
             formatter={(v: string) => (

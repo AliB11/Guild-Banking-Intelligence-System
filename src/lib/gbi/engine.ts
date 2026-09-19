@@ -4,6 +4,9 @@ import type { RecommendedProduct, RiskStatus } from "@/db/schema";
 /* Bank-wide financial constants (تنظیمات خزانه‌داری بانک)               */
 /* ------------------------------------------------------------------ */
 
+/** نسخه سیاست‌ها و فرمول‌های تصمیم‌یار؛ در audit trail ذخیره شود. */
+export const MODEL_VERSION = "GBI-ΠBank-1.5.0";
+
 /** نرخ تسهیلات سالانه (اعطای منابع) */
 export const LENDING_RATE = 0.23;
 /** نسبت سپرده قانونی نزد بانک مرکزی */
@@ -14,6 +17,11 @@ export const FLOAT_BENCHMARK_RIALS = 1_000_000_000;
 export const VOLUME_BENCHMARK_RIALS = 50_000_000_000;
 /** هزینه ماهانه نگهداری هر پایانه (رول، سوئیچ، پشتیبانی PSP) — ۱۵۰ هزار تومان */
 export const TERMINAL_MONTHLY_COST_RIALS = 1_500_000;
+/** پارامترهای کارمزد خرید کارتی؛ قابل جایگزینی با ابلاغیه/قرارداد فعال در production */
+export const CBI_POS_FEE_SMALL_TX_RIALS = 1_200;
+export const CBI_POS_FEE_SMALL_TX_THRESHOLD_RIALS = 6_000_000;
+export const CBI_POS_FEE_RATE = 0.0002;
+export const CBI_POS_FEE_CAP_RIALS = 40_000;
 /** حاشیه خالص تسهیلات (Spread) بین نرخ اعطا و نرخ تمام‌شده منابع */
 export const FACILITY_SPREAD = 0.04;
 /** روزهای مبنای محاسبه ماه */
@@ -30,8 +38,8 @@ export const DAYS_IN_MONTH = 30;
  */
 export function cbiPosFee(amountRials: number): number {
   if (amountRials <= 0) return 0;
-  if (amountRials < 6_000_000) return 1_200;
-  return Math.min(40_000, Math.round(amountRials * 0.0002));
+  if (amountRials < CBI_POS_FEE_SMALL_TX_THRESHOLD_RIALS) return CBI_POS_FEE_SMALL_TX_RIALS;
+  return Math.min(CBI_POS_FEE_CAP_RIALS, Math.round(amountRials * CBI_POS_FEE_RATE));
 }
 
 /* ------------------------------------------------------------------ */
@@ -294,6 +302,14 @@ export interface CalculatorResult {
   creditFacilityMargin: number;
   netBankMargin: number;
   roiPercent: number;
+  /** مدل و مفروضات برای explainability و audit trail */
+  modelVersion: string;
+  assumptions: {
+    lendingRate: number;
+    reserveRatio: number;
+    facilitySpread: number;
+    daysInMonth: number;
+  };
 }
 
 export function runCalculator(input: CalculatorInput): CalculatorResult {
@@ -340,9 +356,11 @@ export function runCalculator(input: CalculatorInput): CalculatorResult {
   const netBankMargin =
     floatMargin + monthlyAcquiringFees + creditFacilityMargin - operatingSupportCost;
 
+  // ROI is net return over the bank's support cost. Gross revenue is shown
+  // separately in the breakdown so the KPI is not overstated by the cost base.
   const roiPercent =
     operatingSupportCost > 0
-      ? ((netBankMargin + operatingSupportCost) / operatingSupportCost) * 100
+      ? (netBankMargin / operatingSupportCost) * 100
       : 0;
 
   return {
@@ -361,6 +379,95 @@ export function runCalculator(input: CalculatorInput): CalculatorResult {
     creditFacilityMargin,
     netBankMargin,
     roiPercent,
+    modelVersion: MODEL_VERSION,
+    assumptions: {
+      lendingRate: LENDING_RATE,
+      reserveRatio: RESERVE_RATIO,
+      facilitySpread: FACILITY_SPREAD,
+      daysInMonth: DAYS_IN_MONTH,
+    },
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Liquidity stress lab — آزمایشگاه شوک نقدینگی                         */
+/* ------------------------------------------------------------------ */
+
+export interface StressScenarioInput {
+  calculator: CalculatorInput;
+  volumeShockPct: number;
+  basketShockPct: number;
+  retentionDeltaDays: number;
+  cccDeltaDays: number;
+  supportCostShockPct: number;
+}
+
+export interface StressScenarioResult {
+  base: CalculatorResult;
+  stressed: CalculatorResult;
+  delta: {
+    marginRials: number;
+    marginPct: number;
+    creditLimitRials: number;
+    volumePct: number;
+  };
+  resilienceScore: number;
+  drivers: string[];
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+/**
+ * Applies bounded shocks to the same governed calculator. Support-cost shock
+ * is applied after the common engine so the scenario remains comparable with
+ * the operational support-cost assumption.
+ */
+export function runStressScenario(input: StressScenarioInput): StressScenarioResult {
+  const volumeShock = clampNumber(input.volumeShockPct, -80, 100);
+  const basketShock = clampNumber(input.basketShockPct, -80, 100);
+  const supportShock = clampNumber(input.supportCostShockPct, -100, 300);
+  const base = runCalculator(input.calculator);
+  const stressedInput: CalculatorInput = {
+    ...input.calculator,
+    dailyTxCount: Math.max(0, Math.round(input.calculator.dailyTxCount * (1 + volumeShock / 100))),
+    avgBasketRials: Math.max(0, Math.round(input.calculator.avgBasketRials * (1 + basketShock / 100))),
+    retentionDays: clampNumber(input.calculator.retentionDays + input.retentionDeltaDays, 0, 60),
+    cccDays: Math.round(clampNumber(input.calculator.cccDays + input.cccDeltaDays, -30, 180)),
+  };
+  const rawStressed = runCalculator(stressedInput);
+  const stressedSupportCost = rawStressed.operatingSupportCost * (1 + supportShock / 100);
+  const stressed: CalculatorResult = {
+    ...rawStressed,
+    operatingSupportCost: stressedSupportCost,
+    netBankMargin: rawStressed.netBankMargin - (stressedSupportCost - rawStressed.operatingSupportCost),
+    roiPercent: stressedSupportCost > 0
+      ? ((rawStressed.netBankMargin - (stressedSupportCost - rawStressed.operatingSupportCost)) / stressedSupportCost) * 100
+      : 0,
+  };
+  const marginDelta = stressed.netBankMargin - base.netBankMargin;
+  const marginPct = base.netBankMargin === 0 ? (marginDelta === 0 ? 0 : 100) : (marginDelta / Math.abs(base.netBankMargin)) * 100;
+  const volumePct = base.monthlyTxVolume === 0 ? 0 : ((stressed.monthlyTxVolume - base.monthlyTxVolume) / base.monthlyTxVolume) * 100;
+  const impact = clampNumber(Math.abs(marginPct), 0, 100);
+  const resilienceScore = round1(clampScore(100 - impact * 0.65 - Math.abs(input.cccDeltaDays) * 0.45 - Math.max(0, supportShock) * 0.25));
+  const drivers: string[] = [];
+  if (volumeShock !== 0) drivers.push(`شوک گردش ${volumeShock > 0 ? "+" : ""}${round1(volumeShock)}٪`);
+  if (basketShock !== 0) drivers.push(`شوک سبد ${basketShock > 0 ? "+" : ""}${round1(basketShock)}٪`);
+  if (input.retentionDeltaDays !== 0) drivers.push(`تغییر رسوب ${input.retentionDeltaDays > 0 ? "+" : ""}${round1(input.retentionDeltaDays)} روز`);
+  if (input.cccDeltaDays !== 0) drivers.push(`تغییر CCC ${input.cccDeltaDays > 0 ? "+" : ""}${Math.round(input.cccDeltaDays)} روز`);
+  if (supportShock !== 0) drivers.push(`شوک هزینه پشتیبانی ${supportShock > 0 ? "+" : ""}${round1(supportShock)}٪`);
+  return {
+    base,
+    stressed,
+    delta: {
+      marginRials: marginDelta,
+      marginPct: round1(marginPct),
+      creditLimitRials: stressed.bestCreditLimit - base.bestCreditLimit,
+      volumePct: round1(volumePct),
+    },
+    resilienceScore,
+    drivers: drivers.length ? drivers : ["بدون شوک؛ سناریوی پایه"],
   };
 }
 

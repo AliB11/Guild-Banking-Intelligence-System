@@ -6,8 +6,8 @@ import { riskStatusEnum } from "@/db/schema";
 export const dynamic = "force-dynamic";
 
 const inputSchema = z.object({
-  dailyTxCount: z.number().min(0).max(10_000),
-  avgBasketRials: z.number().min(0).max(2_000_000_000),
+  dailyTxCount: z.number().int().min(0).max(10_000),
+  avgBasketRials: z.number().int().min(0).max(2_000_000_000),
   retentionDays: z.number().min(0).max(60),
   posUnits: z.number().int().min(1).max(50),
   cccDays: z.number().int().min(-30).max(180),

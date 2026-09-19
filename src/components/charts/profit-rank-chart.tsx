@@ -21,6 +21,9 @@ export function ProfitRankChart({
   data: DashboardSummary["categoryProfit"];
 }) {
   const sorted = [...data].sort((a, b) => a.margin - b.margin);
+  if (sorted.length === 0) {
+    return <div className="flex h-72 items-center justify-center text-sm text-slate-500">داده‌ای برای رتبه‌بندی سودآوری وجود ندارد.</div>;
+  }
   return (
     <div className="h-72 w-full" dir="ltr">
       <ResponsiveContainer width="100%" height="100%">

@@ -155,20 +155,30 @@ const PERIODS = ["1403-06", "1403-07", "1403-08", "1403-09", "1403-10", "1403-11
 /* ------------------------------------------------------------------ */
 
 async function main() {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const databaseUrl = process.env.DATABASE_URL?.trim();
+  if (!databaseUrl) {
+    throw new Error("DATABASE_URL is required. Copy .env.example to .env first.");
+  }
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_DESTRUCTIVE_SEED !== "true") {
+    throw new Error("Refusing destructive seed in production. Set ALLOW_DESTRUCTIVE_SEED=true only for an explicit reset.");
+  }
+
+  const pool = new Pool({ connectionString: databaseUrl });
   const db = drizzle(pool);
 
-  console.log("→ پاکسازی داده‌های قبلی...");
-  await db.delete(marketingLeads);
-  await db.delete(terminalMetrics);
-  await db.delete(merchantBusinesses);
-  await db.delete(subGuilds);
-  await db.delete(guildCategories);
+  try {
+    await db.transaction(async (tx) => {
+      console.log("→ پاکسازی داده‌های قبلی...");
+  await tx.delete(marketingLeads);
+  await tx.delete(terminalMetrics);
+  await tx.delete(merchantBusinesses);
+  await tx.delete(subGuilds);
+  await tx.delete(guildCategories);
 
   console.log("→ درج گروه‌های اصلی و رسته‌های شغلی...");
   const subRows: Array<SubDef & { id: string }> = [];
   for (const cat of TAXONOMY) {
-    const [catRow] = await db
+    const [catRow] = await tx
       .insert(guildCategories)
       .values({
         name: cat.category,
@@ -177,7 +187,7 @@ async function main() {
       })
       .returning();
     for (const s of cat.subs) {
-      const [subRow] = await db
+      const [subRow] = await tx
         .insert(subGuilds)
         .values({
           categoryId: catRow.id,
@@ -225,7 +235,7 @@ async function main() {
       const nationalId = String(intBetween(10, 99)) + String(intBetween(10000000, 99999999)).padStart(8, "0");
       licenseSeq += intBetween(3, 17);
 
-      const [row] = await db
+      const [row] = await tx
         .insert(merchantBusinesses)
         .values({
           subGuildId: sub.id,
@@ -239,7 +249,11 @@ async function main() {
           assignedBranchCode: `${geo.branch}-${intBetween(1000, 9499)}`,
           isTaxCompliant: rand() < 0.66,
           riskStatus: rand() < 0.55 ? "LOW" : rand() < 0.72 ? "MEDIUM" : "HIGH",
-          createdAt: new Date(1403 - 621 + rand() * 2, intBetween(0, 11), intBetween(1, 28)),
+          // Jalali ۱۴۰۳–۱۴۰۴ maps to Gregorian ۲۰۲۴–۲۰۲۵; using UTC keeps
+          // the generated timestamps stable across developer machines.
+          createdAt: new Date(
+            Date.UTC(rand() < 0.5 ? 2024 : 2025, intBetween(0, 11), intBetween(1, 28)),
+          ),
         })
         .returning();
 
@@ -294,7 +308,7 @@ async function main() {
       latestByMerchant.set(m.id, { volume: monthlyTxVolume, float: avgDailyFloat, tx: monthlyTxCount });
     }
   }
-  await db.insert(terminalMetrics).values(metricValues);
+  await tx.insert(terminalMetrics).values(metricValues);
 
   console.log("→ تولید سرنخ‌های بازاریابی با موتور امتیازدهی...");
   const leadValues: Array<typeof marketingLeads.$inferInsert> = [];
@@ -330,7 +344,8 @@ async function main() {
       isTaxCompliant: m.isTaxCompliant,
     });
     const daysAgo = intBetween(0, 44);
-    const interaction = new Date(Date.now() - daysAgo * 86_400_000);
+    // Keep a seed run reproducible instead of anchoring it to wall-clock time.
+    const interaction = new Date(Date.UTC(2025, 1, 20) - daysAgo * 86_400_000);
     leadValues.push({
       merchantId: m.id,
       branchCode: m.assignedBranchCode,
@@ -340,13 +355,16 @@ async function main() {
       lastInteractionDate: interaction,
     });
   }
-  await db.insert(marketingLeads).values(leadValues);
+  await tx.insert(marketingLeads).values(leadValues);
 
   console.log("✓ Seed کامل شد:");
   console.log(`   گروه‌ها: ${TAXONOMY.length} | رسته‌ها: ${subRows.length} | پذیرندگان: ${merchantSeeds.length}`);
   console.log(`   شاخص‌ها: ${metricValues.length} | سرنخ‌ها: ${leadValues.length}`);
 
-  await pool.end();
+    });
+  } finally {
+    await pool.end();
+  }
 }
 
 main().catch((err) => {

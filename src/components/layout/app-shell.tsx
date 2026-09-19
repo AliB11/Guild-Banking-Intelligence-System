@@ -25,15 +25,16 @@ const NAV = [
 ];
 
 function LiveClock() {
-  const [now, setNow] = useState<Date | null>(null);
+  // Lazy initialisation avoids the setState-in-effect lint violation. The
+  // hydration warning is intentional: a live clock cannot have one fixed SSR
+  // value and still be accurate on the client.
+  const [now, setNow] = useState(() => new Date());
   useEffect(() => {
-    setNow(new Date());
     const t = setInterval(() => setNow(new Date()), 30_000);
     return () => clearInterval(t);
   }, []);
-  if (!now) return <span className="text-slate-500">…</span>;
   return (
-    <span className="num text-slate-300">
+    <span suppressHydrationWarning className="num text-slate-300">
       {formatJalaliDate(now)}
       <span className="mx-2 text-slate-600">|</span>
       {faDigits(
@@ -43,7 +44,15 @@ function LiveClock() {
   );
 }
 
-function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
+function Sidebar({
+  open,
+  onClose,
+  demoMode,
+}: {
+  open: boolean;
+  onClose: () => void;
+  demoMode: boolean;
+}) {
   const pathname = usePathname();
   return (
     <>
@@ -129,13 +138,20 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         </nav>
 
         {/* Compliance footer */}
-        <div className="m-4 rounded-xl border border-persian-500/20 bg-persian-500/[0.06] p-4">
+        <div className={cn(
+          "m-4 rounded-xl border p-4",
+          demoMode ? "border-gold-500/20 bg-gold-500/[0.06]" : "border-persian-500/20 bg-persian-500/[0.06]",
+        )}>
           <div className="flex items-center gap-2.5">
-            <ShieldCheck className="h-4.5 w-4.5 h-5 w-5 text-persian-400" />
-            <p className="text-xs font-bold text-persian-300">اتصال به سامانه مؤدیان</p>
+            <ShieldCheck className={cn("h-5 w-5", demoMode ? "text-gold-400" : "text-persian-400")} />
+            <p className={cn("text-xs font-bold", demoMode ? "text-gold-300" : "text-persian-300")}>
+              {demoMode ? "حالت نمایشی فعال" : "اتصال به سامانه مؤدیان"}
+            </p>
           </div>
           <p className="mt-1.5 text-[11px] leading-5 text-slate-400">
-            پایش لحظه‌ای انطباق مالیاتی پایانه‌ها و ضرایب اینتاکد فعال است.
+            {demoMode
+              ? "DATABASE_URL تنظیم نشده است؛ داده‌های نمونه برای بررسی رابط کاربری نمایش داده می‌شود."
+              : "پایش لحظه‌ای انطباق مالیاتی پایانه‌ها و ضرایب اینتاکد فعال است."}
           </p>
         </div>
       </aside>
@@ -143,11 +159,11 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, demoMode }: { children: ReactNode; demoMode: boolean }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative z-10 min-h-screen">
-      <Sidebar open={open} onClose={() => setOpen(false)} />
+      <Sidebar open={open} onClose={() => setOpen(false)} demoMode={demoMode} />
 
       <div className="lg:mr-72">
         {/* Top header */}
@@ -161,8 +177,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Menu className="h-5 w-5" />
             </button>
             <div className="hidden items-center gap-2 text-xs text-slate-500 sm:flex">
-              <span className="flex h-2 w-2 rounded-full bg-persian-400 animate-pulse-soft" />
-              شبکه شاپرک متصل — داده‌های پذیرندگان به‌روز
+              <span className={cn("flex h-2 w-2 animate-pulse-soft rounded-full", demoMode ? "bg-gold-400" : "bg-persian-400")} />
+              {demoMode ? "حالت نمایشی — اتصال پایگاه‌داده برقرار نیست" : "شبکه شاپرک متصل — داده‌های پذیرندگان به‌روز"}
             </div>
             <div className="flex-1" />
             <div className="text-xs">
