@@ -1,7 +1,7 @@
 /**
  * Client-side data layer — the heart of the database-less (static) profile.
  *
- * The app ships a deterministic in-memory corpus (see `demo-data.ts`) and runs
+ * The app ships a published-market corpus (see `demo-data.ts` / `published-market.ts`) and runs
  * the exact same pure computation functions as the server (`compute.ts`,
  * `engine.ts`). Lead pipeline moves are persisted in localStorage so the
  * kanban survives reloads in the browser; nothing leaves the device.
@@ -78,7 +78,7 @@ function writeOverrides(overrides: LeadOverrides): void {
 }
 
 /**
- * Demo corpus with the user's local pipeline moves applied. Reading through
+ * Published corpus with the user's local pipeline moves applied. Reading through
  * this helper guarantees dashboard warnings/SLA and the kanban always agree.
  */
 function activeCorpus(): Corpus {

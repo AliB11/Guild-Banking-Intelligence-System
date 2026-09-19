@@ -13,7 +13,9 @@
     "db:migrate": "node scripts/migrate.mjs",
     "db:seed": "tsx src/db/seed.ts",
     "db:studio": "drizzle-kit studio",
-    "start:container": "node scripts/start-container.mjs"
+    "start:container": "node scripts/start-container.mjs",
+    "catalog:refresh": "tsx scripts/monthly-refresh.ts",
+    "catalog:check": "tsx scripts/monthly-refresh.ts --check --offline"
   },
   "dependencies": {
     "@fontsource-variable/vazirmatn": "^5.3.0",

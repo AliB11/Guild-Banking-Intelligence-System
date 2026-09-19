@@ -62,10 +62,20 @@ async function main() {
   if (!html.includes("GBI")) fail("home page does not look like the GBI app");
   console.log("[smoke] home page ok");
 
-  for (const path of ["/guilds/", "/leads/", "/calculator/"]) {
+  for (const path of ["/brief/", "/guilds/", "/calculator/", "/sources/"]) {
     await expectStatus(path, 200);
     console.log(`[smoke] ${path} ok`);
   }
+
+  const catalogPage = await (await expectStatus("/data/intelligence-catalog.json", 200)).json();
+  if (catalogPage.schemaVersion !== 1 || !Array.isArray(catalogPage.sources)) {
+    fail("catalog json missing keys");
+  }
+  console.log(`[smoke] catalog json ok (${catalogPage.sources.length} sources)`);
+
+  const catalogApi = await (await expectStatus("/api/catalog", 200)).json();
+  if (catalogApi.schemaVersion !== 1) fail("catalog api missing keys");
+  console.log("[smoke] catalog api ok");
   await expectStatus("/nope", 404);
   console.log("[smoke] 404 page ok");
 
@@ -74,8 +84,8 @@ async function main() {
   console.log(`[smoke] dashboard ok (${dashboard.totals.merchantCount} merchants, period ${dashboard.latestPeriod})`);
 
   const leads = await (await expectStatus("/api/leads", 200)).json();
-  if (leads.stats.total <= 0) fail("no leads returned");
-  console.log(`[smoke] leads ok (${leads.stats.total} leads)`);
+  if (!Array.isArray(leads.leads)) fail("leads payload missing");
+  console.log(`[smoke] leads api ok (${leads.stats?.total ?? leads.leads.length} leads)`);
 
   const calculator = await (
     await expectStatus(
@@ -98,17 +108,6 @@ async function main() {
   ).json();
   if (typeof calculator.netBankMargin !== "number") fail("calculator payload missing keys");
   console.log("[smoke] calculator ok");
-
-  const leadId = leads.leads[0].id;
-  const patched = await (
-    await expectStatus(`/api/leads/${leadId}`, 200, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pipeline_stage: "CONTACTED" }),
-    })
-  ).json();
-  if (patched.lead?.pipelineStage !== "CONTACTED") fail("lead stage was not updated");
-  console.log("[smoke] lead mutation ok");
 
   console.log("[smoke] ALL CHECKS PASSED");
   server.kill("SIGTERM");

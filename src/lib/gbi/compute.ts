@@ -445,8 +445,11 @@ export function getGuildsOverviewFromCorpus(corpus: Corpus): GuildsOverview {
 
   return {
     categories,
-    subGuilds: subSummaries.sort((a, b) => b.avgScore - a.avgScore),
-    bcgMatrix: buildBcgMatrix(corpus, subSummaries),
+    subGuilds: subSummaries.sort((a, b) => b.volume - a.volume || b.avgScore - a.avgScore),
+    bcgMatrix: buildBcgMatrix(
+      corpus,
+      subSummaries.filter((summary) => summary.volume > 0),
+    ),
     latestPeriod: corpus.latestPeriod,
   };
 }

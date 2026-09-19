@@ -40,6 +40,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Catalog self-check
+        run: npm run catalog:check
+
       - name: Production build
         run: npm run build
 

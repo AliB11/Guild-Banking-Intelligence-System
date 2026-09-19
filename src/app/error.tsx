@@ -9,7 +9,7 @@ export default function AppError({ reset }: { error: Error & { digest?: string }
         <AlertTriangle className="mx-auto h-10 w-10 text-rose-300" />
         <h1 className="mt-4 text-xl font-black text-white">بارگذاری داده‌ها ناموفق بود</h1>
         <p className="mt-3 text-sm leading-7 text-slate-400">
-          اتصال سامانه یا داده‌های این بخش در دسترس نیست. تنظیم DATABASE_URL و وضعیت PostgreSQL را بررسی کنید و دوباره تلاش کنید.
+          بارگذاری این بخش ناموفق بود. صفحه را یک‌بار دیگر امتحان کنید. در حالت نمایشی نیازی به دیتابیس نیست.
         </p>
         <button
           type="button"

@@ -12,7 +12,7 @@
  * Run: npm start   (or: node --import tsx src/server/server.ts)
  */
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { extname, join, normalize, resolve } from "node:path";
 import { z } from "zod";
 import { sql } from "drizzle-orm";
@@ -25,6 +25,8 @@ import {
   updateLeadStage,
 } from "../lib/gbi/service";
 import { calculatorInputSchema, runCalculator } from "../lib/gbi/engine";
+import { assembleCatalog } from "../lib/gbi/sources/catalog";
+import { getDemoCorpus } from "../lib/gbi/demo-data";
 import { pipelineStageEnum } from "../db/schema";
 
 /* ------------------------------------------------------------------ */
@@ -183,6 +185,22 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL): P
   try {
     if (method === "GET" && pathname === "/api/health") {
       await handleHealth(res);
+      return;
+    }
+
+    if (method === "GET" && pathname === "/api/catalog") {
+      const fromExport = join(outDir, "data/intelligence-catalog.json");
+      const fromPublic = resolve(process.cwd(), "public/data/intelligence-catalog.json");
+      const file = existsSync(fromExport) ? fromExport : existsSync(fromPublic) ? fromPublic : null;
+      if (file) {
+        try {
+          sendJson(res, 200, JSON.parse(readFileSync(file, "utf8")));
+          return;
+        } catch {
+          // Fall through to a live assembly so a corrupt file does not 500.
+        }
+      }
+      sendJson(res, 200, assembleCatalog({ corpus: getDemoCorpus(), probes: new Map() }));
       return;
     }
 

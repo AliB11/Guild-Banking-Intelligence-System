@@ -122,8 +122,8 @@ export const terminalMetrics = pgTable(
     /** دوره گزارش جلالی YYYY-MM — مثل "1403-08" */
     reportingPeriod: varchar("reporting_period", { length: 7 }).notNull(),
     posTerminalCount: integer("pos_terminal_count").notNull(),
-    /** تعداد کل تراکنش‌های کارتخوان در ماه */
-    monthlyTxCount: integer("monthly_tx_count").notNull(),
+    /** تعداد کل تراکنش‌های کارتخوان در ماه — bigint چون جمع شبکه شاپرک از سقف integer می‌گذرد */
+    monthlyTxCount: bigint("monthly_tx_count", { mode: "number" }).notNull(),
     /** مبلغ کل تراکنش‌ها (ریال) */
     monthlyTxVolume: bigint("monthly_tx_volume", { mode: "number" }).notNull(),
     /** میانگین رسوب روزانه مانده حساب جاری — CASA (ریال) */

@@ -63,7 +63,10 @@ export function formatToman(
 
   let value: string;
   let unit: string;
-  if (toman >= 1_000_000_000) {
+  if (toman >= 1_000_000_000_000) {
+    value = formatDecimal(toman / 1_000_000_000_000, decimals);
+    unit = "همت";
+  } else if (toman >= 1_000_000_000) {
     value = formatDecimal(toman / 1_000_000_000, decimals);
     unit = "میلیارد تومان";
   } else if (toman >= 1_000_000) {
@@ -79,6 +82,19 @@ export function formatToman(
   return `${sign}${value}${withUnit ? ` ${unit}` : ""}`;
 }
 
+/** Compact count for billion-scale Shaparak totals. */
+export function formatCount(n: number, decimals = 2): string {
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "−" : "";
+  if (abs >= 1_000_000_000) {
+    return `${sign}${formatDecimal(abs / 1_000_000_000, decimals)} میلیارد`;
+  }
+  if (abs >= 1_000_000) {
+    return `${sign}${formatDecimal(abs / 1_000_000, decimals)} میلیون`;
+  }
+  return `${sign}${formatNum(abs)}`;
+}
+
 /** نمایش فشرده عدد ریال خام (برای تولتیپ‌ها) */
 export function formatRial(rials: number): string {
   return `${formatNum(rials)} ریال`;
@@ -87,6 +103,7 @@ export function formatRial(rials: number): string {
 /** برچسب کوتاه برای محور نمودارها (تومان فشرده) */
 export function chartMoneyTick(rials: number): string {
   const toman = rialToToman(Math.abs(rials));
+  if (toman >= 1_000_000_000_000) return `${formatDecimal(toman / 1_000_000_000_000, 0)} همت`;
   if (toman >= 1_000_000_000) return `${formatDecimal(toman / 1_000_000_000, 0)} م.ت`;
   if (toman >= 1_000_000) return `${formatDecimal(toman / 1_000_000, 0)} م.م`;
   return faDigits(Math.round(toman));
@@ -150,24 +167,57 @@ export function jalaliPeriodShort(period: string): string {
   return JALALI_MONTHS[m - 1];
 }
 
+export interface JalaliYmd {
+  year: number;
+  month: number;
+  day: number;
+}
+
+export function jalaliYmd(date: Date = new Date()): JalaliYmd {
+  const [year, month, day] = gregorianToJalali(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+  );
+  return { year, month, day };
+}
+
+export function formatJalaliPeriod(year: number, month: number): string {
+  return `${year}-${String(month).padStart(2, "0")}`;
+}
+
+export function currentJalaliPeriod(date: Date = new Date()): string {
+  const { year, month } = jalaliYmd(date);
+  return formatJalaliPeriod(year, month);
+}
+
+export function parseJalaliPeriod(period: string): { year: number; month: number } | null {
+  const [year, month] = period.split("-").map(Number);
+  if (!year || !month || month < 1 || month > 12) return null;
+  return { year, month };
+}
+
+/** Shift a `YYYY-MM` Jalali period by a (possibly negative) number of months. */
+export function shiftJalaliPeriod(period: string, deltaMonths: number): string {
+  const parsed = parseJalaliPeriod(period);
+  if (!parsed) return period;
+  const absolute = parsed.year * 12 + (parsed.month - 1) + deltaMonths;
+  const year = Math.floor(absolute / 12);
+  const month = (absolute % 12) + 1;
+  return formatJalaliPeriod(year, month);
+}
+
 /**
  * Rolling reporting window — the `count` most recent Jalali months, ending
  * with the month the given date falls in. Keeps "دوره جاری" aligned with the
- * real calendar instead of a hard-coded snapshot, e.g. on ۲۹ شهریور ۱۴۰۵ with
- * count 6 → ["1405-02", "1405-03", "1405-04", "1405-05", "1405-06", "1405-07"].
+ * real calendar instead of a hard-coded snapshot, e.g. on ۲۸ شهریور ۱۴۰۵ with
+ * count 6 → ["1405-01", "1405-02", "1405-03", "1405-04", "1405-05", "1405-06"].
  */
 export function recentJalaliPeriods(count: number, date: Date = new Date()): string[] {
-  const [jy, jm] = gregorianToJalali(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const latest = currentJalaliPeriod(date);
   const periods: string[] = [];
-  let year = jy;
-  let month = jm;
-  for (let i = 0; i < count; i++) {
-    periods.unshift(`${year}-${String(month).padStart(2, "0")}`);
-    month -= 1;
-    if (month === 0) {
-      month = 12;
-      year -= 1;
-    }
+  for (let i = count - 1; i >= 0; i--) {
+    periods.push(shiftJalaliPeriod(latest, -i));
   }
   return periods;
 }

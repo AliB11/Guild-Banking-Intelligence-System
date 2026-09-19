@@ -19,7 +19,7 @@ export function PageHeader({
           {kicker}
         </p>
         <h1 className="text-2xl font-black tracking-tight text-white sm:text-[28px]">{title}</h1>
-        <p className="mt-2 max-w-2xl text-[13px] leading-6 text-slate-400">{description}</p>
+        <p className="mt-2 max-w-3xl text-[13.5px] leading-7 text-slate-400">{description}</p>
       </div>
       {actions && <div className="flex items-center gap-3">{actions}</div>}
     </div>

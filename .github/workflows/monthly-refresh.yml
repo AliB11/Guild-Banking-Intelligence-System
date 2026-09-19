@@ -1,0 +1,60 @@
+name: Monthly guild catalog refresh
+
+on:
+  schedule:
+    # After typical Shaparak / guild publication lag (days 3, 8, 12, 18, 25).
+    - cron: "30 5 3,8,12,18,25 * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Rewrite the catalog even if fingerprints did not change"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: monthly-catalog-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Probe sources and update catalog
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Refresh intelligence catalog
+        id: refresh
+        run: |
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            npx tsx scripts/monthly-refresh.ts --force
+          else
+            npx tsx scripts/monthly-refresh.ts
+          fi
+
+      - name: Commit catalog if it changed
+        run: |
+          git config user.name "gbi-catalog-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/intelligence-catalog.json
+          if git diff --cached --quiet; then
+            echo "No catalog changes to commit"
+            exit 0
+          fi
+          git commit -m "chore(catalog): monthly guild intelligence refresh"
+          git push

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedNumber } from "./animated-number";
-import { formatDecimal, formatNum, formatToman } from "@/lib/gbi/format";
+import { formatCount, formatDecimal, formatNum, formatToman } from "@/lib/gbi/format";
 
 export interface SparkPoint {
   label: string;
@@ -35,6 +35,7 @@ const FORMATTERS: Record<string, (n: number) => string> = {
   toman: (n) => formatToman(n, { decimals: 1 }),
   toman0: (n) => formatToman(n, { decimals: 0 }),
   num: (n) => formatNum(n),
+  count: (n) => formatCount(n),
   decimal: (n) => formatDecimal(n, 1),
 };
 export type MetricFormat = keyof typeof FORMATTERS;

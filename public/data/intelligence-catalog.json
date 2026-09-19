@@ -1,0 +1,1227 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "GBI-ΠBank-1.8.0",
+  "reporting": {
+    "latestPeriod": "1405-05",
+    "latestPeriodLabel": "مرداد ۱۴۰۵",
+    "prevPeriod": "1405-04",
+    "window": [
+      "1405-03",
+      "1405-04",
+      "1405-05"
+    ]
+  },
+  "policy": {
+    "modelVersion": "GBI-ΠBank-1.8.0",
+    "lendingRate": 0.23,
+    "reserveRatio": 0.13,
+    "facilitySpread": 0.04,
+    "smallTransactionFeeRials": 1200,
+    "smallTransactionThresholdRials": 6000000,
+    "transactionFeeRate": 0.0002,
+    "transactionFeeCapRials": 40000,
+    "terminalMonthlyCostRials": 1500000
+  },
+  "publication": {
+    "asOfPeriod": "1405-05",
+    "nextWatchIso": "2026-09-23T05:30:00.000Z",
+    "windows": [
+      {
+        "sourceId": "shaparak-monthly",
+        "name": "گزارش اقتصادی ماهانه شاپرک",
+        "cadence": "monthly",
+        "expectedPeriod": "1405-05",
+        "expectedPeriodLabel": "مرداد ۱۴۰۵",
+        "state": "due",
+        "lagDays": 12,
+        "note": "موعد گزارش مرداد ۱۴۰۵ گذشته است؛ اگر اثرانگشت صفحه عوض نشده باشد منبع را دستی بررسی کنید."
+      },
+      {
+        "sourceId": "shaparak-terms",
+        "name": "اصطلاحات و تعریف پذیرنده شاپرک",
+        "cadence": "on-change",
+        "expectedPeriod": "1405-06",
+        "expectedPeriodLabel": "شهریور ۱۴۰۵",
+        "state": "current",
+        "lagDays": 0,
+        "note": "منبع رویدادی است؛ فقط وقتی صفحه عوض شود هشدار بازبینی می‌آید."
+      },
+      {
+        "sourceId": "shaparak-mcc",
+        "name": "کد MCC رسته پذیرنده",
+        "cadence": "on-change",
+        "expectedPeriod": "1405-06",
+        "expectedPeriodLabel": "شهریور ۱۴۰۵",
+        "state": "current",
+        "lagDays": 0,
+        "note": "منبع رویدادی است؛ فقط وقتی صفحه عوض شود هشدار بازبینی می‌آید."
+      },
+      {
+        "sourceId": "cbi-pos-fee",
+        "name": "پلکان کارمزد خرید کارتی بانک مرکزی",
+        "cadence": "on-change",
+        "expectedPeriod": "1405-06",
+        "expectedPeriodLabel": "شهریور ۱۴۰۵",
+        "state": "current",
+        "lagDays": 0,
+        "note": "منبع رویدادی است؛ فقط وقتی صفحه عوض شود هشدار بازبینی می‌آید."
+      },
+      {
+        "sourceId": "cbi-reserve-lending",
+        "name": "نرخ تسهیلات و نسبت سپرده قانونی",
+        "cadence": "on-change",
+        "expectedPeriod": "1405-06",
+        "expectedPeriodLabel": "شهریور ۱۴۰۵",
+        "state": "current",
+        "lagDays": 0,
+        "note": "منبع رویدادی است؛ فقط وقتی صفحه عوض شود هشدار بازبینی می‌آید."
+      },
+      {
+        "sourceId": "inta-coefficients",
+        "name": "ضرایب اینتاکد و تبصره ماده ۱۰۰",
+        "cadence": "annual",
+        "expectedPeriod": "1405",
+        "expectedPeriodLabel": "سال 1405",
+        "state": "current",
+        "lagDays": 20,
+        "note": "جدول سالانه معمولاً از ماه 2 سال بعد قابل مشاهده است."
+      },
+      {
+        "sourceId": "isic-amar",
+        "name": "طبقه‌بندی استاندارد فعالیت‌های اقتصادی (ISIC)",
+        "cadence": "on-change",
+        "expectedPeriod": "1405-06",
+        "expectedPeriodLabel": "شهریور ۱۴۰۵",
+        "state": "current",
+        "lagDays": 0,
+        "note": "منبع رویدادی است؛ فقط وقتی صفحه عوض شود هشدار بازبینی می‌آید."
+      },
+      {
+        "sourceId": "chamber-guilds",
+        "name": "رسته‌بندی اتاق اصناف ایران",
+        "cadence": "on-change",
+        "expectedPeriod": "1405-06",
+        "expectedPeriodLabel": "شهریور ۱۴۰۵",
+        "state": "current",
+        "lagDays": 0,
+        "note": "منبع رویدادی است؛ فقط وقتی صفحه عوض شود هشدار بازبینی می‌آید."
+      },
+      {
+        "sourceId": "tax-moodian",
+        "name": "سامانه مؤدیان (اتصال پایانه)",
+        "cadence": "continuous",
+        "expectedPeriod": "1405-06",
+        "expectedPeriodLabel": "شهریور ۱۴۰۵",
+        "state": "current",
+        "lagDays": 0,
+        "note": "منبع پیوسته است؛ جاب فقط در دسترس‌بودن را ثبت می‌کند."
+      },
+      {
+        "sourceId": "bank-internal-pos",
+        "name": "پایش ماهانه پایانه و تراکنش شعبه",
+        "cadence": "monthly",
+        "expectedPeriod": "1405-05",
+        "expectedPeriodLabel": "مرداد ۱۴۰۵",
+        "state": "current",
+        "lagDays": 3,
+        "note": "موعد گزارش مرداد ۱۴۰۵ گذشته است؛ اگر اثرانگشت صفحه عوض نشده باشد منبع را دستی بررسی کنید."
+      },
+      {
+        "sourceId": "bank-casa-float",
+        "name": "مانده روزانه حساب جاری پذیرنده (CASA)",
+        "cadence": "monthly",
+        "expectedPeriod": "1405-05",
+        "expectedPeriodLabel": "مرداد ۱۴۰۵",
+        "state": "current",
+        "lagDays": 2,
+        "note": "موعد گزارش مرداد ۱۴۰۵ گذشته است؛ اگر اثرانگشت صفحه عوض نشده باشد منبع را دستی بررسی کنید."
+      },
+      {
+        "sourceId": "shaparak-news-mirror",
+        "name": "آینه خبری کشف انتشار گزارش شاپرک",
+        "cadence": "monthly",
+        "expectedPeriod": "1405-05",
+        "expectedPeriodLabel": "مرداد ۱۴۰۵",
+        "state": "due",
+        "lagDays": 10,
+        "note": "موعد گزارش مرداد ۱۴۰۵ گذشته است؛ اگر اثرانگشت صفحه عوض نشده باشد منبع را دستی بررسی کنید."
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "shaparak-monthly",
+      "name": "گزارش اقتصادی ماهانه شاپرک",
+      "owner": "شرکت شبکه الکترونیکی پرداخت کارت (شاپرک)",
+      "kind": "official",
+      "cadence": "monthly",
+      "lagDaysAfterMonthEnd": 12,
+      "urls": {
+        "primary": "https://www.shaparak.ir",
+        "mirrors": [
+          "https://shaparak.ir"
+        ]
+      },
+      "fields": [
+        "گردش شبکه پرداخت",
+        "تعداد تراکنش",
+        "تعداد ابزار پذیرش",
+        "سهم کارتخوان"
+      ],
+      "usedFor": [
+        "زمینه کلان گردش پرداخت",
+        "تقویم انتشار ماهانه اصناف"
+      ],
+      "screens": [
+        "میز کار",
+        "نامه ستاد",
+        "منابع اطلاعاتی"
+      ],
+      "licenseNote": "گزارش عمومی شاپرک؛ نقل با ذکر منبع.",
+      "howWeUse": "KPI میز کار (گردش، تعداد، ترکیب ابزار مرداد ۱۴۰۵) از بازتاب گزارش اقتصادی شاپرک با ذکر منبع پر می‌شود. جاب GitHub صفحه رسمی را واکشی می‌کند؛ اگر PDF از رانر نرسد، ارقام نقل‌شدهٔ همین corpus باقی می‌ماند و اثرانگشت unreachable ثبت می‌شود.",
+      "limitation": "سایت شاپرک API عمومی پایدار ندارد و اغلب به‌صورت PDF منتشر می‌شود؛ از رانرهای خارج از ایران ممکن است در دسترس نباشد. تفکیک رسته/MCC و فهرست پذیرنده در گزارش عمومی نیست.",
+      "expectedPeriod": "1405-05",
+      "expectedPeriodLabel": "مرداد ۱۴۰۵",
+      "publicationState": "due",
+      "lastProbe": {
+        "url": "https://shaparak.ir",
+        "at": "2026-09-19T19:06:17.877Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "shaparak-terms",
+      "name": "اصطلاحات و تعریف پذیرنده شاپرک",
+      "owner": "شرکت شاپرک",
+      "kind": "official",
+      "cadence": "on-change",
+      "lagDaysAfterMonthEnd": 0,
+      "urls": {
+        "primary": "https://www.shaparak.ir/docs/terms"
+      },
+      "fields": [
+        "تعریف پذیرنده",
+        "ابزار پذیرش",
+        "طبقه‌بندی شبکه"
+      ],
+      "usedFor": [
+        "واژه‌نامه",
+        "تعریف پذیرنده و ابزار پذیرش"
+      ],
+      "screens": [
+        "اطلس رسته‌ها",
+        "منابع اطلاعاتی"
+      ],
+      "licenseNote": "مستند عمومی اصطلاحات شاپرک.",
+      "howWeUse": "مرجع معنایی واژه‌های پذیرنده و پایانه؛ هیچ رقم KPI از این صفحه خوانده نمی‌شود.",
+      "limitation": "استاندارد رسمی «ماتریس BCG اصناف» در این سند وجود ندارد.",
+      "expectedPeriod": "1405-06",
+      "expectedPeriodLabel": "شهریور ۱۴۰۵",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "https://www.shaparak.ir/docs/terms",
+        "at": "2026-09-19T19:06:18.137Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "shaparak-mcc",
+      "name": "کد MCC رسته پذیرنده",
+      "owner": "شاپرک / استاندارد کارت‌پرداخت",
+      "kind": "official",
+      "cadence": "on-change",
+      "lagDaysAfterMonthEnd": 0,
+      "urls": {
+        "primary": "https://www.shaparak.ir"
+      },
+      "fields": [
+        "defaultMcc"
+      ],
+      "usedFor": [
+        "اتصال رسته شغلی به شبکه پذیرندگی"
+      ],
+      "screens": [
+        "اطلس رسته‌ها"
+      ],
+      "licenseNote": "کد چهاررقمی متعارف پذیرندگی.",
+      "howWeUse": "هر رسته در طبقه‌بندی داخلی یک MCC پیش‌فرض دارد تا به سوییچ پذیرندگی نگاشت شود.",
+      "limitation": "MCC رسته‌ها از استاندارد پذیرندگی است نه از فایل ماهانه شاپرک؛ جدول عملیاتی PSP بانک باید جایگزین شود.",
+      "expectedPeriod": "1405-06",
+      "expectedPeriodLabel": "شهریور ۱۴۰۵",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "https://www.shaparak.ir",
+        "at": "2026-09-19T19:06:18.592Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "cbi-pos-fee",
+      "name": "پلکان کارمزد خرید کارتی بانک مرکزی",
+      "owner": "بانک مرکزی جمهوری اسلامی ایران",
+      "kind": "official",
+      "cadence": "on-change",
+      "lagDaysAfterMonthEnd": 0,
+      "urls": {
+        "primary": "https://www.cbi.ir",
+        "mirrors": [
+          "https://cbi.ir"
+        ]
+      },
+      "fields": [
+        "کارمزد ثابت تراکنش خرد",
+        "آستانه ۶ میلیون ریال",
+        "نرخ ۰٫۰۲٪",
+        "سقف ۴۰ هزار ریال"
+      ],
+      "usedFor": [
+        "موتور Π-Bank",
+        "ماشین‌حساب کارمزد"
+      ],
+      "screens": [
+        "ماشین‌حساب",
+        "اطلس رسته‌ها",
+        "نامه ستاد"
+      ],
+      "licenseNote": "بخشنامه عمومی کارمزد؛ باید با ابلاغیه جاری تطبیق شود.",
+      "howWeUse": "فرمول کارمزد مدل دقیقاً همان پلکان اعلام‌شده است و در کاتالوگ به‌صورت فرض نسخه‌بندی‌شده ذخیره می‌شود. تغییر بخشنامه → هشدار بازبینی انسانی.",
+      "limitation": "نانوایی و سوپرمارکت معاف‌اند و بانک پذیرنده می‌پردازد. سهم بانک/PSP در قرارداد ممکن است با سقف اعلامی متفاوت باشد.",
+      "expectedPeriod": "1405-06",
+      "expectedPeriodLabel": "شهریور ۱۴۰۵",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "https://cbi.ir",
+        "at": "2026-09-19T19:06:19.311Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "cbi-reserve-lending",
+      "name": "نرخ تسهیلات و نسبت سپرده قانونی",
+      "owner": "بانک مرکزی جمهوری اسلامی ایران",
+      "kind": "model",
+      "cadence": "on-change",
+      "lagDaysAfterMonthEnd": 0,
+      "urls": {
+        "primary": "https://www.cbi.ir"
+      },
+      "fields": [
+        "lendingRate",
+        "reserveRatio"
+      ],
+      "usedFor": [
+        "فرض نرخ در موتور — در UI استاتیک نمایش داده نمی‌شود"
+      ],
+      "screens": [
+        "منابع اطلاعاتی"
+      ],
+      "licenseNote": "مفروض مدل خزانه‌داری؛ نه نرخ قطعی هر بانک.",
+      "howWeUse": "حاشیه رسوب = مانده × (نرخ تسهیلات − سپرده قانونی) ÷ ۱۲. مقادیر پیش‌فرض ۲۳٪ و ۱۳٪ هستند.",
+      "limitation": "نرخ تمام‌شده منابع هر بانک متفاوت است و باید از خزانه‌داری خوانده شود.",
+      "expectedPeriod": "1405-06",
+      "expectedPeriodLabel": "شهریور ۱۴۰۵",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "https://www.cbi.ir",
+        "at": "2026-09-19T19:06:19.778Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "inta-coefficients",
+      "name": "ضرایب اینتاکد و تبصره ماده ۱۰۰",
+      "owner": "سازمان امور مالیاتی کشور",
+      "kind": "official",
+      "cadence": "annual",
+      "lagDaysAfterMonthEnd": 20,
+      "annualMonth": 2,
+      "urls": {
+        "primary": "https://www.intamedia.ir",
+        "mirrors": [
+          "https://tax.gov.ir"
+        ]
+      },
+      "fields": [
+        "intaCode",
+        "intaProfitRatio"
+      ],
+      "usedFor": [
+        "شناسه فعالیت مالیاتی رسته",
+        "ضریب سود تبصره ۱۰۰"
+      ],
+      "screens": [
+        "اطلس رسته‌ها",
+        "ماشین‌حساب",
+        "نامه ستاد"
+      ],
+      "licenseNote": "جداول عمومی ضرایب سود فعالیت.",
+      "howWeUse": "هر رسته یک اینتاکد و ضریب سود دارد. جاب سالانه (اوایل سال) تغییر صفحه را تشخیص می‌دهد و پرچم بازبینی انسانی می‌زند؛ ضریب را خودکار جایگزین نمی‌کند.",
+      "limitation": "فقط ضرایبی که در جدول عمومی نقل شده‌اند وارد شده‌اند (سوپرمارکت ۸٫۵٪، رستوران معمولی ۱۴٪، اغذیه ۱۵–۲۰٪). بقیه رسته‌ها خالی‌اند نه inventشده.",
+      "expectedPeriod": "1405",
+      "expectedPeriodLabel": "سال 1405",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "https://tax.gov.ir",
+        "at": "2026-09-19T19:06:20.617Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "isic-amar",
+      "name": "طبقه‌بندی استاندارد فعالیت‌های اقتصادی (ISIC)",
+      "owner": "مرکز آمار ایران / نظام طبقه‌بندی بین‌المللی",
+      "kind": "official",
+      "cadence": "on-change",
+      "lagDaysAfterMonthEnd": 0,
+      "urls": {
+        "primary": "https://www.amar.org.ir"
+      },
+      "fields": [
+        "isicCode",
+        "isicCodePrefix"
+      ],
+      "usedFor": [
+        "گروه‌بندی تولیدی / توزیعی / خدماتی"
+      ],
+      "screens": [
+        "اطلس رسته‌ها"
+      ],
+      "licenseNote": "طبقه‌بندی عمومی فعالیت اقتصادی.",
+      "howWeUse": "کد ISIC رسته را به گروه اصلی صنف وصل می‌کند.",
+      "limitation": "نسخه ISIC مورد استفاده بانک باید با پرونده مالیاتی هم‌خوان باشد.",
+      "expectedPeriod": "1405-06",
+      "expectedPeriodLabel": "شهریور ۱۴۰۵",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "https://www.amar.org.ir",
+        "at": "2026-09-19T19:06:21.227Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "chamber-guilds",
+      "name": "رسته‌بندی اتاق اصناف ایران",
+      "owner": "اتاق اصناف ایران",
+      "kind": "official",
+      "cadence": "on-change",
+      "lagDaysAfterMonthEnd": 0,
+      "urls": {
+        "primary": "https://www.iranianasnaf.ir"
+      },
+      "fields": [
+        "عنوان رسته شغلی",
+        "گروه صنفی"
+      ],
+      "usedFor": [
+        "نام‌گذاری رسته‌ها در اطلس"
+      ],
+      "screens": [
+        "اطلس رسته‌ها"
+      ],
+      "licenseNote": "طبقه‌بندی صنفی عمومی.",
+      "howWeUse": "عنوان رسته‌ها با ادبیات اتاق اصناف هم‌خوان شده است تا شعبه همان زبانی را ببیند که جواز کسب دارد.",
+      "limitation": "اتاق استانی ممکن است زیررسته محلی داشته باشد. شمار واحد صنفی در نقل‌های عمومی متناقض است (صمت ۱۴۰۰ در برابر نقل ۱۴۰۵ اتاق) و به‌عنوان KPI جاری استفاده نمی‌شود.",
+      "expectedPeriod": "1405-06",
+      "expectedPeriodLabel": "شهریور ۱۴۰۵",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "https://www.iranianasnaf.ir",
+        "at": "2026-09-19T19:06:22.182Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "tax-moodian",
+      "name": "سامانه مؤدیان (اتصال پایانه)",
+      "owner": "سازمان امور مالیاتی کشور",
+      "kind": "official",
+      "cadence": "continuous",
+      "lagDaysAfterMonthEnd": 0,
+      "urls": {
+        "primary": "https://my.tax.gov.ir",
+        "mirrors": [
+          "https://tax.gov.ir"
+        ]
+      },
+      "fields": [
+        "isTaxCompliant"
+      ],
+      "usedFor": [
+        "وضعیت اتصال مالیاتی — در UI استاتیک نمایش داده نمی‌شود"
+      ],
+      "screens": [
+        "منابع اطلاعاتی"
+      ],
+      "licenseNote": "وضعیت اتصال مودی؛ داده حساس.",
+      "howWeUse": "در حالت بانک واقعی از استعلام اتصال پایانه به سامانه مؤدیان خوانده می‌شود. در حالت استاتیک پرچم کمپین رسته است نه وضعیت یک فروشگاه حقیقی.",
+      "limitation": "این سامانه لاگین می‌خواهد و از GitHub واکشی نمی‌شود.",
+      "expectedPeriod": "1405-06",
+      "expectedPeriodLabel": "شهریور ۱۴۰۵",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "https://tax.gov.ir",
+        "at": "2026-09-19T19:06:23.168Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "bank-internal-pos",
+      "name": "پایش ماهانه پایانه و تراکنش شعبه",
+      "owner": "هسته بانکی / سوئیچ PSP طرف قرارداد",
+      "kind": "internal",
+      "cadence": "monthly",
+      "lagDaysAfterMonthEnd": 3,
+      "urls": {
+        "primary": "internal://bank/pos-metrics"
+      },
+      "fields": [
+        "monthlyTxCount",
+        "monthlyTxVolume",
+        "posTerminalCount",
+        "acquiringFeeEarned",
+        "operatingSupportCost"
+      ],
+      "usedFor": [
+        "پایش شعبه — در UI استاتیک نیست؛ میز کار جمع شاپرک را نشان می‌دهد"
+      ],
+      "screens": [
+        "منابع اطلاعاتی"
+      ],
+      "licenseNote": "داده اختصاصی بانک؛ در حالت استاتیک با جمع شبکه شاپرک جایگزین شده نه با پرونده شعبه.",
+      "howWeUse": "پس از بستن ماه باید از انبار داده بانک وارد شود. در GitHub Pages به‌جایش جمع ماهنامه شاپرک نمایش داده می‌شود — نه تراکنش شعبه.",
+      "limitation": "بدون DATABASE_URL هیچ رقم واقعی شعبه وارد سامانه نمی‌شود.",
+      "expectedPeriod": "1405-05",
+      "expectedPeriodLabel": "مرداد ۱۴۰۵",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "internal://bank/pos-metrics",
+        "at": "2026-09-19T19:06:23.419Z",
+        "status": "skipped",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "منبع داخلی بانک است و از GitHub واکشی نمی‌شود."
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "bank-casa-float",
+      "name": "مانده روزانه حساب جاری پذیرنده (CASA)",
+      "owner": "هسته سپرده‌ای بانک",
+      "kind": "internal",
+      "cadence": "monthly",
+      "lagDaysAfterMonthEnd": 2,
+      "urls": {
+        "primary": "internal://bank/casa-float"
+      },
+      "fields": [
+        "avgDailyFloatBalance"
+      ],
+      "usedFor": [
+        "بازده رسوب — در UI استاتیک نمایش داده نمی‌شود"
+      ],
+      "screens": [
+        "منابع اطلاعاتی"
+      ],
+      "licenseNote": "داده اختصاصی بانک.",
+      "howWeUse": "میانگین مانده روزانه حساب جاری در دوره گزارش.",
+      "limitation": "در حالت استاتیک نمایش داده نمی‌شود؛ ساختن رسوب از روی الگوی رسته حذف شد.",
+      "expectedPeriod": "1405-05",
+      "expectedPeriodLabel": "مرداد ۱۴۰۵",
+      "publicationState": "current",
+      "lastProbe": {
+        "url": "internal://bank/casa-float",
+        "at": "2026-09-19T19:06:23.419Z",
+        "status": "skipped",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "منبع داخلی بانک است و از GitHub واکشی نمی‌شود."
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    },
+    {
+      "id": "shaparak-news-mirror",
+      "name": "آینه خبری کشف انتشار گزارش شاپرک",
+      "owner": "رسانه‌های تخصصی پرداخت (راه پرداخت و مشابه)",
+      "kind": "mirror",
+      "cadence": "monthly",
+      "lagDaysAfterMonthEnd": 10,
+      "urls": {
+        "primary": "https://www.ecoiran.com",
+        "mirrors": [
+          "https://banker.ir",
+          "https://way2pay.ir"
+        ]
+      },
+      "fields": [
+        "بازتاب گزارش اقتصادی شاپرک"
+      ],
+      "usedFor": [
+        "خواندن ارقام ماهنامه وقتی PDF شاپرک از رانر نرسد"
+      ],
+      "screens": [
+        "منابع اطلاعاتی",
+        "میز کار"
+      ],
+      "licenseNote": "خبر؛ منبع آماری مستقل نیست — فقط نقل گزارش شاپرک.",
+      "howWeUse": "بازتاب EcoIran و banker.ir متن گزارش اقتصادی شاپرک را نقل می‌کند. KPI به شماره گزارش شاپرک استناد می‌شود نه به خبر به عنوان منبع مستقل. واحد «همت» در خبرها گاهی غلط است و با چند بازتاب کنترل می‌شود.",
+      "limitation": "خبر می‌تواند واحد را اشتباه کند؛ رقم وارد مدل نمی‌شود مگر با سازگاری MoM/YoY و ذکر شماره گزارش.",
+      "expectedPeriod": "1405-05",
+      "expectedPeriodLabel": "مرداد ۱۴۰۵",
+      "publicationState": "due",
+      "lastProbe": {
+        "url": "https://peivast.com",
+        "at": "2026-09-19T19:06:23.835Z",
+        "status": "unreachable",
+        "httpStatus": null,
+        "contentType": null,
+        "etag": null,
+        "lastModified": null,
+        "hash": null,
+        "title": null,
+        "bytes": null,
+        "signals": [],
+        "error": "fetch failed"
+      },
+      "previousHash": null,
+      "pendingHumanReview": false,
+      "reviewReason": null
+    }
+  ],
+  "taxonomy": [
+    {
+      "id": "guild-1",
+      "title": "سوپرمارکت و مواد غذایی",
+      "categoryName": "توزیعی",
+      "isicCode": "4711",
+      "intaCode": "2260133",
+      "intaProfitRatio": 8.5,
+      "defaultMcc": "5411",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-2",
+      "title": "بنکداری مواد غذایی",
+      "categoryName": "توزیعی",
+      "isicCode": "4630",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5399",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-3",
+      "title": "طلا، جواهر و نقره",
+      "categoryName": "توزیعی",
+      "isicCode": "4777",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5944",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-4",
+      "title": "پوشاک خرده‌فروشی",
+      "categoryName": "توزیعی",
+      "isicCode": "4771",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5699",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-5",
+      "title": "نانوایی",
+      "categoryName": "خدماتی",
+      "isicCode": "1071",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5462",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-6",
+      "title": "رستوران معمولی",
+      "categoryName": "خدماتی",
+      "isicCode": "5610",
+      "intaCode": "—",
+      "intaProfitRatio": 14,
+      "defaultMcc": "5812",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-7",
+      "title": "اغذیه فروشی",
+      "categoryName": "خدماتی",
+      "isicCode": "5610",
+      "intaCode": "—",
+      "intaProfitRatio": 15,
+      "defaultMcc": "5814",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-8",
+      "title": "میوه و تره‌بار",
+      "categoryName": "خدماتی",
+      "isicCode": "4721",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5431",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-9",
+      "title": "قنادی و شیرینی‌فروشی",
+      "categoryName": "خدماتی",
+      "isicCode": "4724",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5462",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-10",
+      "title": "داروخانه",
+      "categoryName": "خدماتی",
+      "isicCode": "4772",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5912",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-11",
+      "title": "تعمیرگاه خودرو",
+      "categoryName": "خدمات فنی",
+      "isicCode": "4520",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "7538",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-12",
+      "title": "موبایل و کالای دیجیتال",
+      "categoryName": "خدمات فنی",
+      "isicCode": "4741",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5732",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-13",
+      "title": "جایگاه سوخت",
+      "categoryName": "خدمات فنی",
+      "isicCode": "4730",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5541",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    },
+    {
+      "id": "guild-14",
+      "title": "تولید نان و فرآورده‌های نانوایی",
+      "categoryName": "تولیدی",
+      "isicCode": "1071",
+      "intaCode": "—",
+      "intaProfitRatio": 0,
+      "defaultMcc": "5462",
+      "sourceIds": [
+        "isic-amar",
+        "inta-coefficients",
+        "shaparak-mcc",
+        "chamber-guilds"
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "field": "totals.volume",
+      "label": "گردش ماهانه شبکه شاپرک",
+      "screens": [
+        "میز کار",
+        "نامه ستاد"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "shaparak-monthly"
+      ],
+      "note": "جمع گزارش اقتصادی شاپرک (آخرین ماه نقل‌شده: مرداد ۱۴۰۵ / گزارش ۱۳۴)."
+    },
+    {
+      "field": "totals.txCount",
+      "label": "تعداد تراکنش شبکه",
+      "screens": [
+        "میز کار"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "shaparak-monthly"
+      ],
+      "note": "تعداد نقل‌شده همان ماهنامه؛ برای تیر از MoM مرداد گرد شده است."
+    },
+    {
+      "field": "instruments",
+      "label": "ترکیب ابزار پذیرش مرداد",
+      "screens": [
+        "میز کار"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "shaparak-monthly",
+        "shaparak-news-mirror"
+      ],
+      "note": "کارتخوان و اینترنت رقم اعلامی مرداد ۱۴۰۵؛ سایر ابزار مانده پس از این دو است."
+    },
+    {
+      "field": "posBasket",
+      "label": "سبد اعلامی کارتخوان",
+      "screens": [
+        "میز کار",
+        "ماشین‌حساب"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "shaparak-monthly"
+      ],
+      "note": "حدود ۶۹۴ هزار تومان در بازتاب گزارش مرداد ۱۴۰۵."
+    },
+    {
+      "field": "mellatShare",
+      "label": "سهم بانک ملت به‌عنوان پذیرنده",
+      "screens": [
+        "میز کار"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "shaparak-monthly",
+        "shaparak-news-mirror"
+      ],
+      "note": "۱۸٫۷۹٪ تعداد و ۱۹٫۹۵٪ مبلغ در مرداد ۱۴۰۵."
+    },
+    {
+      "field": "ticketGap",
+      "label": "فاصله رشد مبلغ و تعداد مرداد",
+      "screens": [
+        "میز کار",
+        "نامه ستاد"
+      ],
+      "origin": "model",
+      "sourceIds": [
+        "shaparak-monthly"
+      ],
+      "note": "تفریق دو درصد نقل‌شده MoM (۷٫۲۶ − ۲٫۹۷). منبع تازه نیست."
+    },
+    {
+      "field": "instrumentBasket",
+      "label": "سبد ابزار (اعلامی یا تقسیم)",
+      "screens": [
+        "میز کار",
+        "نامه ستاد"
+      ],
+      "origin": "model",
+      "sourceIds": [
+        "shaparak-monthly"
+      ],
+      "note": "کارتخوان رقم اعلامی ۶۹۴ هزار تومان است. اینترنت و سایر حاصل تقسیم مبلغ÷تعداد همان ماه‌اند."
+    },
+    {
+      "field": "mellatImplied",
+      "label": "حاصل‌ضرب سهم ملت در جمع شبکه",
+      "screens": [
+        "میز کار",
+        "نامه ستاد"
+      ],
+      "origin": "model",
+      "sourceIds": [
+        "shaparak-monthly",
+        "shaparak-news-mirror"
+      ],
+      "note": "شاپرک رقم مطلق ملت را جدا نداده؛ این ضرب سهم اعلامی در جمع شبکه است."
+    },
+    {
+      "field": "cbiPosFee",
+      "label": "کارمزد هر تراکنش کارتخوان",
+      "screens": [
+        "ماشین‌حساب"
+      ],
+      "origin": "model",
+      "sourceIds": [
+        "cbi-pos-fee"
+      ],
+      "note": "پلکان بانک مرکزی به‌صورت فرض نسخه‌بندی‌شده؛ فقط در ماشین‌حساب سناریو."
+    },
+    {
+      "field": "subGuild.intaProfitRatio",
+      "label": "ضریب سود اینتاکد",
+      "screens": [
+        "اطلس رسته‌ها"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "inta-coefficients"
+      ],
+      "note": "فقط رسته‌هایی که ضریب‌شان در جدول عمومی نقل شده پر شده‌اند؛ بقیه خالی‌اند."
+    },
+    {
+      "field": "subGuild.isicCode",
+      "label": "کد ISIC رسته",
+      "screens": [
+        "اطلس رسته‌ها"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "isic-amar",
+        "chamber-guilds"
+      ],
+      "note": "کد طبقه‌بندی فعالیت اقتصادی؛ با جواز کسب و پرونده مالیاتی باید یکی باشد."
+    },
+    {
+      "field": "subGuild.defaultMcc",
+      "label": "کد MCC شاپرک",
+      "screens": [
+        "اطلس رسته‌ها"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "shaparak-mcc"
+      ],
+      "note": "کد چهاررقمی متعارف پذیرندگی؛ جدول قرارداد PSP بانک مقدم است."
+    },
+    {
+      "field": "guildPolicy",
+      "label": "طبقه‌بندی سیاست رسته",
+      "screens": [
+        "اطلس رسته‌ها"
+      ],
+      "origin": "official",
+      "sourceIds": [
+        "cbi-pos-fee",
+        "inta-coefficients"
+      ],
+      "note": "معاف کارمزد / ضریب اینتا نقل‌شده / فقط کد. سود شاپرک رسته نیست چون گردش MCC منتشر نشده."
+    }
+  ],
+  "briefing": {
+    "period": "1405-05",
+    "periodLabel": "مرداد ۱۴۰۵",
+    "headline": "مرداد ۱۴۰۵: رشد مبلغ شبکه شاپرک",
+    "narrative": [
+      "آخرین ماهنامه منتشرشده شاپرک مرداد ۱۴۰۵ (گزارش ۱۳۴) است. گردش شبکه ۳٬۶۵۴ همت و تعداد تراکنش ۴٫۶۵ میلیارد نقل شده. شهریور در تقویم است اما گزارش ندارد.",
+      "بازتاب MoM مرداد: مبلغ ۷٫۳٪ و تعداد ۳٪. فاصله ۴٫۳٪ یعنی سبد شبکه سنگین‌تر شده، نه لزوماً اینکه فروشگاه بیشتری آمده.",
+      "کارتخوان ۲٬۷۷۶ همت با سبد اعلامی ۶۹۴ هزار تومان؛ اینترنت ۸۶۰ همت با سبد حاصل‌تقسیم ۳٫۲ میلیون تومان. سبد اینترنت چند برابر کارتخوان است.",
+      "سهم ملت ۱۸٫۷۹٪ تعداد و ۱۹٫۹۵٪ مبلغ است؛ حاصل‌ضرب در جمع شبکه حدود ۷۲۹ همت می‌شود — شاپرک رقم مطلق ملت را جدا نداده. رشد اسمی سالانه مبلغ ۹۳٫۷٪ و رشد واقعی حدود ۲٫۵٪ نقل شده."
+    ],
+    "highlights": [
+      {
+        "title": "گردش شاپرک",
+        "detail": "۳٬۶۵۴ همت (۷٫۳٪ MoM نقل‌شده)",
+        "tone": "persian"
+      },
+      {
+        "title": "فاصله مبلغ و تعداد",
+        "detail": "۴٫۳٪ — سبد شبکه سنگین‌تر شده",
+        "tone": "gold"
+      },
+      {
+        "title": "سبد اینترنت",
+        "detail": "۳٫۲ میلیون تومان",
+        "tone": "persian"
+      },
+      {
+        "title": "سهم ملت × شبکه",
+        "detail": "۷۲۹ همت",
+        "tone": "gold"
+      }
+    ],
+    "movers": [
+      {
+        "id": "pos",
+        "title": "کارتخوان فروشگاهی",
+        "volume": 27760000000000000,
+        "growthPct": 0,
+        "quadrant": "—",
+        "profitabilityLabel": "سبد اعلامی"
+      },
+      {
+        "id": "internet",
+        "title": "پذیرش اینترنتی",
+        "volume": 8600000000000000,
+        "growthPct": 0,
+        "quadrant": "—",
+        "profitabilityLabel": "سبد از تقسیم مبلغ÷تعداد"
+      },
+      {
+        "id": "other",
+        "title": "سایر ابزار (موبایل/USSD)",
+        "volume": 180000000000000,
+        "growthPct": 0,
+        "quadrant": "—",
+        "profitabilityLabel": "سبد از تقسیم؛ تعداد تقریبی"
+      }
+    ],
+    "watchouts": [
+      "فهرست پذیرنده، رسوب CASA و گردش رسته در ماهنامه عمومی نیست و در این سامانه نمایش داده نمی‌شود.",
+      "کارمزد پلکان بانک مرکزی فقط برای کارتخوان است؛ به سبد اینترنت اعمال نمی‌شود.",
+      "رشد واقعی حدود ۲٫۵٪ نقل شده؛ ۹۳٫۷۲٪ اسمی تورم قیمت است نه انفجار تراکنش."
+    ],
+    "comparedToPreviousBriefing": "همان دوره منتشرشده دوباره محاسبه شد."
+  },
+  "changelog": [
+    {
+      "at": "2026-09-19T20:22:42.679Z",
+      "jalali": "۲۸ شهریور ۱۴۰۵",
+      "kind": "probe",
+      "title": "واکشی دوره‌ای منابع",
+      "detail": "پنجره گزارش و اثرانگشت منابع با اجرای جاب همگام شد."
+    },
+    {
+      "at": "2026-09-19T20:07:57.525Z",
+      "jalali": "۲۸ شهریور ۱۴۰۵",
+      "kind": "probe",
+      "title": "واکشی دوره‌ای منابع",
+      "detail": "پنجره گزارش و اثرانگشت منابع با اجرای جاب همگام شد."
+    },
+    {
+      "at": "2026-09-19T19:56:20.500Z",
+      "jalali": "۲۸ شهریور ۱۴۰۵",
+      "kind": "probe",
+      "title": "واکشی دوره‌ای منابع",
+      "detail": "پنجره گزارش و اثرانگشت منابع با اجرای جاب همگام شد."
+    },
+    {
+      "at": "2026-09-19T19:55:12.928Z",
+      "jalali": "۲۸ شهریور ۱۴۰۵",
+      "kind": "policy",
+      "title": "تغییر فرض‌های مدل",
+      "detail": "نسخه مدل GBI-ΠBank-1.8.0 با نرخ/کارمزد جدید در کاتالوگ ثبت شد."
+    },
+    {
+      "at": "2026-09-19T19:40:40.982Z",
+      "jalali": "۲۸ شهریور ۱۴۰۵",
+      "kind": "period-roll",
+      "title": "چرخش دوره گزارش",
+      "detail": "پنجره شش‌ماهه جلالی با ماه جاری هم‌تراز شد و ماهنامه بازتولید گردید."
+    },
+    {
+      "at": "2026-09-19T19:40:40.982Z",
+      "jalali": "۲۸ شهریور ۱۴۰۵",
+      "kind": "policy",
+      "title": "تغییر فرض‌های مدل",
+      "detail": "نسخه مدل GBI-ΠBank-1.7.0 با نرخ/کارمزد جدید در کاتالوگ ثبت شد."
+    },
+    {
+      "at": "2026-09-19T19:06:24.032Z",
+      "jalali": "۲۸ شهریور ۱۴۰۵",
+      "kind": "probe",
+      "title": "واکشی دوره‌ای منابع",
+      "detail": "پنجره گزارش و اثرانگشت منابع با اجرای جاب همگام شد."
+    }
+  ],
+  "alerts": [
+    {
+      "code": "OFFICIAL_SOURCES_UNREACHABLE",
+      "severity": "warning",
+      "title": "چند منبع رسمی از این محیط در دسترس نیستند",
+      "detail": "گزارش اقتصادی ماهانه شاپرک، اصطلاحات و تعریف پذیرنده شاپرک، کد MCC رسته پذیرنده، پلکان کارمزد خرید کارتی بانک مرکزی، ضرایب اینتاکد و تبصره ماده ۱۰۰، طبقه‌بندی استاندارد فعالیت‌های اقتصادی (ISIC)، رسته‌بندی اتاق اصناف ایران، سامانه مؤدیان (اتصال پایانه). رانرهای GitHub معمولاً بیرون ایران هستند؛ این به معنی نبود گزارش نیست."
+    },
+    {
+      "code": "PUBLICATION_WINDOW_OPEN",
+      "severity": "info",
+      "title": "پنجره واکشی ماهانه باز است",
+      "detail": "گزارش اقتصادی ماهانه شاپرک (مرداد ۱۴۰۵)؛ آینه خبری کشف انتشار گزارش شاپرک (مرداد ۱۴۰۵)"
+    }
+  ],
+  "generatedAt": "2026-09-19T20:22:42.679Z",
+  "jalaliGenerated": "۲۸ شهریور ۱۴۰۵",
+  "contentFingerprint": "GBI-ΠBank-1.8.0::1405-05::0.23::0.0002::shaparak-monthly:unreachable:due|shaparak-terms:unreachable:current|shaparak-mcc:unreachable:current|cbi-pos-fee:unreachable:current|cbi-reserve-lending:unreachable:current|inta-coefficients:unreachable:current|isic-amar:unreachable:current|chamber-guilds:unreachable:current|tax-moodian:unreachable:current|bank-internal-pos:skipped:current|bank-casa-float:skipped:current|shaparak-news-mirror:unreachable:due::مرداد ۱۴۰۵: رشد مبلغ شبکه شاپرک"
+}

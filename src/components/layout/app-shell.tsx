@@ -6,22 +6,24 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   LayoutDashboard,
   Network,
-  KanbanSquare,
   Calculator,
   Landmark,
   Menu,
   X,
   ShieldCheck,
-  Bell,
+  Library,
+  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { faDigits, formatJalaliDate } from "@/lib/gbi/format";
+import { DataFreshnessBar } from "@/components/layout/data-freshness-bar";
 
 const NAV = [
-  { href: "/", label: "میز کار مدیریتی", latin: "Executive Desk", icon: LayoutDashboard },
-  { href: "/guilds", label: "کاوشگر ماتریس اصناف", latin: "Guild Matrix", icon: Network },
-  { href: "/leads", label: "مدیریت سرنخ‌های شعب", latin: "Lead Pipeline", icon: KanbanSquare },
-  { href: "/calculator", label: "ماشین‌حساب سودآوری", latin: "Profitability Lab", icon: Calculator },
+  { href: "/", label: "میز کار شاپرک", latin: "میز کار", icon: LayoutDashboard },
+  { href: "/brief", label: "نامه ستاد", latin: "ستاد", icon: ScrollText },
+  { href: "/guilds", label: "اطلس رسته‌ها", latin: "رسته‌ها", icon: Network },
+  { href: "/calculator", label: "ماشین‌حساب کارمزد", latin: "شبیه‌ساز", icon: Calculator },
+  { href: "/sources", label: "منابع و به‌روزرسانی", latin: "تبار داده", icon: Library },
 ];
 
 function LiveClock() {
@@ -139,10 +141,10 @@ function Sidebar({
         <div className="m-4 rounded-xl border border-gold-500/20 bg-gold-500/[0.06] p-4">
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="h-5 w-5 text-gold-400" />
-            <p className="text-xs font-bold text-gold-300">حالت بدون دیتابیس</p>
+            <p className="text-xs font-bold text-gold-300">نمایش بدون دیتابیس</p>
           </div>
           <p className="mt-1.5 text-[11px] leading-5 text-slate-400">
-            داده‌های نمونه به‌صورت درون‌برنامه‌ای محاسبه می‌شوند؛ تغییرات قیف سرنخ فقط در مرورگر شما ذخیره می‌گردد.
+            ارقام میز کار از ماهنامه شاپرک است. صفحه‌هایی که داده عمومی ندارند از محصول حذف شده‌اند.
           </p>
         </div>
       </aside>
@@ -154,11 +156,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative z-10 min-h-screen">
-      <Sidebar open={open} onClose={() => setOpen(false)} />
+      <div className="print-hide">
+        <Sidebar open={open} onClose={() => setOpen(false)} />
+      </div>
 
-      <div className="lg:mr-72">
+      <div className="lg:mr-72 print:mr-0">
         {/* Top header */}
-        <header className="sticky top-0 z-30 border-b border-white/[0.05] bg-night-950/70 backdrop-blur-xl">
+        <header className="print-hide sticky top-0 z-30 border-b border-white/[0.05] bg-night-950/70 backdrop-blur-xl">
           <div className="flex h-16 items-center gap-4 px-5 sm:px-8">
             <button
               onClick={() => setOpen(true)}
@@ -167,19 +171,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="hidden items-center gap-2 text-xs text-slate-500 sm:flex">
-              <span className="flex h-2 w-2 animate-pulse-soft rounded-full bg-gold-400" />
-              حالت استاتیک — محاسبه درون‌برنامه‌ای بدون دیتابیس
-            </div>
+            <DataFreshnessBar />
             <div className="flex-1" />
             <div className="text-xs">
               <LiveClock />
             </div>
             <span className="hidden h-5 w-px bg-white/10 sm:block" />
-            <button className="relative rounded-lg border border-white/10 p-2 text-slate-300 transition hover:bg-white/5" aria-label="اعلان‌ها">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -left-0.5 -top-0.5 h-2 w-2 rounded-full bg-gold-400" />
-            </button>
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-500/40 bg-gradient-to-br from-night-700 to-night-800 text-[13px] font-bold text-gold-300">
                 ب‌ت
