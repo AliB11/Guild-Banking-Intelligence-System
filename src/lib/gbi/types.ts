@@ -4,8 +4,47 @@ import type {
   RecommendedProduct,
   RiskStatus,
 } from "@/db/schema";
+import type { NextBestAction } from "./operations";
 
 /* Shared DTOs between server services, API routes and client UI */
+
+export interface BranchOpportunity {
+  branchCode: string;
+  province: string;
+  city: string;
+  merchantCount: number;
+  terminals: number;
+  volume: number;
+  float: number;
+  leadCount: number;
+  taxCompliancePct: number;
+  opportunityScore: number;
+  recommendation: string;
+  signal: "EXPAND_POS" | "CREDIT_CAMPAIGN" | "TAX_CLEANUP" | "MONITOR";
+}
+
+export type AlertSeverity = "critical" | "warning" | "info";
+
+export interface EarlyWarning {
+  code: string;
+  severity: AlertSeverity;
+  title: string;
+  detail: string;
+  value?: number;
+}
+
+export interface DataQualityCheck {
+  code: string;
+  label: string;
+  status: "PASS" | "WARN" | "FAIL";
+  count: number;
+  detail: string;
+}
+
+export interface DataQualitySummary {
+  score: number;
+  checks: DataQualityCheck[];
+}
 
 export interface DashboardSummary {
   latestPeriod: string;
@@ -52,6 +91,9 @@ export interface DashboardSummary {
     float: number;
     intensity: number; // 0..1
   }>;
+  branchOpportunities: BranchOpportunity[];
+  alerts: EarlyWarning[];
+  dataQuality: DataQualitySummary;
   topSubGuilds: Array<{
     id: string;
     title: string;
@@ -134,6 +176,8 @@ export interface LeadDTO {
   leadScore: number;
   pipelineStage: PipelineStage;
   lastInteractionDate: string;
+  staleDays: number;
+  nextAction: NextBestAction;
   merchant: Pick<
     MerchantBusinessRow,
     | "businessName"
@@ -155,6 +199,7 @@ export interface LeadsResponse {
     byStage: Record<PipelineStage, number>;
     avgScore: number;
     hotCount: number;
+    actionRequiredCount: number;
   };
 }
 

@@ -207,7 +207,9 @@ function buildDemoCorpus(): DemoCorpus {
   const leads: MarketingLeadRow[] = ranked.slice(0, 28).map(({ merchant, metric, score }, index) => {
     const definition = merchantProfiles.get(merchant.id)!;
     const stage: PipelineStage = index % 9 === 0 ? "CONVERTED" : index % 5 === 0 ? "FINANCIAL_EVALUATION" : index % 3 === 0 ? "CONTACTED" : "NEW";
-    const interactionDate = new Date(Date.UTC(2025, 1, 20 - (index % 22)));
+    // Demo interactions stay close to the current clock so the SLA panel is
+    // useful during a live walkthrough rather than flagging every card as old.
+    const interactionDate = new Date(Date.now() - (index % 22) * 86_400_000);
     return {
       id: uuid(2000 + index),
       merchantId: merchant.id,

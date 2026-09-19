@@ -12,6 +12,19 @@ const patchSchema = z.object({
 type Params = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: NextRequest, { params }: Params) {
+  const origin = req.headers.get("origin");
+  if (origin) {
+    try {
+      const requestOrigin = new URL(origin).host;
+      const requestHost = req.headers.get("host");
+      if (requestHost && requestOrigin !== requestHost) {
+        return NextResponse.json({ error: "مبدأ درخواست مجاز نیست" }, { status: 403 });
+      }
+    } catch {
+      return NextResponse.json({ error: "مبدأ درخواست نامعتبر است" }, { status: 403 });
+    }
+  }
+
   const { id } = await params;
   if (!z.string().uuid().safeParse(id).success) {
     return NextResponse.json({ error: "شناسه سرنخ نامعتبر است" }, { status: 400 });

@@ -4,6 +4,9 @@ import {
   Trophy,
   Map,
   Grid3X3,
+  GitBranch,
+  ShieldAlert,
+  Database,
 } from "lucide-react";
 import { getDashboardSummary } from "@/lib/gbi/service";
 import { faDigits, formatToman } from "@/lib/gbi/format";
@@ -17,6 +20,9 @@ import { ProfitRankChart } from "@/components/charts/profit-rank-chart";
 import { ProvinceHeatmap } from "@/components/charts/province-heatmap";
 import { GuildTreemap } from "@/components/charts/guild-treemap";
 import { MerchantsTable } from "@/components/dashboard/merchants-table";
+import { BranchOpportunityList } from "@/components/dashboard/branch-opportunity-list";
+import { EarlyWarningPanel } from "@/components/dashboard/early-warning-panel";
+import { DataQualityCard } from "@/components/dashboard/data-quality-card";
 
 export const dynamic = "force-dynamic";
 
@@ -90,6 +96,41 @@ export default async function DashboardPage() {
           tone="rose"
           spark={sparkFees}
         />
+      </section>
+
+      {/* Operational signals */}
+      <section className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <Card className="lg:col-span-2 animate-fade-up">
+          <CardHeader>
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <ShieldAlert className="h-4 w-4 text-rose-300" />
+                اتاق هشدار زودهنگام
+              </CardTitle>
+              <CardDescription>افت گردش، تمرکز ریسک، شکاف مالیاتی و سرنخ‌های خارج از SLA</CardDescription>
+            </div>
+            <Badge variant={d.alerts.some((alert) => alert.severity === "critical") ? "rose" : "slate"}>
+              {faDigits(d.alerts.length)} سیگنال
+            </Badge>
+          </CardHeader>
+          <CardContent>
+            <EarlyWarningPanel alerts={d.alerts} />
+          </CardContent>
+        </Card>
+        <Card className="animate-fade-up" style={{ animationDelay: "0.08s" }}>
+          <CardHeader>
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-4 w-4 text-persian-300" />
+                گیت کیفیت داده
+              </CardTitle>
+              <CardDescription>کنترل پیش از انتشار KPIهای مدیریتی</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataQualityCard data={d.dataQuality} />
+          </CardContent>
+        </Card>
       </section>
 
       {/* Trend + composition */}
@@ -186,6 +227,39 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <MerchantsTable merchants={d.topMerchants} />
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Branch opportunity map */}
+      <section className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <Card className="lg:col-span-2 animate-fade-up">
+          <CardHeader>
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <GitBranch className="h-4 w-4 text-gold-400" />
+                نقشه فرصت شعب
+              </CardTitle>
+              <CardDescription>اولویت اقدام شعب بر اساس گردش، رسوب، انطباق و پوشش سرنخ‌ها</CardDescription>
+            </div>
+            <Badge variant="gold">{faDigits(d.branchOpportunities.length)} شعبه برتر</Badge>
+          </CardHeader>
+          <CardContent>
+            <BranchOpportunityList data={d.branchOpportunities} />
+          </CardContent>
+        </Card>
+        <Card className="animate-fade-up" style={{ animationDelay: "0.08s" }}>
+          <CardHeader>
+            <div>
+              <CardTitle>راهنمای اقدام عملیاتی</CardTitle>
+              <CardDescription>ترجمه سیگنال به برنامه شعبه</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3 text-[10.5px] leading-6 text-slate-400">
+            <p><b className="text-sky-300">توسعه POS:</b> ظرفیت تراکنش وجود دارد اما پوشش پایانه پایین است.</p>
+            <p><b className="text-gold-300">کمپین اعتبار:</b> سرنخ کافی نیست؛ کارشناس شعبه باید اقدام کند.</p>
+            <p><b className="text-rose-300">پاک‌سازی مالیاتی:</b> ابتدا شفافیت مالیاتی، سپس پیشنهاد اعتبار.</p>
+            <p className="border-t border-white/[0.06] pt-3 text-slate-600">امتیاز فرصت، تصمیم اعتباری نهایی نیست؛ فقط اولویت تخصیص ظرفیت فروش است.</p>
           </CardContent>
         </Card>
       </section>

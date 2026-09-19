@@ -24,6 +24,7 @@ import { Slider } from "@/components/ui/slider";
 import { ScoreGauge } from "@/components/score-gauge";
 import { AnimatedNumber } from "@/components/animated-number";
 import { useCalculatorStore, type CalculatorInputs } from "@/lib/store";
+import { StressLab } from "./stress-lab";
 import { PRODUCT_LABELS, RISK_LABELS } from "@/lib/gbi/types";
 import type { CalculatorInput, CalculatorResult } from "@/lib/gbi/engine";
 import type { RiskStatus } from "@/db/schema";
@@ -396,6 +397,8 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
           </CardContent>
         </Card>
 
+        <StressLab inputs={payload} />
+
         {/* Breakdown + score mix */}
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <Card className="animate-fade-up">
@@ -531,7 +534,7 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
             <p className="num text-[10.5px] leading-6 text-slate-500" dir="rtl">
               مدل محاسباتی: حاشیه رسوب = میانگین مانده روزانه × (نرخ تسهیلات {formatDecimal(23, 0)}٪ − سپرده قانونی {formatDecimal(13, 0)}٪) ÷ ۱۲ ·
               کارمزد پذیرندگی طبق پلکان بانک مرکزی · حاشیه تسهیلات = سقف اعتبار × اسپرد ۴٪ ÷ ۱۲ · هزینه پایانه = {formatNum(150_000)} تومان
-              ماهانه برای هر دستگاه. ارقام صرفاً برآوردی و جهت تصمیم‌یار اعتباری شعب است.
+              ماهانه برای هر دستگاه. نسخه مدل: {result?.modelVersion ?? "GBI-ΠBank-1.5.0"} · ارقام صرفاً برآوردی و جهت تصمیم‌یار اعتباری شعب است.
             </p>
           </CardContent>
         </Card>

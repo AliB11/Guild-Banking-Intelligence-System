@@ -8,6 +8,7 @@ import {
   boolean,
   bigint,
   doublePrecision,
+  jsonb,
   timestamp,
   index,
   uniqueIndex,
@@ -176,6 +177,51 @@ export const marketingLeads = pgTable(
 );
 
 /* ------------------------------------------------------------------ */
+/* DecisionAuditEvent — trace تصمیم‌های rule/model                       */
+/* ------------------------------------------------------------------ */
+
+export const decisionAuditEvents = pgTable(
+  "decision_audit_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityType: varchar("entity_type", { length: 40 }).notNull(),
+    entityId: uuid("entity_id"),
+    action: varchar("action", { length: 80 }).notNull(),
+    modelVersion: varchar("model_version", { length: 40 }).notNull(),
+    inputSnapshot: jsonb("input_snapshot").notNull(),
+    explanation: text("explanation").notNull(),
+    actorId: varchar("actor_id", { length: 120 }),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("decision_audit_entity_idx").on(t.entityType, t.entityId),
+    index("decision_audit_created_idx").on(t.createdAt),
+  ],
+);
+
+/* ------------------------------------------------------------------ */
+/* OutboxEvent — foundation for CDC/event-driven integrations             */
+/* ------------------------------------------------------------------ */
+
+export const outboxEvents = pgTable(
+  "outbox_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    aggregateType: varchar("aggregate_type", { length: 40 }).notNull(),
+    aggregateId: uuid("aggregate_id").notNull(),
+    eventType: varchar("event_type", { length: 80 }).notNull(),
+    payload: jsonb("payload").notNull(),
+    occurredAt: timestamp("occurred_at", { mode: "date" }).notNull().defaultNow(),
+    publishedAt: timestamp("published_at", { mode: "date" }),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("outbox_unpublished_idx").on(t.publishedAt, t.createdAt),
+    index("outbox_aggregate_idx").on(t.aggregateType, t.aggregateId),
+  ],
+);
+
+/* ------------------------------------------------------------------ */
 /* Inferred row types                                                  */
 /* ------------------------------------------------------------------ */
 
@@ -184,6 +230,8 @@ export type SubGuildRow = typeof subGuilds.$inferSelect;
 export type MerchantBusinessRow = typeof merchantBusinesses.$inferSelect;
 export type TerminalMetricRow = typeof terminalMetrics.$inferSelect;
 export type MarketingLeadRow = typeof marketingLeads.$inferSelect;
+export type DecisionAuditEventRow = typeof decisionAuditEvents.$inferSelect;
+export type OutboxEventRow = typeof outboxEvents.$inferSelect;
 
 export type RiskStatus = (typeof riskStatusEnum.enumValues)[number];
 export type RecommendedProduct =

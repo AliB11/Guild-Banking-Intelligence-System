@@ -27,7 +27,7 @@ export default async function CalculatorPage() {
         description="شبیه‌سازی آنی حاشیه خالص بانک برای هر پذیرنده: رسوب CASA، کارمزد شاپرکی، سقف تسهیلات طرح‌های پذیرنده ملی / سپهر / امید و امتیاز اولویت سرنخ — همه در یک نمای زنده."
         actions={
           <>
-            <Badge variant="gold">موتور Π-Bank نسخه ۱٫۴</Badge>
+            <Badge variant="gold">موتور Π-Bank نسخه ۱٫۵</Badge>
             <Badge variant="persian">پلکان کارمزد بانک مرکزی</Badge>
           </>
         }

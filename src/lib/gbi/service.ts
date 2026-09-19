@@ -1,8 +1,10 @@
 import { db, hasDatabaseConfig } from "@/db";
 import {
+  decisionAuditEvents,
   guildCategories,
   marketingLeads,
   merchantBusinesses,
+  outboxEvents,
   subGuilds,
   terminalMetrics,
   type GuildCategoryRow,
@@ -14,6 +16,7 @@ import {
 } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import {
+  MODEL_VERSION,
   VOLUME_BENCHMARK_RIALS,
   FLOAT_BENCHMARK_RIALS,
   clampScore,
@@ -23,6 +26,13 @@ import {
   marketingTier,
 } from "./engine";
 import { getDemoCorpus } from "./demo-data";
+import { actionNeedsAttention, recommendNextAction } from "./operations";
+import {
+  buildBranchOpportunities,
+  buildDataQuality,
+  buildEarlyWarnings,
+  daysSince,
+} from "./service-ops";
 import { jalaliPeriodLabel, jalaliPeriodShort } from "./format";
 import type {
   DashboardSummary,
@@ -326,6 +336,16 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     .sort((a, b) => b.margin - a.margin)
     .slice(0, 7);
 
+  const dataQuality = buildDataQuality(merchants, metrics, corpus.leads, latestPeriod);
+  const branchOpportunities = buildBranchOpportunities(merchants, metrics, corpus.leads, latestPeriod);
+  const alerts = buildEarlyWarnings({
+    merchants,
+    latestRows: periodRows,
+    previousRows: hasPrevious ? prevRows : [],
+    leads: corpus.leads,
+    dataQuality,
+  });
+
   return {
     latestPeriod,
     latestPeriodLabel: jalaliPeriodLabel(latestPeriod),
@@ -347,6 +367,9 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     trend,
     categoryProfit,
     provinces,
+    branchOpportunities,
+    alerts,
+    dataQuality,
     topSubGuilds,
     topMerchants,
   };
@@ -462,6 +485,15 @@ type LeadJoinRow = {
 };
 
 function toLeadDTO(row: LeadJoinRow): LeadDTO {
+  const staleDays = daysSince(row.lead.lastInteractionDate);
+  const nextAction = recommendNextAction({
+    stage: row.lead.pipelineStage,
+    score: row.lead.leadScore,
+    product: row.lead.recommendedProduct,
+    isTaxCompliant: row.merchant.isTaxCompliant,
+    riskStatus: row.merchant.riskStatus,
+    staleDays,
+  });
   return {
     id: row.lead.id,
     merchantId: row.lead.merchantId,
@@ -470,6 +502,8 @@ function toLeadDTO(row: LeadJoinRow): LeadDTO {
     leadScore: row.lead.leadScore,
     pipelineStage: row.lead.pipelineStage,
     lastInteractionDate: row.lead.lastInteractionDate.toISOString(),
+    staleDays,
+    nextAction,
     merchant: {
       businessName: row.merchant.businessName,
       ownerName: row.merchant.ownerName,
@@ -498,6 +532,7 @@ function makeLeadsResponse(leads: LeadDTO[]): LeadsResponse {
       byStage,
       avgScore: leads.length > 0 ? Math.round((leads.reduce((total, lead) => total + lead.leadScore, 0) / leads.length) * 10) / 10 : 0,
       hotCount: leads.filter((lead) => lead.leadScore >= 75).length,
+      actionRequiredCount: leads.filter((lead) => actionNeedsAttention(lead.nextAction)).length,
     },
   };
 }
@@ -546,11 +581,45 @@ export async function updateLeadStage(id: string, stage: PipelineStage) {
     return lead;
   }
 
-  const [updated] = await db
-    .update(marketingLeads)
-    .set({ pipelineStage: stage, lastInteractionDate: new Date() })
-    .where(eq(marketingLeads.id, id))
-    .returning();
+  const updated = await db.transaction(async (tx) => {
+    const [current] = await tx
+      .select()
+      .from(marketingLeads)
+      .where(eq(marketingLeads.id, id));
+    if (!current) return null;
+
+    const interactionDate = new Date();
+    const [next] = await tx
+      .update(marketingLeads)
+      .set({ pipelineStage: stage, lastInteractionDate: interactionDate })
+      .where(eq(marketingLeads.id, id))
+      .returning();
+
+    if (current.pipelineStage !== stage) {
+      const snapshot = {
+        leadId: id,
+        fromStage: current.pipelineStage,
+        toStage: stage,
+        interactionDate: interactionDate.toISOString(),
+      };
+      await tx.insert(decisionAuditEvents).values({
+        entityType: "MARKETING_LEAD",
+        entityId: id,
+        action: "PIPELINE_STAGE_CHANGED",
+        modelVersion: MODEL_VERSION,
+        inputSnapshot: snapshot,
+        explanation: `مرحله سرنخ از ${current.pipelineStage} به ${stage} تغییر کرد.`,
+      });
+      await tx.insert(outboxEvents).values({
+        aggregateType: "MARKETING_LEAD",
+        aggregateId: id,
+        eventType: "MARKETING_LEAD_STAGE_CHANGED",
+        payload: snapshot,
+        occurredAt: interactionDate,
+      });
+    }
+    return next ?? null;
+  });
   invalidateCorpusCache();
-  return updated ?? null;
+  return updated;
 }
