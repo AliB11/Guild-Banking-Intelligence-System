@@ -9,6 +9,15 @@ export const metadata: Metadata = {
   title: "GBI | سامانه هوش بانکداری اصناف",
   description:
     "Guild Banking Intelligence — پلتفرم تحلیل، امتیازدهی و هدف‌گیری اصناف برای بانک‌های تجاری ایران. میز کار مدیریتی، ماتریس اصناف، قیف سرنخ‌ها و ماشین‌حساب سودآوری تسهیلات.",
+  applicationName: "GBI اصناف",
+  openGraph: {
+    title: "GBI | سامانه هوش بانکداری اصناف",
+    description:
+      "داشبورد تحلیل سودآوری، ماتریس رسته‌های شغلی، قیف سرنخ شعب و ماشین‌حساب تسهیلات — بدون نیاز به دیتابیس.",
+    siteName: "GBI اصناف",
+    locale: "fa_IR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

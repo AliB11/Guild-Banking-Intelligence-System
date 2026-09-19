@@ -149,3 +149,25 @@ export function jalaliPeriodShort(period: string): string {
   if (!m || m < 1 || m > 12) return faDigits(period);
   return JALALI_MONTHS[m - 1];
 }
+
+/**
+ * Rolling reporting window — the `count` most recent Jalali months, ending
+ * with the month the given date falls in. Keeps "دوره جاری" aligned with the
+ * real calendar instead of a hard-coded snapshot, e.g. on ۲۹ شهریور ۱۴۰۵ with
+ * count 6 → ["1405-02", "1405-03", "1405-04", "1405-05", "1405-06", "1405-07"].
+ */
+export function recentJalaliPeriods(count: number, date: Date = new Date()): string[] {
+  const [jy, jm] = gregorianToJalali(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const periods: string[] = [];
+  let year = jy;
+  let month = jm;
+  for (let i = 0; i < count; i++) {
+    periods.unshift(`${year}-${String(month).padStart(2, "0")}`);
+    month -= 1;
+    if (month === 0) {
+      month = 12;
+      year -= 1;
+    }
+  }
+  return periods;
+}

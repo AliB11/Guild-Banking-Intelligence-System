@@ -1,5 +1,8 @@
 # GBI — سامانه هوش بانکداری اصناف
 
+[![Deploy to GitHub Pages](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/pages.yml/badge.svg)](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/pages.yml)
+[![CI](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/ci.yml/badge.svg)](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/ci.yml)
+
 داشبورد تحلیل سودآوری، ماتریس رسته‌های شغلی، قیف سرنخ شعب و ماشین‌حساب تسهیلات برای بانکداری اصناف.
 
 > **حالت اصلی: کاملاً بدون دیتابیس.** برنامه یک وب‌اپ استاتیک است که داده‌های نمونه را به‌صورت درون‌برنامه‌ای (Pure TypeScript) محاسبه می‌کند؛ بدون PostgreSQL، بدون سرور Node، بدون متغیر محیطی — روی GitHub Pages با یک کلیک.
@@ -19,6 +22,7 @@ npm start          # سرو out/ + API اختیاری (بدون دیتابیس: 
 ```
 
 - تمام صفحات (میز کار، ماتریس اصناف، قیف سرنخ، ماشین‌حساب) در مرورگر روی یک corpus نمونه دترمینیستیک کار می‌کنند؛ هیچ فایل `.env` یا سرویس خارجی لازم نیست.
+- پنجره‌ی گزارش‌دهی خودکار با تقویم جلالی واقعی حرکت می‌کند: شش ماه اخیر تا ماه جاری (اگر امروز شهریور ۱۴۰۵ باشد، «دوره جاری» دقیقاً شهریور ۱۴۰۵ است و هرگز اسنپشات قدیمی نمایش داده نمی‌شود). ارقام خود داده‌های تولیدی داخلی‌اند — واکشی از منبع خارجی وجود ندارد.
 - جابه‌جایی کارت‌ها در کانبان سرنخ‌ها در **localStorage مرورگر** ذخیره می‌شود (دکمه «بازنشانی داده‌های نمونه» در صفحه سرنخ‌ها).
 
 ## استقرار روی GitHub (GitHub Pages)

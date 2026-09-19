@@ -8,6 +8,7 @@ import type {
   RiskStatus,
 } from "@/db/schema";
 import { cbiPosFee, computeLeadScore, recommendProduct } from "./engine";
+import { recentJalaliPeriods } from "./format";
 
 /** The shape consumed by the service layer, shared by PostgreSQL and demo data. */
 export interface DemoCorpus {
@@ -21,7 +22,12 @@ export interface DemoCorpus {
   prevPeriod: string;
 }
 
-const PERIODS = ["1403-06", "1403-07", "1403-08", "1403-09", "1403-10", "1403-11"];
+/**
+ * The reporting window follows the real calendar: the six most recent Jalali
+ * months ending with the current one (e.g. "1405-07" شهریور ۱۴۰۵ when the app
+ * is opened in Shahrivar 1405), so "دوره جاری" is never a stale snapshot.
+ */
+const PERIODS = recentJalaliPeriods(6);
 const PROVINCES = [
   ["تهران", "تهران", "TH"],
   ["البرز", "کرج", "KJ"],
