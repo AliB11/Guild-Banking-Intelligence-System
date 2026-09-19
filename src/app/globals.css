@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Vazirmatn Variable", "Vazirmatn", "Segoe UI", system-ui, sans-serif;
+
+  /* Night palette — پس‌زمینه فرماندهی مالی */
+  --color-night-950: #04070d;
+  --color-night-900: #070d18;
+  --color-night-850: #0a1120;
+  --color-night-800: #0e1729;
+  --color-night-750: #121d33;
+  --color-night-700: #17263f;
+  --color-night-600: #1f3252;
+
+  /* Gold — طلای اصناف */
+  --color-gold-300: #ffe1a1;
+  --color-gold-400: #f5c860;
+  --color-gold-500: #e0ab3a;
+  --color-gold-600: #b58424;
+
+  /* Persian turquoise */
+  --color-persian-300: #7de8df;
+  --color-persian-400: #3bd6c8;
+  --color-persian-500: #17b3a6;
+
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.9s ease both;
+  --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.6s linear infinite;
+  --animate-dash: dash 1.4s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.86); }
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+  @keyframes dash {
+    0% { stroke-dashoffset: 40; }
+    100% { stroke-dashoffset: 0; }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #04070d;
+  color: #e6ecf5;
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01";
+  overflow-x: clip;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+::selection {
+  background: rgba(224, 171, 58, 0.35);
+  color: #fff7e8;
+}
+
+/* ---- Scrollbar ----------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #060b14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1c2c49;
+  border-radius: 8px;
+  border: 2px solid #060b14;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2a4067;
+}
+
+/* ---- Glass card ----------------------------------------------------- */
+.glass {
+  position: relative;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+    rgba(10, 17, 32, 0.72);
+  border: 1px solid rgba(148, 178, 255, 0.09);
+  backdrop-filter: blur(14px);
+  border-radius: 1.15rem;
+}
+
+.glass-hover {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s, box-shadow 0.35s;
+}
+.glass-hover:hover {
+  transform: translateY(-3px);
+  border-color: rgba(224, 171, 58, 0.28);
+  box-shadow: 0 18px 50px -22px rgba(224, 171, 58, 0.22), 0 8px 30px -18px rgba(0, 0, 0, 0.7);
+}
+
+.gold-text {
+  background: linear-gradient(120deg, #ffe9bd 10%, #f5c860 45%, #c98f22 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ring-line {
+  background: linear-gradient(90deg, transparent, rgba(245, 200, 96, 0.55), transparent);
+  height: 1px;
+}
+
+/* ---- Stagger helper ------------------------------------------------- */
+.stagger > * {
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.03s; }
+.stagger > *:nth-child(2) { animation-delay: 0.09s; }
+.stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger > *:nth-child(4) { animation-delay: 0.21s; }
+.stagger > *:nth-child(5) { animation-delay: 0.27s; }
+.stagger > *:nth-child(6) { animation-delay: 0.33s; }
+.stagger > *:nth-child(7) { animation-delay: 0.39s; }
+.stagger > *:nth-child(8) { animation-delay: 0.45s; }
+.stagger > *:nth-child(9) { animation-delay: 0.51s; }
+.stagger > *:nth-child(10) { animation-delay: 0.57s; }
+
+/* ---- Recharts polish ------------------------------------------------- */
+.recharts-wrapper * {
+  font-family: var(--font-sans) !important;
+}
+.recharts-cartesian-axis-tick text {
+  fill: #7c8db0;
+  font-size: 11px;
+}
+.recharts-tooltip-cursor {
+  fill: rgba(245, 200, 96, 0.05);
+}
+
+/* ---- Kanban drag states ---------------------------------------------- */
+.kanban-card {
+  cursor: grab;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s, opacity 0.25s, border-color 0.25s;
+}
+.kanban-card:active {
+  cursor: grabbing;
+}
+.kanban-card.dragging {
+  opacity: 0.35;
+  transform: scale(0.97) rotate(1deg);
+}
+.kanban-col.drop-target {
+  border-color: rgba(245, 200, 96, 0.5) !important;
+  background: rgba(245, 200, 96, 0.045) !important;
+}
