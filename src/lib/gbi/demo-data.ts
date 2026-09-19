@@ -1,16 +1,11 @@
-import {
-  guildCategories,
-  marketingLeads,
-  merchantBusinesses,
-  subGuilds,
-  terminalMetrics,
-  type GuildCategoryRow,
-  type MarketingLeadRow,
-  type MerchantBusinessRow,
-  type SubGuildRow,
-  type TerminalMetricRow,
-  type PipelineStage,
-  type RiskStatus,
+import type {
+  GuildCategoryRow,
+  MarketingLeadRow,
+  MerchantBusinessRow,
+  SubGuildRow,
+  TerminalMetricRow,
+  PipelineStage,
+  RiskStatus,
 } from "@/db/schema";
 import { cbiPosFee, computeLeadScore, recommendProduct } from "./engine";
 

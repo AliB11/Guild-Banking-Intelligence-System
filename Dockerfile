@@ -23,13 +23,15 @@ ENV PORT=3000
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
 
-# Install only runtime dependencies; the standalone Next server is copied below.
+# Runtime dependencies only; tsx (a regular dependency now) lets the plain
+# Node server run the TypeScript service layer without a compile step.
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/out ./out
+COPY --from=builder /app/src ./src
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
 RUN chown -R nextjs:nodejs /app
 USER nextjs

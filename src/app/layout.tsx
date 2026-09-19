@@ -4,7 +4,6 @@ import "@fontsource-variable/vazirmatn";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AppShell } from "@/components/layout/app-shell";
-import { allowDemoMode, hasDatabaseConfig } from "@/db";
 
 export const metadata: Metadata = {
   title: "GBI | سامانه هوش بانکداری اصناف",
@@ -22,8 +21,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div className="absolute bottom-[-15%] left-[-8%] h-[38rem] w-[38rem] rounded-full bg-[radial-gradient(circle,rgba(224,171,58,0.1),transparent_65%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(148,178,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(148,178,255,0.025)_1px,transparent_1px)] bg-[size:52px_52px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,black,transparent)]" />
         </div>
+        {/*
+          The deployed artifact is the static profile: data is computed in the
+          browser from the bundled sample corpus, so the shell always reports
+          the database-less mode.
+        */}
         <Providers>
-          <AppShell demoMode={!hasDatabaseConfig && allowDemoMode}>{children}</AppShell>
+          <AppShell>{children}</AppShell>
         </Providers>
       </body>
     </html>

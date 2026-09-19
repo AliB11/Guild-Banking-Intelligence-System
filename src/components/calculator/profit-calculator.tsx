@@ -24,6 +24,7 @@ import { Slider } from "@/components/ui/slider";
 import { ScoreGauge } from "@/components/score-gauge";
 import { AnimatedNumber } from "@/components/animated-number";
 import { useCalculatorStore, type CalculatorInputs } from "@/lib/store";
+import { runCalculatorClient } from "@/lib/gbi/client-data";
 import { StressLab } from "./stress-lab";
 import { PRODUCT_LABELS, RISK_LABELS } from "@/lib/gbi/types";
 import type { CalculatorInput, CalculatorResult } from "@/lib/gbi/engine";
@@ -142,13 +143,11 @@ export function ProfitCalculator({ presets }: { presets: GuildPreset[] }) {
 
   const mutation = useMutation<CalculatorResult, Error, CalculatorInput>({
     mutationFn: async (payload) => {
-      const res = await fetch("/api/calculator", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error("محاسبه سودآوری ناموفق بود");
-      return (await res.json()) as CalculatorResult;
+      try {
+        return runCalculatorClient(payload);
+      } catch {
+        throw new Error("محاسبه سودآوری ناموفق بود");
+      }
     },
   });
 

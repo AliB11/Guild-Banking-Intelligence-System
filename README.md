@@ -2,85 +2,99 @@
 
 داشبورد تحلیل سودآوری، ماتریس رسته‌های شغلی، قیف سرنخ شعب و ماشین‌حساب تسهیلات برای بانکداری اصناف.
 
-## اجرای سریع
+> **حالت اصلی: کاملاً بدون دیتابیس.** برنامه یک وب‌اپ استاتیک است که داده‌های نمونه را به‌صورت درون‌برنامه‌ای (Pure TypeScript) محاسبه می‌کند؛ بدون PostgreSQL، بدون سرور Node، بدون متغیر محیطی — روی GitHub Pages با یک کلیک.
+
+## اجرای سریع (بدون دیتابیس)
 
 ```bash
 npm install
-cp .env.example .env
-# مقدار DATABASE_URL را در .env تنظیم کنید
-npm run db:push
-npm run db:seed
-npm run dev
+npm run dev        # توسعه روی http://localhost:3000
 ```
 
-- برنامه روی `0.0.0.0` اجرا می‌شود تا در Preview/Container قابل دسترسی باشد.
-- اگر `DATABASE_URL` تنظیم نشده باشد، برنامه عمداً در **حالت نمایشی** با یک corpus درون‌حافظه‌ای کامل اجرا می‌شود؛ در این حالت هیچ اطلاعاتی در PostgreSQL نوشته نمی‌شود و نوار وضعیت برنامه آن را نمایش می‌دهد.
-- `npm run db:seed` داده‌های نمونه را در یک transaction جایگزین می‌کند. این دستور را روی دیتابیس عملیاتی اجرا نکنید؛ در `NODE_ENV=production` فقط با `ALLOW_DESTRUCTIVE_SEED=true` اجرا می‌شود.
+ساخت و اجرای نسخه تولیدی:
+
+```bash
+npm run build      # خروجی استاتیک در ./out
+npm start          # سرو out/ + API اختیاری (بدون دیتابیس: حالت demo)
+```
+
+- تمام صفحات (میز کار، ماتریس اصناف، قیف سرنخ، ماشین‌حساب) در مرورگر روی یک corpus نمونه دترمینیستیک کار می‌کنند؛ هیچ فایل `.env` یا سرویس خارجی لازم نیست.
+- جابه‌جایی کارت‌ها در کانبان سرنخ‌ها در **localStorage مرورگر** ذخیره می‌شود (دکمه «بازنشانی داده‌های نمونه» در صفحه سرنخ‌ها).
+
+## استقرار روی GitHub (GitHub Pages)
+
+Workflow `Deploy to GitHub Pages` (.github/workflows/pages.yml) روی هر push به `main` خروجی استاتیک را با `NEXT_BASE_PATH` خودکار (از نام repository) build و روی Pages منتشر می‌کند.
+
+فعال‌سازی (یک‌بار):
+
+1. در repository: **Settings → Pages → Build and deployment → Source: GitHub Actions**
+2. روی `main` push کنید؛ site روی `https://<owner>.github.io/Guild-Banking-Intelligence-System/` آنلاین می‌شود.
+
+بدون دیتابیس، بدون secret، بدون env — فقط خود repository. برای انتشار از branch دیگر یا تست دستی: **Actions → Deploy to GitHub Pages → Run workflow**. اگر از دامنه سفارشی استفاده می‌کنید، مقدار `NEXT_BASE_PATH` در workflow را خالی بگذارید (ریشه دامنه).
+
+## معماری دو حالتی
+
+| حالت | داده | اجرا | کاربرد |
+| --- | --- | --- | --- |
+| **استاتیک** (پیش‌فرض) | corpus درون‌حافظه‌ای + localStorage | فایل‌های خالص HTML/JS — GitHub Pages، هر host استاتیک، یا `npm start` | دمو، مرور UI، بدون زیرساخت |
+| **full-stack اختیاری** | PostgreSQL (Drizzle) + audit/outbox | Node server خالص (`src/server/server.ts`) با همان قرارداد JSON | داده واقعی، Docker/compose |
+
+- `src/lib/gbi/compute.ts` — همه محاسبات (pure)؛ دقیقاً توابع یکسانی هم در مرورگر و هم در سرور اجرا می‌شوند.
+- `src/lib/gbi/client-data.ts` — لایه داده مرورگر (بدون هیچ وابستگی نودی).
+- `src/lib/gbi/service.ts` + `src/db` — facade سرور؛ فقط در حالت PG لود می‌شود (pg/drizzle وارد باندل مرورگر نمی‌شوند).
+- `src/server/server.ts` — سرور HTTP نود (بدون فریم‌ورک) که `out/` را سرو می‌کند و APIهای JSON را در دسترس نگه می‌دارد:
+
+| endpoint | توضیح |
+| --- | --- |
+| `GET /api/health` | وضعیت: `demo` (بدون DB) یا `postgres` (قابل‌دسترس / بدون migration / ناپایدار) |
+| `GET /api/dashboard` | شاخص‌های مدیریتی |
+| `GET /api/guilds` | ماتریس اصناف + BCG |
+| `GET /api/guilds/compare?a=&b=` | مقایسه راداری دو رسته |
+| `GET /api/leads` | سرنخ‌های بازاریابی |
+| `PATCH /api/leads/:id` | تغییر مرحله قیف (audit + outbox در PG) |
+| `POST /api/calculator` | ماشین‌حساب سودآوری |
 
 ## اسکریپت‌ها
 
 | دستور | کاربرد |
 | --- | --- |
-| `npm run dev` | توسعه با میزبان قابل Preview |
-| `npm run build` | build تولیدی |
-| `npm run start` | اجرای build تولیدی |
+| `npm run dev` | توسعه با میزبان قابل Preview (بدون دیتابیس) |
+| `npm run build` | build استاتیک (خروجی `out/`) |
+| `npm start` | سرو `out/` + API؛ بدون `DATABASE_URL` در حالت demo اجرا می‌شود |
 | `npm run lint` | بررسی ESLint |
 | `npm run typecheck` | بررسی TypeScript |
 | `npm run db:push` | اعمال مستقیم schema با Drizzle برای توسعه؛ نیازمند `DATABASE_URL` |
-| `npm run db:generate` | ساخت migration جدید پس از تغییر schema؛ نیازمند `DATABASE_URL` در config |
+| `npm run db:generate` | ساخت migration جدید پس از تغییر schema |
 | `npm run db:migrate` | اعمال migrationهای commit‌شده و امن برای production |
 | `npm run db:seed` | درج corpus نمونه در PostgreSQL؛ عملیات destructive و فقط برای demo |
 | `npm run db:studio` | باز کردن Drizzle Studio |
-| `npm run start:container` | اجرای Next standalone داخل Docker و migration اختیاری |
+| `npm run start:container` | entrypoint container؛ migration اختیاری + سرور |
 
-## استقرار از GitHub
+## متغیرهای محیطی
 
-این پروژه یک Next.js full-stack است؛ چون APIهای dynamic، تغییر مرحله سرنخ و PostgreSQL دارد، **GitHub Pages برای آن مناسب نیست**. برای استقرار بدون دردسر از GitHub یکی از این دو مسیر را انتخاب کنید:
+| متغیر | اجباری | توضیح |
+| --- | --- | --- |
+| `NEXT_BASE_PATH` | build فقط | زیرمسیر استقرار (workflow Pages خودکار از نام repo مقدار می‌دهد؛ برای دامنه سفارشی خالی بگذارید) |
+| `DATABASE_URL` | حالت PG | connection string PostgreSQL |
+| `ALLOW_DEMO_MODE` | خیر | پیش‌فرض `true`؛ فقط API سرور را بدون دیتابیس زنده نگه می‌دارد |
+| `DB_POOL_MAX` | خیر | سقف pool؛ برای serverless معمولاً `5` |
+| `RUN_DB_MIGRATIONS` | Docker | فقط entrypoint container با `true` migration اجرا می‌کند |
+| `ALLOW_DESTRUCTIVE_SEED` | seed | فقط با مقدار `true` و برای reset صریح demo |
 
-### مسیر پیشنهادی: Vercel متصل به GitHub
+## اجرای Docker / GHCR (حالت full-stack اختیاری)
 
-1. در Vercel گزینه **New Project → Import Git Repository** را بزنید و همین repository را انتخاب کنید. فایل `vercel.json` تنظیمات build را آماده کرده است.
-2. در Environment Variables این مقادیر را ثبت کنید:
-   - `DATABASE_URL`: اتصال PostgreSQL مدیریت‌شده (Neon، Supabase یا سرویس مشابه).
-   - `ALLOW_DEMO_MODE=false`: برای اینکه production بدون دیتابیس به‌صورت ناخواسته با داده حافظه‌ای اجرا نشود.
-   - `DB_POOL_MAX=5`: برای جلوگیری از اشباع connection pool در محیط serverless.
-3. یک‌بار migration را اجرا کنید. می‌توانید secret به نام `DATABASE_URL` را در GitHub بگذارید و از مسیر **Actions → Migrate database → Run workflow**، گزینه تأیید را فعال کنید؛ یا در محیط امن خود اجرا کنید:
-
-   ```bash
-   npm ci
-   DATABASE_URL="postgresql://..." npm run db:migrate
-   ```
-
-4. در Vercel روی هر push به branch متصل، build و deploy خودکار انجام می‌شود. endpoint سلامت `/api/health` باید وضعیت `mode: "postgres"` و `database: "reachable"` برگرداند.
-
-برای Preview بدون دیتابیس، `ALLOW_DEMO_MODE=true` بگذارید؛ داده نمایشی in-memory است و بین instanceها/استقرارها پایدار نیست. **این repository هنوز login، SSO و RBAC ندارد**؛ قبل از اتصال داده واقعی، Vercel/پروکسی سازمانی را با احراز هویت و محدودسازی شبکه جلوی برنامه قرار دهید.
-
-### مسیر Docker / GHCR
-
-Workflow `CI` روی هر push و Pull Request، lint، typecheck، build و audit را اجرا می‌کند. Workflow `Publish container` روی `main` یا tag نسخه، image را در GitHub Container Registry منتشر می‌کند:
-
-```text
-ghcr.io/<owner>/<repository>:latest
-```
-
-برای اجرای محلی full-stack با PostgreSQL:
+Workflow `CI` روی هر push و Pull Request، lint، typecheck و build را اجرا می‌کند. Workflow `Publish container` روی `main` یا tag نسخه، image را در `ghcr.io/<owner>/<repository>:latest` منتشر می‌کند:
 
 ```bash
 docker compose up --build -d
 docker compose --profile seed run --rm seed   # اختیاری؛ داده demo را جایگزین می‌کند
 ```
 
-سرویس container با `RUN_DB_MIGRATIONS=true` migrationهای commit‌شده را هنگام start اجرا می‌کند و `/api/health` healthcheck دارد. در production مقدار `DATABASE_URL` را از secret manager بدهید و seed را اجرا نکنید.
+Container همان سرور نود را با `RUN_DB_MIGRATIONS=true` و healthcheck `/api/health` اجرا می‌کند. بدون `DATABASE_URL`، container نیز بدون دیتابیس (حالت demo) کار می‌کند.
 
-### متغیرهای محیطی
+## امکان‌سنجی و تصمیمات معماری
 
-| متغیر | اجباری | توضیح |
-| --- | --- | --- |
-| `DATABASE_URL` | production | connection string PostgreSQL |
-| `ALLOW_DEMO_MODE` | خیر | پیش‌فرض `true`؛ برای production واقعی `false` |
-| `DB_POOL_MAX` | خیر | سقف pool؛ برای serverless معمولاً `5` |
-| `RUN_DB_MIGRATIONS` | Docker | فقط برای اجرای migration در entrypoint container |
-| `ALLOW_DESTRUCTIVE_SEED` | seed | فقط با مقدار `true` و برای reset صریح demo |
+مستند کامل امکان‌سنجی اجرای روی GitHub بدون دیتابیس: [`docs/feasibility-github-pages.md`](docs/feasibility-github-pages.md). خلاصه: چون تمام موتور محاسباتی Pure است، اپ به‌صورت static export روی GitHub Pages اجرا می‌شود؛ APIهای قدیمی Next.js به یک سرور نود اختیاری منتقل شدند و مسیر PostgreSQL دست‌نخورده باقی مانده است.
 
 ## قرارداد محاسباتی مهم
 
@@ -102,6 +116,7 @@ docker compose --profile seed run --rm seed   # اختیاری؛ داده demo �
 - افزودن unique index برای `(merchant_id, reporting_period)` و تبدیل Drizzle config به تنظیمات مبتنی بر env.
 - اصلاح timestampهای seed که قبلاً سال جلالی را مستقیماً به `Date` میلادی می‌دادند.
 - ارتقای Next/PostCSS به نسخه‌های بدون آسیب‌پذیری runtime گزارش‌شده و اضافه شدن بررسی health.
+- **استقرار بدون دیتابیس:** تبدیل اپ به static export با لایه داده کلاینت‌ساید؛ حذف وابستگی اجباری به PostgreSQL و افزودن workflow GitHub Pages (جزئیات در `docs/feasibility-github-pages.md`).
 
 ## قابلیت‌های عملیاتی اجراشده
 
@@ -123,7 +138,7 @@ docker compose --profile seed run --rm seed   # اختیاری؛ داده demo �
 - **سهم نسبی:** گردش ماهانه هر رسته ÷ گردش بزرگ‌ترین رسته داخلی؛ خط برش فعلاً ۵۰٪ است.
 - **رشد:** تغییر گردش رسته نسبت به دوره گزارش قبلی؛ خط رشد برابر میانه رشد رسته‌های دارای داده است.
 - **حاشیه خالص بانک:** کارمزد خرید کارتی استاندارد مدل + ارزش ماهانه رسوب CASA − هزینه پشتیبانی پایانه. ارزش رسوب با `(مانده × (نرخ تسهیلات − نسبت سپرده قانونی)) ÷ ۱۲` محاسبه می‌شود.
-- **کارمزد خرید کارتی در مدل:** برای تراکنش کمتر از ۶٬۰۰۰٬۰۰۰ ریال، ۱٬۲۰۰ ریال؛ برای مبالغ بالاتر، `۰٫۰۲٪ × مبلغ` تا سقف ۴۰٬۰۰۰ ریال. هزینه پشتیبانی پیش‌فرض هر پایانه ۱٬۵۰۰٬۰۰۰ ریال در ماه است. همه این اعداد در UI به‌عنوان assumption نمایش داده می‌شوند و برای production باید با ابلاغیه جاری، قرارداد PSP و سیاست مالی بانک تطبیق و version شوند.
+- **کارمزد خرید کارتی در مدل:** برای تراکنش کمتر از ۶٬۰۰۰٬۰۰۰ ریال، ۱٬۲۰۰ ریال؛ برای مبالغ بالاتر، `۰٫۰۲٪ × مبلغ` تا سقف ۴۰۰۰۰ ریال. هزینه پشتیبانی پیش‌فرض هر پایانه ۱٬۵۰۰٬۰۰۰ ریال در ماه است. همه این اعداد در UI به‌عنوان assumption نمایش داده می‌شوند و برای production باید با ابلاغیه جاری، قرارداد PSP و سیاست مالی بانک تطبیق و version شوند.
 - **سوددهی:** حاشیه خالص مثبت «سودده»، حاشیه نزدیک به نقطه سربه‌سر «مرزی» و حاشیه منفیِ معنادار «زیان‌ده» است؛ این برچسب‌ها rule داخلی‌اند و جایگزین صورت سود و زیان، قرارداد یا تصمیم اعتباری نیستند.
 
 ## مسیرهای توسعه پیشنهادی

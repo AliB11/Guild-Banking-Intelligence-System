@@ -1,29 +1,35 @@
 import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 
 if (process.env.RUN_DB_MIGRATIONS === "true") {
   if (!process.env.DATABASE_URL?.trim()) {
     throw new Error("DATABASE_URL is required when RUN_DB_MIGRATIONS=true");
   }
 
-  await new Promise((resolve, reject) => {
+  await new Promise((resolvePromise, rejectPromise) => {
     const migration = spawn(process.execPath, ["scripts/migrate.mjs"], {
       stdio: "inherit",
       env: process.env,
     });
-    migration.once("error", reject);
+    migration.once("error", rejectPromise);
     migration.once("exit", (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(`Database migration exited with code ${code ?? "unknown"}`));
+      if (code === 0) resolvePromise();
+      else rejectPromise(new Error(`Database migration exited with code ${code ?? "unknown"}`));
     });
   });
 }
 
-const server = spawn(process.execPath, ["server.js"], {
+if (!existsSync(resolve(process.cwd(), "out", "index.html"))) {
+  throw new Error("Static export not found (out/index.html). The image must be built with `npm run build`.");
+}
+
+const server = spawn(process.execPath, ["--import", "tsx", "src/server/server.ts"], {
   stdio: "inherit",
   env: {
     ...process.env,
-    // Do not reuse the container's default HOSTNAME; it is not a bind address.
-    HOSTNAME: process.env.BIND_HOST || "0.0.0.0",
+    // Do not reuse the container's default HOSTNAME; it is a bind address.
+    BIND_HOST: process.env.BIND_HOST || "0.0.0.0",
     PORT: process.env.PORT || "3000",
   },
 });

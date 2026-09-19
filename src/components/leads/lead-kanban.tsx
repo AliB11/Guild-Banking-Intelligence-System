@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDecimal, formatJalaliDate } from "@/lib/gbi/format";
+import { getLeadsClient, updateLeadStageClient } from "@/lib/gbi/client-data";
+import { DataLoading } from "@/components/data-state";
 import {
   PRODUCT_LABELS,
   STAGE_LABELS,
@@ -193,16 +195,11 @@ function calculateLeadStats(leads: LeadDTO[]): LeadsResponse["stats"] {
   };
 }
 
-export function LeadKanban({ initial }: { initial: LeadsResponse }) {
+export function LeadKanban() {
   const queryClient = useQueryClient();
   const { data } = useQuery<LeadsResponse>({
     queryKey: ["leads"],
-    queryFn: async () => {
-      const res = await fetch("/api/leads");
-      if (!res.ok) throw new Error("leads failed");
-      return res.json();
-    },
-    initialData: initial,
+    queryFn: getLeadsClient,
   });
 
   // Keep optimistic changes separate from the server snapshot. This avoids a
@@ -211,20 +208,15 @@ export function LeadKanban({ initial }: { initial: LeadsResponse }) {
   const [dragId, setDragId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<PipelineStage | null>(null);
 
-  const leads = data.leads.map((lead) => ({
+  const leads = (data?.leads ?? []).map((lead) => ({
     ...lead,
     pipelineStage: stageOverrides[lead.id] ?? lead.pipelineStage,
   }));
 
   const mutation = useMutation({
     mutationFn: async ({ id, stage }: { id: string; stage: PipelineStage }) => {
-      const res = await fetch(`/api/leads/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pipeline_stage: stage }),
-      });
-      if (!res.ok) throw new Error("patch failed");
-      return res.json();
+      const lead = updateLeadStageClient(id, stage);
+      return { ok: true, lead };
     },
     onMutate: ({ id, stage }) => {
       setStageOverrides((current) => ({ ...current, [id]: stage }));
@@ -255,6 +247,10 @@ export function LeadKanban({ initial }: { initial: LeadsResponse }) {
   };
 
   const stats = calculateLeadStats(leads);
+
+  if (!data) {
+    return <DataLoading label="در حال بارگذاری سرنخ‌ها…" />;
+  }
 
   return (
     <div className="space-y-5">

@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build",
-    "start": "node scripts/start-standalone.mjs",
+    "start": "node --import tsx src/server/server.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "db:push": "drizzle-kit push",
@@ -29,6 +29,7 @@
     "react-dom": "19.2.6",
     "recharts": "^3.10.1",
     "tailwind-merge": "^3.7.0",
+    "tsx": "4.23.13",
     "zod": "4.6.5",
     "zustand": "5.0.15"
   },
@@ -43,7 +44,6 @@
     "eslint-config-next": "^16.3.5",
     "postcss": "^8.5.23",
     "tailwindcss": "4.1.17",
-    "tsx": "4.23.13",
     "typescript": "5.9.3"
   }
 }

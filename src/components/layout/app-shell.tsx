@@ -47,11 +47,9 @@ function LiveClock() {
 function Sidebar({
   open,
   onClose,
-  demoMode,
 }: {
   open: boolean;
   onClose: () => void;
-  demoMode: boolean;
 }) {
   const pathname = usePathname();
   return (
@@ -137,21 +135,14 @@ function Sidebar({
           })}
         </nav>
 
-        {/* Compliance footer */}
-        <div className={cn(
-          "m-4 rounded-xl border p-4",
-          demoMode ? "border-gold-500/20 bg-gold-500/[0.06]" : "border-persian-500/20 bg-persian-500/[0.06]",
-        )}>
+        {/* Data-mode footer — the deployed artifact is the static, database-less profile */}
+        <div className="m-4 rounded-xl border border-gold-500/20 bg-gold-500/[0.06] p-4">
           <div className="flex items-center gap-2.5">
-            <ShieldCheck className={cn("h-5 w-5", demoMode ? "text-gold-400" : "text-persian-400")} />
-            <p className={cn("text-xs font-bold", demoMode ? "text-gold-300" : "text-persian-300")}>
-              {demoMode ? "حالت نمایشی فعال" : "اتصال به سامانه مؤدیان"}
-            </p>
+            <ShieldCheck className="h-5 w-5 text-gold-400" />
+            <p className="text-xs font-bold text-gold-300">حالت بدون دیتابیس</p>
           </div>
           <p className="mt-1.5 text-[11px] leading-5 text-slate-400">
-            {demoMode
-              ? "DATABASE_URL تنظیم نشده است؛ داده‌های نمونه برای بررسی رابط کاربری نمایش داده می‌شود."
-              : "پایش لحظه‌ای انطباق مالیاتی پایانه‌ها و ضرایب اینتاکد فعال است."}
+            داده‌های نمونه به‌صورت درون‌برنامه‌ای محاسبه می‌شوند؛ تغییرات قیف سرنخ فقط در مرورگر شما ذخیره می‌گردد.
           </p>
         </div>
       </aside>
@@ -159,11 +150,11 @@ function Sidebar({
   );
 }
 
-export function AppShell({ children, demoMode }: { children: ReactNode; demoMode: boolean }) {
+export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative z-10 min-h-screen">
-      <Sidebar open={open} onClose={() => setOpen(false)} demoMode={demoMode} />
+      <Sidebar open={open} onClose={() => setOpen(false)} />
 
       <div className="lg:mr-72">
         {/* Top header */}
@@ -177,8 +168,8 @@ export function AppShell({ children, demoMode }: { children: ReactNode; demoMode
               <Menu className="h-5 w-5" />
             </button>
             <div className="hidden items-center gap-2 text-xs text-slate-500 sm:flex">
-              <span className={cn("flex h-2 w-2 animate-pulse-soft rounded-full", demoMode ? "bg-gold-400" : "bg-persian-400")} />
-              {demoMode ? "حالت نمایشی — اتصال پایگاه‌داده برقرار نیست" : "شبکه شاپرک متصل — داده‌های پذیرندگان به‌روز"}
+              <span className="flex h-2 w-2 animate-pulse-soft rounded-full bg-gold-400" />
+              حالت استاتیک — محاسبه درون‌برنامه‌ای بدون دیتابیس
             </div>
             <div className="flex-1" />
             <div className="text-xs">
