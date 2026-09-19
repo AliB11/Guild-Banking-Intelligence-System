@@ -11,6 +11,7 @@ import {
 } from "../engine";
 import { formatJalaliDate, jalaliPeriodLabel } from "../format";
 import type { Corpus } from "../compute";
+import { getGuildAtlas, GUILD_CATEGORY_LABEL } from "../market-view";
 import { buildMonthlyBriefing } from "./briefing";
 import { coverageForSource, nextWatchDate } from "./calendar";
 import { FIELD_LINEAGE, SOURCE_REGISTRY } from "./registry";
@@ -41,16 +42,15 @@ function fingerprintPayload(
   ].join("::");
 }
 
-function taxonomyFromCorpus(corpus: Corpus): TaxonomyRow[] {
-  const categoryById = new Map(corpus.categories.map((category) => [category.id, category.name]));
-  return corpus.subs.map((sub) => ({
-    id: sub.id,
-    title: sub.title,
-    categoryName: categoryById.get(sub.categoryId) ?? "—",
-    isicCode: sub.isicCode,
-    intaCode: sub.intaCode,
-    intaProfitRatio: sub.intaProfitRatio,
-    defaultMcc: sub.defaultMcc,
+function taxonomyFromAtlas(): TaxonomyRow[] {
+  return getGuildAtlas().map((row, index) => ({
+    id: `guild-${index + 1}`,
+    title: row.title,
+    categoryName: GUILD_CATEGORY_LABEL[row.category],
+    isicCode: row.isicCode,
+    intaCode: row.intaCode,
+    intaProfitRatio: row.intaProfitRatio,
+    defaultMcc: row.defaultMcc,
     sourceIds: ["isic-amar", "inta-coefficients", "shaparak-mcc", "chamber-guilds"],
   }));
 }
@@ -222,7 +222,7 @@ export function assembleCatalog(input: {
       })),
     },
     sources,
-    taxonomy: taxonomyFromCorpus(input.corpus),
+    taxonomy: taxonomyFromAtlas(),
     lineage: FIELD_LINEAGE,
     briefing,
     changelog: buildChangelog({ now, previous, periodRolled, sources, policyChanged }),

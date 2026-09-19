@@ -6,17 +6,16 @@ import type {
   TerminalMetricRow,
 } from "@/db/schema";
 import { cbiPosFee } from "./engine";
+import { getGuildAtlas, GUILD_CATEGORY_LABEL } from "./market-view";
 import {
-  GUILD_TAXONOMY,
   LATEST_PUBLISHED_PERIOD,
   MORDAD_INSTRUMENTS,
-  POLICY_LEADS,
   PREV_PUBLISHED_PERIOD,
   PUBLISHED_PERIODS,
   SHAPARAK_MONTHS,
 } from "./published-market";
 
-/** The shape consumed by the service layer, shared by PostgreSQL and static data. */
+/** Optional PostgreSQL / JSON API corpus. The static UI reads `published-market` directly. */
 export interface DemoCorpus {
   categories: GuildCategoryRow[];
   subs: SubGuildRow[];
@@ -28,62 +27,59 @@ export interface DemoCorpus {
   prevPeriod: string;
 }
 
-const CATEGORY_META: Record<
-  (typeof GUILD_TAXONOMY)[number]["category"],
-  { name: string; isicCodePrefix: string; description: string }
-> = {
-  network: {
-    name: "شبکه پرداخت",
-    isicCodePrefix: "PAY",
-    description: "ابزار پذیرش شاپرک با ارقام ماهنامه منتشرشده — نه جواز کسب",
-  },
-  production: {
-    name: "تولیدی",
-    isicCodePrefix: "C",
-    description: "طبقه‌بندی ISIC بخش تولید؛ گردش رسته در گزارش عمومی شاپرک نیست",
-  },
-  distribution: {
-    name: "توزیعی",
-    isicCodePrefix: "G",
-    description: "خرده‌فروشی و عمده‌فروشی؛ سوپرمارکت با اینتاکد و معافیت کارمزد مستند است",
-  },
-  services: {
-    name: "خدماتی",
-    isicCodePrefix: "I",
-    description: "خدمات روزمره؛ نانوایی معاف کارمزد، رستوران/اغذیه با ضریب اینتا نقل‌شده",
-  },
-  technical: {
-    name: "خدمات فنی",
-    isicCodePrefix: "S",
-    description: "خدمات فنی و سوخت؛ فقط کد ISIC/MCC — بدون گردش ماهانه عمومی",
-  },
-};
-
-const CATEGORY_ORDER: Array<(typeof GUILD_TAXONOMY)[number]["category"]> = [
-  "network",
-  "production",
-  "distribution",
-  "services",
-  "technical",
-];
-
 function uuid(sequence: number): string {
   return `00000000-0000-4000-8000-${sequence.toString(16).padStart(12, "0")}`;
 }
 
 function buildPublishedCorpus(): DemoCorpus {
   const createdAt = new Date(Date.UTC(2026, 8, 13));
-  const categories: GuildCategoryRow[] = CATEGORY_ORDER.map((key, index) => ({
-    id: uuid(100 + index),
-    name: CATEGORY_META[key].name,
-    isicCodePrefix: CATEGORY_META[key].isicCodePrefix,
-    description: CATEGORY_META[key].description,
+  const networkCategory: GuildCategoryRow = {
+    id: uuid(100),
+    name: "شبکه پرداخت",
+    isicCodePrefix: "PAY",
+    description: "ابزار پذیرش شاپرک با ارقام ماهنامه منتشرشده",
+    createdAt,
+  };
+  const atlas = getGuildAtlas();
+  const categoryKeys = Array.from(new Set(atlas.map((row) => row.category)));
+  const guildCategories: GuildCategoryRow[] = categoryKeys.map((key, index) => ({
+    id: uuid(101 + index),
+    name: GUILD_CATEGORY_LABEL[key],
+    isicCodePrefix: key.slice(0, 1).toUpperCase(),
+    description: null,
     createdAt,
   }));
-  const categoryIdByKey = new Map(CATEGORY_ORDER.map((key, index) => [key, categories[index].id]));
+  const categoryIdByKey = new Map(categoryKeys.map((key, index) => [key, guildCategories[index].id]));
+  const categories = [networkCategory, ...guildCategories];
 
-  const subs: SubGuildRow[] = GUILD_TAXONOMY.map((row, index) => ({
-    id: uuid(200 + index),
+  const networkSubs: SubGuildRow[] = [
+    {
+      id: uuid(200),
+      categoryId: networkCategory.id,
+      title: "کل شبکه شاپرک",
+      isicCode: "—",
+      intaCode: "—",
+      intaProfitRatio: 0,
+      defaultMcc: "—",
+      avgGrossMargin: 0,
+      cashConversionCycleDays: 0,
+      createdAt,
+    },
+    ...MORDAD_INSTRUMENTS.map((instrument, index) => ({
+      id: uuid(201 + index),
+      categoryId: networkCategory.id,
+      title: instrument.title,
+      isicCode: "—",
+      intaCode: "—",
+      intaProfitRatio: 0,
+      defaultMcc: "—",
+      avgGrossMargin: 0,
+      cashConversionCycleDays: 0,
+      createdAt,
+    })),
+  ];
+  const guildSubs: SubGuildRow[] = atlas.map((row, index) => ({
+    id: uuid(220 + index),
     categoryId: categoryIdByKey.get(row.category)!,
     title: row.title,
     isicCode: row.isicCode,
@@ -94,6 +90,7 @@ function buildPublishedCorpus(): DemoCorpus {
     cashConversionCycleDays: 0,
     createdAt,
   }));
+  const subs = [...networkSubs, ...guildSubs];
   const subByTitle = new Map(subs.map((sub) => [sub.title, sub]));
 
   const merchants: MerchantBusinessRow[] = [];
@@ -151,8 +148,7 @@ function buildPublishedCorpus(): DemoCorpus {
     };
     merchants.push(merchant);
     const avgBasket = instrument.txCount > 0 ? instrument.volumeRials / instrument.txCount : 0;
-    const fee =
-      instrument.key === "pos" ? Math.round(cbiPosFee(avgBasket) * instrument.txCount) : 0;
+    const fee = instrument.key === "pos" ? Math.round(cbiPosFee(avgBasket) * instrument.txCount) : 0;
     metrics.push({
       id: uuid(5000 + metrics.length),
       merchantId: merchant.id,
@@ -166,44 +162,12 @@ function buildPublishedCorpus(): DemoCorpus {
     });
   }
 
-  const leads: MarketingLeadRow[] = [];
-  for (const [index, lead] of POLICY_LEADS.entries()) {
-    const sub = subByTitle.get(lead.title);
-    if (!sub) continue;
-    const merchant: MerchantBusinessRow = {
-      id: uuid(2000 + index),
-      subGuildId: sub.id,
-      businessLicenseNumber: `POLICY/${index + 1}`,
-      nationalId: `POLICY-${String(index + 1).padStart(4, "0")}`,
-      businessName: `کمپین رسته: ${lead.title}`,
-      ownerName: "فرصت سیاستی — بدون پرونده پذیرنده عمومی",
-      province: "کل کشور",
-      city: "طراحی کمپین ستاد",
-      postalCode: "0000000000",
-      assignedBranchCode: "POLICY",
-      isTaxCompliant: true,
-      riskStatus: "LOW",
-      createdAt,
-    };
-    merchants.push(merchant);
-    leads.push({
-      id: uuid(3000 + index),
-      merchantId: merchant.id,
-      branchCode: "POLICY",
-      recommendedProduct: lead.product,
-      leadScore: lead.score,
-      pipelineStage: "NEW",
-      lastInteractionDate: createdAt,
-      createdAt,
-    });
-  }
-
   return {
     categories,
     subs,
     merchants,
     metrics,
-    leads,
+    leads: [],
     periods: [...PUBLISHED_PERIODS],
     latestPeriod: LATEST_PUBLISHED_PERIOD,
     prevPeriod: PREV_PUBLISHED_PERIOD,
@@ -212,10 +176,7 @@ function buildPublishedCorpus(): DemoCorpus {
 
 let cachedPublishedCorpus: DemoCorpus | null = null;
 
-/** Static corpus built only from published Shaparak/CBI/INTA/ISIC facts. */
 export function getDemoCorpus(): DemoCorpus {
   cachedPublishedCorpus ??= buildPublishedCorpus();
   return cachedPublishedCorpus;
 }
-
-

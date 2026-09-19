@@ -2,44 +2,32 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
-import { ProfitCalculator } from "@/components/calculator/profit-calculator";
+import { FeeCalculator } from "@/components/calculator/fee-calculator";
 import { ReadingGuide } from "@/components/explain/reading-guide";
-import { CALCULATOR_PRESETS } from "@/lib/gbi/published-market";
 
 export default function CalculatorPage() {
-  const presets = CALCULATOR_PRESETS.map((preset) => ({
-    id: preset.id,
-    title: preset.title,
-    categoryName: preset.categoryName,
-    cccDays: preset.cccDays,
-    intaProfitRatio: preset.intaProfitRatio,
-    avgBasket: preset.avgBasket,
-    avgDailyTx: preset.avgDailyTx,
-    note: preset.note,
-  }));
-
   return (
     <>
       <PageHeader
         kicker="شبیه‌ساز"
-        title="ماشین‌حساب سودآوری و تسهیلات"
-        description="این صفحه سناریوی شعبه است نه پرونده یک فروشگاه. سبد پیش‌فرض همان میانگین کارتخوان مرداد ۱۴۰۵ (۶۹۴ هزار تومان) است. تعداد تراکنش روزانه را خودتان می‌گذارید. کارمزد از پلکان بانک مرکزی است."
+        title="ماشین‌حساب کارمزد کارتخوان"
+        description="سناریوی شعبه است نه پرونده یک فروشگاه. سبد پیش‌فرض همان میانگین کارتخوان مرداد ۱۴۰۵ (۶۹۴ هزار تومان) است. کارمزد از پلکان بانک مرکزی می‌آید."
         actions={
           <>
-            <Badge variant="gold">موتور Π-Bank نسخه ۱٫۷</Badge>
+            <Badge variant="gold">موتور Π-Bank نسخه ۱٫۸</Badge>
             <Badge variant="persian">پلکان کارمزد بانک مرکزی</Badge>
           </>
         }
       />
       <ReadingGuide
         items={[
-          "پیش‌تنظیم‌ها از سبد اعلامی شاپرک و ضرایب اینتا نقل‌شده می‌آیند؛ تعداد روزانه فروشگاه جعلی نیست.",
-          "عدد بزرگ طلایی سود ماهانه بانک در سناریوی شماست: کارمزد + ارزش رسوب فرضی + حاشیه تسهیلات − هزینه دستگاه.",
-          "نانوایی و سوپرمارکت در بخشنامه معاف‌اند؛ ماشین‌حساب همچنان پلکان عمومی را نشان می‌دهد مگر خودتان سناریو را صفر کنید.",
-          "آزمایشگاه شوک می‌گوید اگر فروش کم شود، سود و سقف اعتبار چقدر تاب می‌آورد.",
+          "تعداد تراکنش روزانه را خودتان می‌گذارید؛ شاپرک رقم یک فروشگاه را نمی‌دهد.",
+          "اگر رسته معاف باشد (نانوایی/سوپرمارکت) کارمزد پذیرنده صفر است و بانک می‌پردازد.",
+          "هزینه پشتیبانی پایانه فرض مدل است، نه رقم اعلامی شاپرک.",
+          "سقف تسهیلات و رسوب حساب اینجا نیست چون داده عمومی ندارد.",
         ]}
       />
-      <ProfitCalculator presets={presets} />
+      <FeeCalculator />
     </>
   );
 }

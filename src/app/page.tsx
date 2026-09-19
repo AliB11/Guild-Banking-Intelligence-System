@@ -1,77 +1,42 @@
 "use client";
 
-import {
-  TrendingUp,
-  PieChart as PieChartIcon,
-  Trophy,
-  Map,
-  Grid3X3,
-  GitBranch,
-  ShieldAlert,
-  Database,
-} from "lucide-react";
+import { Landmark, PieChart as PieChartIcon, TrendingUp } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getDashboardSummaryClient } from "@/lib/gbi/client-data";
 import { loadCatalogClient } from "@/lib/gbi/sources/load-client";
 import { faDigits, formatCount, formatPercent, formatToman } from "@/lib/gbi/format";
-import { CBI_FEE_EXEMPT_HINT, MELLAT_MORDAD_ACQUIRER_SHARE } from "@/lib/gbi/published-market";
+import { getMarketDashboard } from "@/lib/gbi/market-view";
 import { PageHeader } from "@/components/page-header";
 import { ReadingGuide } from "@/components/explain/reading-guide";
-import { TermTip } from "@/components/explain/term-tip";
 import { OriginChip } from "@/components/explain/origin-chip";
 import { MonthlyBriefingCard } from "@/components/sources/monthly-briefing-card";
 import { MetricCard } from "@/components/metric-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DataError, DataLoading } from "@/components/data-state";
 import { TrendChart } from "@/components/charts/trend-chart";
 import { ShareDonut } from "@/components/charts/share-donut";
-import { ProfitRankChart } from "@/components/charts/profit-rank-chart";
-import { GuildTreemap } from "@/components/charts/guild-treemap";
-import { MerchantsTable } from "@/components/dashboard/merchants-table";
-import { EarlyWarningPanel } from "@/components/dashboard/early-warning-panel";
-import { DataQualityCard } from "@/components/dashboard/data-quality-card";
 
 export default function DashboardPage() {
-  const {
-    data: d,
-    isPending,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ["dashboard"],
-    queryFn: getDashboardSummaryClient,
-  });
+  const d = getMarketDashboard();
   const catalogQuery = useQuery({
     queryKey: ["intelligence-catalog"],
     queryFn: loadCatalogClient,
   });
 
-  if (isPending) return <DataLoading />;
-  if (isError || !d) return <DataError onRetry={() => void refetch()} />;
-
   const sparkVolume = d.trend.map((t) => ({ label: t.short, value: t.volume }));
-  const sparkFees = d.trend.map((t) => ({ label: t.short, value: t.fees }));
-  const instrumentShare = d.topSubGuilds.map((row) => ({
-    categoryId: row.id,
+  const sparkCount = d.trend.map((t) => ({ label: t.short, value: t.txCount }));
+  const instrumentShare = d.instruments.map((row) => ({
+    id: row.key,
     name: row.title,
-    merchants: row.merchants,
-    terminals: 0,
     volume: row.volume,
-    float: row.float,
-    fees: 0,
-    margin: row.volume,
-    sharePct: d.totals.totalTxVolume > 0 ? (row.volume / d.totals.totalTxVolume) * 100 : 0,
+    sharePct: row.sharePct,
   }));
-  const posRow = d.topSubGuilds.find((row) => row.title.includes("کارتخوان"));
-  const geoPublished = d.provinces.some((row) => row.province !== "کل کشور");
 
   return (
     <>
       <PageHeader
         kicker="میز کار"
         title="نمای شبکه پرداخت شاپرک"
-        description={`آخرین ماهنامه منتشرشده ${d.latestPeriodLabel} است (گزارش ۱۳۴). شهریور در تقویم است اما رقم شاپرک ندارد. گردش و تعداد از بازتاب گزارش رسمی است؛ رسوب CASA و نام پذیرنده در منبع عمومی نیست.`}
+        description={`آخرین ماهنامه منتشرشده ${d.latestPeriodLabel} است (گزارش ${faDigits(d.reportNo ?? 0)}). شهریور در تقویم است اما رقم شاپرک ندارد. ارقام این صفحه فقط از بازتاب گزارش رسمی آمده‌اند.`}
         actions={
           <>
             <Badge variant="persian">دوره منتشرشده: {d.latestPeriodLabel}</Badge>
@@ -81,10 +46,10 @@ export default function DashboardPage() {
       />
       <ReadingGuide
         items={[
-          "پنج کارت بالا جمع شبکه شاپرک است نه پرونده شعبه. رسوب حساب جاری اینجا نیست چون منتشر نشده.",
-          "کارمزد نمایش‌داده‌شده برآورد پلکان بانک مرکزی روی سبد کارتخوان است، نه رقم اعلامی شاپرک.",
+          "پنج کارت بالا جمع شبکه شاپرک است، نه پرونده شعبه یا پذیرنده.",
           "نمودار روند فقط ماه‌هایی را دارد که مبلغ مطلق‌شان نقل شده: خرداد، تیر، مرداد ۱۴۰۵.",
-          "نانوایی و سوپرمارکت معاف کارمزد پذیرنده‌اند؛ بانک پذیرنده می‌پردازد.",
+          "ترکیب ابزار فقط برای مرداد منتشر شده است. سبد کارتخوان رقم اعلامی است، نه میانگین ساخته‌شده.",
+          "کارمزد، رسوب حساب و گردش رسته در این صفحه نیست چون در ماهنامه عمومی نیست — کارمزد در ماشین‌حساب سناریو است.",
         ]}
       />
       {catalogQuery.data && (
@@ -97,7 +62,7 @@ export default function DashboardPage() {
         <MetricCard
           title="گردش شبکه شاپرک"
           subtitle={`بازتاب گزارش ${d.latestPeriodLabel} — منبع رسمی`}
-          value={d.totals.totalTxVolume}
+          value={d.totals.volume}
           format="toman"
           icon="exchange"
           tone="sky"
@@ -106,74 +71,41 @@ export default function DashboardPage() {
         />
         <MetricCard
           title="تعداد تراکنش"
-          subtitle={`${formatCount(d.totals.totalTxCount)} تراکنش در ${d.latestPeriodLabel}`}
-          value={d.totals.totalTxCount}
+          subtitle={`${formatCount(d.totals.txCount)} تراکنش در ${d.latestPeriodLabel}`}
+          value={d.totals.txCount}
           format="count"
           icon="terminal"
           tone="violet"
-          spark={sparkVolume}
+          deltaPct={d.totals.countDeltaPct}
+          spark={sparkCount}
         />
         <MetricCard
           title="گردش کارتخوان فروشگاهی"
-          subtitle={posRow ? "حدود ۴ میلیارد تراکنش — رقم اعلامی کارتخوان" : "در این دوره تفکیک ابزار نیست"}
-          value={posRow?.volume ?? 0}
+          subtitle={`${formatCount(d.totals.posTxCount, 0)} تراکنش — رقم اعلامی کارتخوان`}
+          value={d.totals.posVolume}
           format="toman"
           icon="vault"
           tone="gold"
           spark={sparkVolume}
         />
         <MetricCard
-          title="میانگین سبد شبکه"
-          subtitle="جمع مبلغ ÷ جمع تعداد همه ابزار؛ سبد اعلامی کارتخوان حدود ۶۹۴ هزار تومان است"
-          value={d.totals.avgBasket}
-          format="toman"
-          icon="basket"
-          tone="rose"
-          spark={sparkFees}
-        />
-        <MetricCard
-          title="برآورد کارمزد کارتخوان"
-          subtitle="فرض مدل: پلکان بانک مرکزی × سبد کارتخوان مرداد — شاپرک این رقم را منتشر نکرده"
-          value={d.totals.totalFees}
+          title="گردش پذیرش اینترنتی"
+          subtitle={`${formatCount(d.totals.internetTxCount, 0)} تراکنش اعلام‌شده`}
+          value={d.totals.internetVolume}
           format="toman"
           icon="percent"
           tone="persian"
-          spark={sparkFees}
+          spark={sparkVolume}
         />
-      </section>
-
-      <section className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <Card className="lg:col-span-2 animate-fade-up">
-          <CardHeader>
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <ShieldAlert className="h-4 w-4 text-rose-300" />
-                اتاق هشدار و شکاف داده
-              </CardTitle>
-              <CardDescription>سیگنال عملیاتی به‌علاوه چیزهایی که عمداً ساخته نشده‌اند</CardDescription>
-            </div>
-            <Badge variant={d.alerts.some((alert) => alert.severity === "critical") ? "rose" : "slate"}>
-              {faDigits(d.alerts.length)} سیگنال
-            </Badge>
-          </CardHeader>
-          <CardContent>
-            <EarlyWarningPanel alerts={d.alerts} />
-          </CardContent>
-        </Card>
-        <Card className="animate-fade-up" style={{ animationDelay: "0.08s" }}>
-          <CardHeader>
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-4 w-4 text-persian-300" />
-                گیت کیفیت داده
-              </CardTitle>
-              <CardDescription>کنترل پیش از انتشار KPIهای مدیریتی</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <DataQualityCard data={d.dataQuality} />
-          </CardContent>
-        </Card>
+        <MetricCard
+          title="سبد اعلامی کارتخوان"
+          subtitle="رقم نقل‌شده مرداد؛ میانگین کل شبکه جداگانه از مبلغ÷تعداد است"
+          value={d.totals.posBasket}
+          format="toman"
+          icon="basket"
+          tone="rose"
+          spark={sparkVolume}
+        />
       </section>
 
       <section className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
@@ -185,8 +117,7 @@ export default function DashboardPage() {
                 روند ماه‌های منتشرشده
               </CardTitle>
               <CardDescription>
-                فقط خرداد، تیر و مرداد ۱۴۰۵ مبلغ مطلق دارند. خط فیروزه‌ای <TermTip id="float">رسوب CASA</TermTip> خالی
-                است چون در گزارش عمومی نیست.
+                خرداد، تیر و مرداد ۱۴۰۵. مبلغ و تعداد هر دو از بازتاب ماهنامه است.
               </CardDescription>
             </div>
             <Badge variant="gold">{faDigits(d.trend.length)} ماه نقل‌شده</Badge>
@@ -201,9 +132,9 @@ export default function DashboardPage() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <PieChartIcon className="h-4 w-4 text-persian-400" />
-                سهم ابزار پذیرش از گردش
+                سهم ابزار از گردش مرداد
               </CardTitle>
-              <CardDescription>تفکیک مرداد ۱۴۰۵ — کارتخوان، اینترنت، مانده سایر ابزار</CardDescription>
+              <CardDescription>کارتخوان، اینترنت، مانده سایر ابزار</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
@@ -213,118 +144,68 @@ export default function DashboardPage() {
       </section>
 
       <section className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <Card className="animate-fade-up">
-          <CardHeader>
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-4 w-4 text-gold-400" />
-                ترکیب مبلغ ابزارها
-              </CardTitle>
-              <CardDescription>حاشیه نمایشی = برآورد کارمزد مدل؛ رسوب صفرِ غایب است</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ProfitRankChart data={instrumentShare} />
-          </CardContent>
-        </Card>
-
-        <Card className="lg:col-span-2 animate-fade-up" style={{ animationDelay: "0.08s" }}>
-          <CardHeader>
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Grid3X3 className="h-4 w-4 text-persian-400" />
-                نقشه ابزارهای اعلام‌شده
-              </CardTitle>
-              <CardDescription>
-                سهم نسبی ابزار از گردش شبکه — {formatToman(d.totals.totalTxVolume)}. گردش رسته صنفی در ماهنامه عمومی نیست.
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <GuildTreemap data={d.topSubGuilds} />
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
         <Card className="lg:col-span-2 animate-fade-up">
           <CardHeader>
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <Map className="h-4 w-4 text-gold-400" />
-                جغرافیا و شعبه
-              </CardTitle>
-              <CardDescription>
-                سهم استانی مبلغ در گزارش عمومی مرداد به‌صورت رقم منتشر نشده است
-              </CardDescription>
+              <CardTitle>تفکیک ابزار پذیرش — مرداد ۱۴۰۵</CardTitle>
+              <CardDescription>تعداد کارتخوان و سایر ابزار تقریبی نقل شده؛ اینترنت رقم دقیق است</CardDescription>
             </div>
-            <Badge variant="slate">{geoPublished ? `${faDigits(d.provinces.length)} استان` : "رقم استانی نیست"}</Badge>
           </CardHeader>
-          <CardContent className="space-y-3 text-[12px] leading-6 text-slate-400">
-            <p>
-              بازتاب خبری می‌گوید تهران سهم غالب دارد اما درصد مبلغ استان‌ها در منبع قابل نقل نبود؛ بنابراین نقشه حرارتی
-              ساختگی رسم نشد.
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] border-collapse text-right">
+                <thead>
+                  <tr className="border-b border-white/[0.06] text-[10.5px] font-bold text-slate-500">
+                    <th className="px-3 py-2">ابزار</th>
+                    <th className="px-3 py-2">گردش</th>
+                    <th className="px-3 py-2">تعداد</th>
+                    <th className="px-3 py-2">سهم مبلغ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {d.instruments.map((row) => (
+                    <tr key={row.key} className="border-b border-white/[0.04] text-[12px] last:border-0">
+                      <td className="px-3 py-2.5 font-extrabold text-slate-100">{row.title}</td>
+                      <td className="num px-3 py-2.5 text-gold-200">{formatToman(row.volume)}</td>
+                      <td className="num px-3 py-2.5 text-slate-300">
+                        {formatCount(row.txCount, 0)}
+                        {row.countIsApproximate ? " ≈" : ""}
+                      </td>
+                      <td className="num px-3 py-2.5 text-persian-200">{formatPercent(row.sharePct, 1)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-3 text-[11px] leading-6 text-slate-500">
+              میانگین سبد کل شبکه (مبلغ ÷ تعداد همه ابزار): {formatToman(d.totals.avgBasket)}. سبد اعلامی کارتخوان{" "}
+              {formatToman(d.totals.posBasket)} است.
             </p>
-            <p>
-              سهم بانک ملت به‌عنوان بانک پذیرنده در مرداد ۱۴۰۵: {formatPercent(MELLAT_MORDAD_ACQUIRER_SHARE.countPct, 2)}{" "}
-              تعداد و {formatPercent(MELLAT_MORDAD_ACQUIRER_SHARE.valuePct, 2)} مبلغ. بهپراخت در روایت خبری رتبهٔ اول PSP
-              است اما سهم عددی‌اش در همان بازتاب نبود.
-            </p>
-            <p className="text-[11px] text-slate-500">{CBI_FEE_EXEMPT_HINT}</p>
           </CardContent>
         </Card>
 
         <Card className="animate-fade-up" style={{ animationDelay: "0.08s" }}>
           <CardHeader>
             <div>
-              <CardTitle>ابزارهای اعلام‌شده شبکه</CardTitle>
-              <CardDescription>رتبه‌بندی بر اساس برآورد کارمزد مدل — نه تالار افتخار فروشگاه</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <MerchantsTable merchants={d.topMerchants} />
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <Card className="lg:col-span-2 animate-fade-up">
-          <CardHeader>
-            <div>
               <CardTitle className="flex items-center gap-2">
-                <GitBranch className="h-4 w-4 text-gold-400" />
-                فرصت شعب
+                <Landmark className="h-4 w-4 text-gold-400" />
+                سهم بانک ملت و ترکیب خدمات خرداد
               </CardTitle>
-              <CardDescription>بدون پایش داخلی شعبه، نقشه فرصت شعبه ساخته نمی‌شود</CardDescription>
+              <CardDescription>ارقام نقل‌شده؛ سهم استانی مبلغ منتشر نشده</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 text-[12px] leading-6 text-slate-400">
             <p>
-              فهرست شعبه و تخصیص پایانه دادهٔ داخلی بانک است. به‌جای ساختن شعبهٔ ساختگی، کمپین‌های رسته در صفحه سرنخ‌ها
-              آمده‌اند: نانوایی و سوپرمارکت (معاف کارمزد)، رستوران و اغذیه (ضریب اینتا).
+              بانک ملت به‌عنوان بانک پذیرنده در مرداد ۱۴۰۵: {formatPercent(d.mellat.countPct, 2)} تعداد و{" "}
+              {formatPercent(d.mellat.valuePct, 2)} مبلغ.
             </p>
-            <p className="border-t border-white/[0.06] pt-3 text-[10.5px] text-slate-600">
-              اتصال PostgreSQL با پایش پایانه و CASA این بلوک را با داده شعبه پر می‌کند.
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="animate-fade-up" style={{ animationDelay: "0.08s" }}>
-          <CardHeader>
-            <div>
-              <CardTitle>راهنمای خواندن ارقام</CardTitle>
-              <CardDescription>چه چیز رسمی است و چه چیز غایب</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3 text-[10.5px] leading-6 text-slate-400">
-            <p>
-              <b className="text-persian-300">رسمی:</b> گردش، تعداد، ترکیب ابزار مرداد، سبد کارتخوان، سهم ملت.
-            </p>
-            <p>
-              <b className="text-gold-300">فرض مدل:</b> کارمزد پلکانی بانک مرکزی روی سبد کارتخوان.
-            </p>
-            <p>
-              <b className="text-rose-300">غایب:</b> CASA، نام پذیرنده، گردش رسته، تعداد کارتخوان ۱۴۰۵، سهم استان.
-            </p>
+            <ul className="space-y-1 text-[11.5px] text-slate-500">
+              {d.khordadNotes.map((note) => (
+                <li key={note}>• {note}</li>
+              ))}
+            </ul>
+            <p className="border-t border-white/[0.06] pt-3 text-[11px] text-slate-500">{d.feeExemptHint}</p>
+            <p className="text-[10.5px] text-slate-600">{d.citation}</p>
           </CardContent>
         </Card>
       </section>

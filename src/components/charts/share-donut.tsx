@@ -2,11 +2,17 @@
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { formatDecimal, formatToman } from "@/lib/gbi/format";
-import type { DashboardSummary } from "@/lib/gbi/types";
 
 const COLORS = ["#f5c860", "#3bd6c8", "#a78bfa", "#38bdf8"];
 
-export function ShareDonut({ data }: { data: DashboardSummary["categoryProfit"] }) {
+export interface ShareSlice {
+  id: string;
+  name: string;
+  volume: number;
+  sharePct: number;
+}
+
+export function ShareDonut({ data }: { data: ShareSlice[] }) {
   const total = data.reduce((a, c) => a + c.volume, 0);
   if (data.length === 0 || total === 0) {
     return <div className="flex h-72 items-center justify-center text-sm text-slate-500">داده‌ای برای نمایش سهم گردش وجود ندارد.</div>;
@@ -33,7 +39,7 @@ export function ShareDonut({ data }: { data: DashboardSummary["categoryProfit"] 
             <Tooltip
               content={({ active, payload }) => {
                 if (!active || !payload?.length) return null;
-                const d = payload[0].payload as DashboardSummary["categoryProfit"][number];
+                const d = payload[0].payload as ShareSlice;
                 return (
                   <div dir="rtl" className="rounded-xl border border-white/10 bg-night-900/95 p-3 text-[11px] shadow-2xl backdrop-blur-xl">
                     <p className="font-extrabold text-slate-100">{d.name}</p>
@@ -55,7 +61,7 @@ export function ShareDonut({ data }: { data: DashboardSummary["categoryProfit"] 
       </div>
       <div dir="rtl" className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 px-1">
         {data.map((c, i) => (
-          <div key={c.categoryId} className="flex items-center justify-between text-[11px]">
+          <div key={c.id} className="flex items-center justify-between text-[11px]">
             <span className="flex items-center gap-1.5 text-slate-400">
               <span className="h-2.5 w-2.5 rounded-[4px]" style={{ background: COLORS[i % COLORS.length] }} />
               {c.name}

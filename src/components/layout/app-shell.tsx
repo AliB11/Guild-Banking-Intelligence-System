@@ -6,13 +6,11 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   LayoutDashboard,
   Network,
-  KanbanSquare,
   Calculator,
   Landmark,
   Menu,
   X,
   ShieldCheck,
-  Bell,
   Library,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,10 +18,9 @@ import { faDigits, formatJalaliDate } from "@/lib/gbi/format";
 import { DataFreshnessBar } from "@/components/layout/data-freshness-bar";
 
 const NAV = [
-  { href: "/", label: "میز کار مدیریتی", latin: "میز کار", icon: LayoutDashboard },
-  { href: "/guilds", label: "ماتریس اصناف", latin: "رسته‌ها", icon: Network },
-  { href: "/leads", label: "سرنخ‌های شعب", latin: "قیف فروش", icon: KanbanSquare },
-  { href: "/calculator", label: "ماشین‌حساب سودآوری", latin: "شبیه‌ساز", icon: Calculator },
+  { href: "/", label: "میز کار شاپرک", latin: "میز کار", icon: LayoutDashboard },
+  { href: "/guilds", label: "اطلس رسته‌ها", latin: "رسته‌ها", icon: Network },
+  { href: "/calculator", label: "ماشین‌حساب کارمزد", latin: "شبیه‌ساز", icon: Calculator },
   { href: "/sources", label: "منابع و به‌روزرسانی", latin: "تبار داده", icon: Library },
 ];
 
@@ -145,7 +142,7 @@ function Sidebar({
             <p className="text-xs font-bold text-gold-300">نمایش بدون دیتابیس</p>
           </div>
           <p className="mt-1.5 text-[11px] leading-5 text-slate-400">
-            گردش میز کار از ماهنامه شاپرک است. رسوب CASA و نام پذیرنده در منبع عمومی نیست. جزئیات در «منابع و به‌روزرسانی».
+            ارقام میز کار از ماهنامه شاپرک است. صفحه‌هایی که داده عمومی ندارند از محصول حذف شده‌اند.
           </p>
         </div>
       </aside>
@@ -176,10 +173,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               <LiveClock />
             </div>
             <span className="hidden h-5 w-px bg-white/10 sm:block" />
-            <button className="relative rounded-lg border border-white/10 p-2 text-slate-300 transition hover:bg-white/5" aria-label="اعلان‌ها">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -left-0.5 -top-0.5 h-2 w-2 rounded-full bg-gold-400" />
-            </button>
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-500/40 bg-gradient-to-br from-night-700 to-night-800 text-[13px] font-bold text-gold-300">
                 ب‌ت

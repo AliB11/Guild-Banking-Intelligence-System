@@ -3,7 +3,7 @@
 [![Deploy to GitHub Pages](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/pages.yml/badge.svg)](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/pages.yml)
 [![CI](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/ci.yml/badge.svg)](https://github.com/AliB11/Guild-Banking-Intelligence-System/actions/workflows/ci.yml)
 
-داشبورد تحلیل سودآوری، ماتریس رسته‌های شغلی، قیف سرنخ شعب، ماشین‌حساب تسهیلات، دفترچه منابع اطلاعاتی و به‌روزرسانی ماهانه پس از انتشار گزارش اصناف.
+میز کار شاپرک، اطلس رسته، ماشین‌حساب کارمزد کارتخوان، دفترچه منابع و به‌روزرسانی ماهانه پس از انتشار گزارش شاپرک.
 
 > **حالت اصلی: کاملاً بدون دیتابیس.** برنامه یک وب‌اپ استاتیک است که جمعِ منتشرشدهٔ شاپرک/بانک مرکزی/اینتا را به‌صورت درون‌برنامه‌ای محاسبه می‌کند؛ بدون PostgreSQL، بدون سرور Node، بدون متغیر محیطی — روی GitHub Pages با یک کلیک. نام پذیرنده و رسوب CASA در منبع عمومی نیست و ساخته نمی‌شود.
 
@@ -23,7 +23,7 @@ npm start          # سرو out/ + API اختیاری (بدون دیتابیس: 
 
 - تمام صفحات در مرورگر روی corpus منتشرشده (`src/lib/gbi/published-market.ts`) کار می‌کنند؛ هیچ فایل `.env` لازم نیست.
 - آخرین ماهنامه شاپرک در این نسخه **مرداد ۱۴۰۵** (گزارش ۱۳۴) است. شهریور در تقویم جاری است اما رقم شاپرک ندارد و به‌عنوان دوره جاری نمایش داده نمی‌شود.
-- کانبان سرنخ‌ها کمپین رسته است نه پرونده مشتری؛ جابه‌جایی مرحله در **localStorage مرورگر** می‌ماند.
+- قیف سرنخ، BCG، نقشه استان و تالار پذیرنده در محصول نیستند چون داده عمومی ندارند.
 
 ## استقرار روی GitHub (GitHub Pages)
 
@@ -40,7 +40,7 @@ Workflow `Deploy to GitHub Pages` (.github/workflows/pages.yml) روی هر push
 
 | حالت | داده | اجرا | کاربرد |
 | --- | --- | --- | --- |
-| **استاتیک** (پیش‌فرض) | ماهنامه شاپرک + طبقه‌بندی ISIC/INTA/MCC + localStorage | فایل‌های خالص HTML/JS — GitHub Pages، هر host استاتیک، یا `npm start` | دمو با ارقام منتشرشده، بدون زیرساخت |
+| **استاتیک** (پیش‌فرض) | ماهنامه شاپرک + طبقه‌بندی ISIC/INTA/MCC | فایل‌های خالص HTML/JS — GitHub Pages، هر host استاتیک، یا `npm start` | دمو با ارقام منتشرشده، بدون زیرساخت |
 | **full-stack اختیاری** | PostgreSQL (Drizzle) + audit/outbox | Node server خالص (`src/server/server.ts`) با همان قرارداد JSON | داده واقعی، Docker/compose |
 
 - `src/lib/gbi/compute.ts` — همه محاسبات (pure)؛ دقیقاً توابع یکسانی هم در مرورگر و هم در سرور اجرا می‌شوند.
@@ -52,11 +52,9 @@ Workflow `Deploy to GitHub Pages` (.github/workflows/pages.yml) روی هر push
 | --- | --- |
 | `GET /api/health` | وضعیت: `demo` (بدون DB) یا `postgres` (قابل‌دسترس / بدون migration / ناپایدار) |
 | `GET /api/dashboard` | شاخص‌های مدیریتی |
-| `GET /api/guilds` | ماتریس اصناف + BCG |
-| `GET /api/guilds/compare?a=&b=` | مقایسه راداری دو رسته |
-| `GET /api/leads` | سرنخ‌های بازاریابی |
-| `PATCH /api/leads/:id` | تغییر مرحله قیف (audit + outbox در PG) |
-| `POST /api/calculator` | ماشین‌حساب سودآوری |
+| `GET /api/guilds` | طبقه‌بندی رسته‌ها (اختیاری) |
+| `GET /api/leads` | در حالت استاتیک خالی است |
+| `POST /api/calculator` | موتور کارمزد/تسهیلات |
 | `GET /api/catalog` | کاتالوگ منابع، تقویم انتشار و ماهنامه |
 
 ## اسکریپت‌ها
@@ -129,7 +127,7 @@ Workflow `Monthly guild catalog refresh` (`.github/workflows/monthly-refresh.yml
 
 ## قرارداد محاسباتی مهم
 
-تمام مبالغ در لایه داده و موتور محاسباتی **ریال** هستند و فقط در لایه نمایش به تومان تبدیل می‌شوند. امتیاز سرنخ از چهار جزء رسوب، گردش، تناسب اعتباری و انطباق مالیاتی ساخته می‌شود. `GET /api/health` در حالت واقعی اتصال PostgreSQL و در حالت بدون پیکربندی، وضعیت demo را گزارش می‌کند.
+تمام مبالغ در لایه داده و موتور محاسباتی **ریال** هستند و فقط در لایه نمایش به تومان تبدیل می‌شوند. `GET /api/health` در حالت واقعی اتصال PostgreSQL و در حالت بدون پیکربندی، وضعیت demo را گزارش می‌کند.
 
 ## موارد اصلاح‌شده در بازبینی ۳۶۰ درجه
 

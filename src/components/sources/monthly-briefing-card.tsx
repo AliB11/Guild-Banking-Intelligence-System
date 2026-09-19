@@ -1,7 +1,7 @@
 import { Newspaper } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { faDigits, formatDecimal, formatToman } from "@/lib/gbi/format";
+import { faDigits, formatToman } from "@/lib/gbi/format";
 import type { MonthlyBriefing } from "@/lib/gbi/sources/types";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +22,7 @@ export function MonthlyBriefingCard({ briefing }: { briefing: MonthlyBriefing })
             {briefing.headline}
           </CardTitle>
           <CardDescription>
-            ماهنامه از آخرین گزارش منتشرشده شاپرک — نه از پرونده شعبه. رسوب CASA در منبع عمومی نیست.
+            ماهنامه از آخرین گزارش منتشرشده شاپرک — نه از پرونده شعبه.
           </CardDescription>
         </div>
         <Badge variant="gold">{briefing.periodLabel}</Badge>
@@ -43,13 +43,14 @@ export function MonthlyBriefingCard({ briefing }: { briefing: MonthlyBriefing })
         </ul>
         {briefing.movers.length > 0 && (
           <div>
-            <p className="mb-2 text-[11px] font-extrabold text-slate-300">رسته‌های پرتحرک این ماه</p>
+            <p className="mb-2 text-[11px] font-extrabold text-slate-300">ترکیب ابزار مرداد</p>
             <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
               {briefing.movers.map((mover) => (
                 <div key={mover.id} className="flex items-center justify-between rounded-lg border border-white/[0.06] px-3 py-2 text-[11px]">
                   <span className="font-bold text-slate-200">{mover.title}</span>
                   <span className="num text-slate-400">
-                    {formatToman(mover.volume, { decimals: 0 })} · {formatDecimal(mover.growthPct, 1)}٪
+                    {formatToman(mover.volume, { decimals: 0 })}
+                    {mover.profitabilityLabel ? ` · ${mover.profitabilityLabel}` : ""}
                   </span>
                 </div>
               ))}

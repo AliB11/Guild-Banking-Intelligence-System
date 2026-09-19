@@ -6,7 +6,7 @@ import type { RecommendedProduct, RiskStatus } from "@/db/schema";
 /* ------------------------------------------------------------------ */
 
 /** نسخه سیاست‌ها و فرمول‌های تصمیم‌یار؛ در audit trail ذخیره شود. */
-export const MODEL_VERSION = "GBI-ΠBank-1.7.0";
+export const MODEL_VERSION = "GBI-ΠBank-1.8.0";
 
 /** نرخ تسهیلات سالانه (اعطای منابع) */
 export const LENDING_RATE = 0.23;

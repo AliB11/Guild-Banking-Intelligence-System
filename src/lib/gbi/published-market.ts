@@ -127,7 +127,7 @@ export const MELLAT_MORDAD_ACQUIRER_SHARE = {
 export const CBI_FEE_EXEMPT_HINT = "نانوایی و سوپرمارکت: کارمزد پذیرنده صفر است و بانک پذیرنده می‌پردازد (بخشنامه بانک مرکزی ۱۴۰۲/۰۴/۰۴، تا اطلاع ثانوی).";
 
 export interface GuildTaxonomyRow {
-  category: "network" | "production" | "distribution" | "services" | "technical";
+  category: "production" | "distribution" | "services" | "technical";
   title: string;
   isicCode: string;
   intaCode: string;
@@ -138,46 +138,6 @@ export interface GuildTaxonomyRow {
 }
 
 export const GUILD_TAXONOMY: GuildTaxonomyRow[] = [
-  {
-    category: "network",
-    title: "کل شبکه شاپرک",
-    isicCode: "—",
-    intaCode: "—",
-    intaProfitRatio: 0,
-    defaultMcc: "—",
-    feeExempt: false,
-    citation: "جمع کل ماهنامه شاپرک — خرداد و تیر ۱۴۰۵؛ مرداد به تفکیک ابزار شکسته شده",
-  },
-  {
-    category: "network",
-    title: "کارتخوان فروشگاهی",
-    isicCode: "—",
-    intaCode: "—",
-    intaProfitRatio: 0,
-    defaultMcc: "—",
-    feeExempt: false,
-    citation: "ابزار پذیرش شاپرک — نه رسته جواز کسب",
-  },
-  {
-    category: "network",
-    title: "پذیرش اینترنتی",
-    isicCode: "—",
-    intaCode: "—",
-    intaProfitRatio: 0,
-    defaultMcc: "—",
-    feeExempt: false,
-    citation: "ابزار پذیرش شاپرک — نه رسته جواز کسب",
-  },
-  {
-    category: "network",
-    title: "سایر ابزار (موبایل/USSD)",
-    isicCode: "—",
-    intaCode: "—",
-    intaProfitRatio: 0,
-    defaultMcc: "—",
-    feeExempt: false,
-    citation: "مانده ابزار پس از ارقام اعلام‌شده کارتخوان و اینترنت",
-  },
   {
     category: "distribution",
     title: "سوپرمارکت و مواد غذایی",
@@ -320,72 +280,14 @@ export const GUILD_TAXONOMY: GuildTaxonomyRow[] = [
   },
 ];
 
-export interface PolicyLeadDef {
-  title: string;
-  product: "POS_EXPANSION" | "WORKING_CAPITAL_LOAN" | "LC_DOMESTIC" | "SCF_GAM" | "BILL_DISCOUNTING";
-  score: number;
-  reason: string;
-}
-
-export const POLICY_LEADS: PolicyLeadDef[] = [
-  {
-    title: "سوپرمارکت و مواد غذایی",
-    product: "WORKING_CAPITAL_LOAN",
-    score: 88,
-    reason: "معاف کارمزد پذیرنده؛ بانک کارمزد را می‌پردازد — اولویت جذب رسوب جاری و اتصال مؤدیان، نه ساختن پرونده ساختگی.",
-  },
-  {
-    title: "نانوایی",
-    product: "WORKING_CAPITAL_LOAN",
-    score: 86,
-    reason: "همان بخشنامه معافیت کارمزد؛ تراکنش خرد پرتکرار، فرصت ماندگاری وجوه در حساب بانک پذیرنده.",
-  },
-  {
-    title: "رستوران معمولی",
-    product: "WORKING_CAPITAL_LOAN",
-    score: 74,
-    reason: "ضریب اینتا ۱۴٪ منتشر شده؛ سبد کارتخوان شبکه بالای کف ۶ میلیون ریال است — طرح پوز مشروط به اتصال مؤدیان.",
-  },
-  {
-    title: "اغذیه فروشی",
-    product: "POS_EXPANSION",
-    score: 70,
-    reason: "ضریب اینتا ۱۵–۲۰٪؛ پوشش پایانه و اتصال مالیاتی پیش از اعتبار.",
-  },
-  {
-    title: "داروخانه",
-    product: "LC_DOMESTIC",
-    score: 64,
-    reason: "MCC ۵۹۱۲ در طبقه‌بندی پذیرندگی؛ گردش رسته در گزارش عمومی شاپرک تفکیک نشده.",
-  },
-  {
-    title: "جایگاه سوخت",
-    product: "POS_EXPANSION",
-    score: 58,
-    reason: "MCC ۵۵۴۱؛ سهم مبلغ رسته در ماهنامه عمومی نیست — کمپین پوشش پایانه نه پرونده مشتری.",
-  },
-  {
-    title: "طلا، جواهر و نقره",
-    product: "BILL_DISCOUNTING",
-    score: 56,
-    reason: "MCC ۵۹۴۴ سبد درشت؛ بدون CASA عمومی نمی‌توان سقف اعتبار ساخت — فقط رسته سیاستی.",
-  },
-  {
-    title: "بنکداری مواد غذایی",
-    product: "SCF_GAM",
-    score: 54,
-    reason: "عمده‌فروشی مواد غذایی (ISIC 4630)؛ ابزار زنجیره تأمین وقتی داده رابطه‌ای بانک برسد.",
-  },
-];
-
 export interface CalculatorPresetDef {
   id: string;
   title: string;
   categoryName: string;
-  cccDays: number;
   intaProfitRatio: number;
   avgBasket: number;
   avgDailyTx: number;
+  feeExempt: boolean;
   note: string;
 }
 
@@ -398,49 +300,42 @@ export const CALCULATOR_PRESETS: CalculatorPresetDef[] = [
     id: "pos-network-basket",
     title: "سبد میانگین کارتخوان شبکه (مرداد ۱۴۰۵)",
     categoryName: "شاپرک",
-    cccDays: 0,
     intaProfitRatio: 0,
     avgBasket: MORDAD_POS_BASKET_RIALS,
     avgDailyTx: 0,
+    feeExempt: false,
     note: "۶۹۴ هزار تومان — رقم اعلامی سبد کارتخوان مرداد ۱۴۰۵. تعداد تراکنش روزانه سناریوی شعبه است نه آمار یک فروشگاه.",
   },
   {
     id: "supermarket-exempt",
     title: "سوپرمارکت — معاف کارمزد پذیرنده",
     categoryName: "توزیعی",
-    cccDays: 0,
     intaProfitRatio: 8.5,
     avgBasket: MORDAD_POS_BASKET_RIALS,
     avgDailyTx: 0,
-    note: "اینتا ۸٫۵٪ و معافیت کارمزد بخشنامه ۱۴۰۲. ماشین‌حساب همچنان پلکان عمومی را حساب می‌کند؛ در رسته معاف، بانک می‌پردازد.",
+    feeExempt: true,
+    note: "اینتا ۸٫۵٪ و معافیت کارمزد بخشنامه ۱۴۰۲. کارمزد پذیرنده صفر است؛ بانک می‌پردازد.",
   },
   {
     id: "restaurant-inta",
     title: "رستوران معمولی — ضریب اینتا ۱۴٪",
     categoryName: "خدماتی",
-    cccDays: 0,
     intaProfitRatio: 14,
     avgBasket: MORDAD_POS_BASKET_RIALS,
     avgDailyTx: 0,
+    feeExempt: false,
     note: "فقط ضریب مالیاتی نقل شده؛ سبد همان میانگین شبکه است چون سبد رستوران در شاپرک عمومی نیست.",
   },
   {
     id: "snack-inta",
     title: "اغذیه فروشی — ضریب اینتا ۱۵٪ (کف)",
     categoryName: "خدماتی",
-    cccDays: 0,
     intaProfitRatio: 15,
     avgBasket: MORDAD_POS_BASKET_RIALS,
     avgDailyTx: 0,
+    feeExempt: false,
     note: "بازه منتشرشده ۱۵–۲۰٪؛ ۱۵٪ کف جدول است.",
   },
 ];
 
-export const DATA_GAPS = [
-  "فهرست پذیرنده حقیقی یا کد ملی/جواز در منابع عمومی نیست.",
-  "مانده CASA و رسوب حساب جاری فقط از هسته بانک خوانده می‌شود.",
-  "جدول ماهانه گردش به تفکیک رسته/MCC در گزارش عمومی شاپرک یافت نشد.",
-  "شهریور ۱۴۰۵ هنوز گزارش اقتصادی شاپرک ندارد؛ آخرین ماه منتشرشده مرداد ۱۴۰۵ است.",
-  "تعداد ابزار پذیرش برای ۱۴۰۵ منتشر نشده؛ آخرین رقم ابزار مربوط به تیر ۱۴۰۴ است و به‌عنوان موجودی جاری استفاده نمی‌شود.",
-  "سهم استانی مبلغ در مرداد ۱۴۰۵ به‌صورت رقم منتشر نشده (فقط روایت غلبه تهران).",
-] as const;
+

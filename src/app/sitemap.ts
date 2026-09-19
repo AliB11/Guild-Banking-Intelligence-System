@@ -4,10 +4,7 @@ import type { MetadataRoute } from "next";
 export const dynamic = "force-static";
 
 /**
- * Static sitemap for the four app sections. GitHub Pages (and any static
- * host) serves it at /sitemap.xml; crawlers and link previews pick it up
- * automatically. The deploy date is the build date, which is the only
- * meaningful "last modified" for a database-less sample corpus.
+ * Static sitemap for the four published-data sections.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();

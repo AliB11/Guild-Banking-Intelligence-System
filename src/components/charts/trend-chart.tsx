@@ -5,16 +5,20 @@ import {
   AreaChart,
   CartesianGrid,
   Legend,
+  Line,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
-import { chartMoneyTick } from "@/lib/gbi/format";
-import { ChartTooltip } from "./chart-tooltip";
-import type { DashboardSummary } from "@/lib/gbi/types";
+import { chartMoneyTick, formatCount, formatToman } from "@/lib/gbi/format";
+import type { MarketTrendPoint } from "@/lib/gbi/market-view";
 
-export function TrendChart({ data }: { data: DashboardSummary["trend"] }) {
+function chartCountTick(n: number): string {
+  return formatCount(n, 1);
+}
+
+export function TrendChart({ data }: { data: MarketTrendPoint[] }) {
   if (data.length === 0) {
     return <div className="flex h-72 items-center justify-center text-sm text-slate-500">داده‌ای برای روند وجود ندارد.</div>;
   }
@@ -26,10 +30,6 @@ export function TrendChart({ data }: { data: DashboardSummary["trend"] }) {
             <linearGradient id="gVolume" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#f5c860" stopOpacity={0.35} />
               <stop offset="100%" stopColor="#f5c860" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="gFloat" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3bd6c8" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#3bd6c8" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid stroke="rgba(148,178,255,0.06)" vertical={false} />
@@ -44,15 +44,36 @@ export function TrendChart({ data }: { data: DashboardSummary["trend"] }) {
             tick={{ fill: "#d9b45a", fontSize: 10 }}
           />
           <YAxis
-            yAxisId="float"
-            tickFormatter={chartMoneyTick}
+            yAxisId="count"
+            tickFormatter={chartCountTick}
             tickLine={false}
             axisLine={false}
             width={56}
             orientation="left"
             tick={{ fill: "#54cfc4", fontSize: 10 }}
           />
-          <Tooltip content={<ChartTooltip />} />
+          <Tooltip
+            content={({ active, payload, label }) => {
+              if (!active || !payload?.length) return null;
+              const point = payload[0]?.payload as MarketTrendPoint | undefined;
+              if (!point) return null;
+              return (
+                <div dir="rtl" className="min-w-44 rounded-xl border border-white/10 bg-night-900/95 p-3 shadow-2xl backdrop-blur-xl">
+                  <p className="mb-2 border-b border-white/[0.07] pb-1.5 text-[11px] font-extrabold text-slate-200">
+                    {point.label ?? String(label ?? "")}
+                  </p>
+                  <p className="flex justify-between gap-4 text-[11px] text-slate-400">
+                    <span>گردش</span>
+                    <span className="num font-bold text-gold-200">{formatToman(point.volume, { decimals: 1 })}</span>
+                  </p>
+                  <p className="mt-1 flex justify-between gap-4 text-[11px] text-slate-400">
+                    <span>تعداد</span>
+                    <span className="num font-bold text-persian-200">{formatCount(point.txCount)}</span>
+                  </p>
+                </div>
+              );
+            }}
+          />
           <Legend
             formatter={(v: string) => (
               <span className="text-[11px] font-bold text-slate-300">{v}</span>
@@ -65,7 +86,7 @@ export function TrendChart({ data }: { data: DashboardSummary["trend"] }) {
             yAxisId="vol"
             type="monotone"
             dataKey="volume"
-            name="گردش تراکنش (تومان)"
+            name="گردش تراکنش"
             stroke="#f5c860"
             strokeWidth={2.4}
             fill="url(#gVolume)"
@@ -73,14 +94,13 @@ export function TrendChart({ data }: { data: DashboardSummary["trend"] }) {
             activeDot={{ r: 5, strokeWidth: 0 }}
             animationDuration={1400}
           />
-          <Area
-            yAxisId="float"
+          <Line
+            yAxisId="count"
             type="monotone"
-            dataKey="float"
-            name="رسوب روزانه CASA"
+            dataKey="txCount"
+            name="تعداد تراکنش"
             stroke="#3bd6c8"
             strokeWidth={2.2}
-            fill="url(#gFloat)"
             dot={{ r: 3, fill: "#3bd6c8", strokeWidth: 0 }}
             activeDot={{ r: 5, strokeWidth: 0 }}
             animationDuration={1600}
