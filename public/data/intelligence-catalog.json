@@ -24,17 +24,17 @@
   },
   "publication": {
     "asOfPeriod": "1405-05",
-    "nextWatchIso": "2026-10-04T05:30:00.000Z",
+    "nextWatchIso": "2026-10-10T05:30:00.000Z",
     "windows": [
       {
         "sourceId": "shaparak-monthly",
         "name": "گزارش اقتصادی ماهانه شاپرک",
         "cadence": "monthly",
-        "expectedPeriod": "1405-05",
-        "expectedPeriodLabel": "مرداد ۱۴۰۵",
-        "state": "waiting",
+        "expectedPeriod": "1405-06",
+        "expectedPeriodLabel": "شهریور ۱۴۰۵",
+        "state": "due",
         "lagDays": 12,
-        "note": "گزارش شهریور ۱۴۰۵ معمولاً از روز 12 این ماه منتشر می‌شود."
+        "note": "پنجره واکشی گزارش شهریور ۱۴۰۵ باز است."
       },
       {
         "sourceId": "shaparak-terms",
@@ -122,9 +122,9 @@
         "cadence": "monthly",
         "expectedPeriod": "1405-06",
         "expectedPeriodLabel": "شهریور ۱۴۰۵",
-        "state": "due",
+        "state": "current",
         "lagDays": 3,
-        "note": "پنجره واکشی گزارش شهریور ۱۴۰۵ باز است."
+        "note": "موعد گزارش شهریور ۱۴۰۵ گذشته است؛ اگر اثرانگشت صفحه عوض نشده باشد منبع را دستی بررسی کنید."
       },
       {
         "sourceId": "bank-casa-float",
@@ -132,9 +132,9 @@
         "cadence": "monthly",
         "expectedPeriod": "1405-06",
         "expectedPeriodLabel": "شهریور ۱۴۰۵",
-        "state": "due",
+        "state": "current",
         "lagDays": 2,
-        "note": "پنجره واکشی گزارش شهریور ۱۴۰۵ باز است."
+        "note": "موعد گزارش شهریور ۱۴۰۵ گذشته است؛ اگر اثرانگشت صفحه عوض نشده باشد منبع را دستی بررسی کنید."
       },
       {
         "sourceId": "shaparak-news-mirror",
@@ -180,12 +180,12 @@
       "licenseNote": "گزارش عمومی شاپرک؛ نقل با ذکر منبع.",
       "howWeUse": "KPI میز کار (گردش، تعداد، ترکیب ابزار مرداد ۱۴۰۵) از بازتاب گزارش اقتصادی شاپرک با ذکر منبع پر می‌شود. جاب GitHub صفحه رسمی را واکشی می‌کند؛ اگر PDF از رانر نرسد، ارقام نقل‌شدهٔ همین corpus باقی می‌ماند و اثرانگشت unreachable ثبت می‌شود.",
       "limitation": "سایت شاپرک API عمومی پایدار ندارد و اغلب به‌صورت PDF منتشر می‌شود؛ از رانرهای خارج از ایران ممکن است در دسترس نباشد. تفکیک رسته/MCC و فهرست پذیرنده در گزارش عمومی نیست.",
-      "expectedPeriod": "1405-05",
-      "expectedPeriodLabel": "مرداد ۱۴۰۵",
-      "publicationState": "waiting",
+      "expectedPeriod": "1405-06",
+      "expectedPeriodLabel": "شهریور ۱۴۰۵",
+      "publicationState": "due",
       "lastProbe": {
         "url": "https://shaparak.ir",
-        "at": "2026-10-03T10:31:49.538Z",
+        "at": "2026-10-08T12:10:42.345Z",
         "status": "unreachable",
         "httpStatus": null,
         "contentType": null,
@@ -232,7 +232,7 @@
       "publicationState": "current",
       "lastProbe": {
         "url": "https://www.shaparak.ir/docs/terms",
-        "at": "2026-10-03T10:32:00.033Z",
+        "at": "2026-10-08T12:10:52.840Z",
         "status": "unreachable",
         "httpStatus": null,
         "contentType": null,
@@ -275,7 +275,7 @@
       "publicationState": "current",
       "lastProbe": {
         "url": "https://www.shaparak.ir",
-        "at": "2026-10-03T10:32:10.527Z",
+        "at": "2026-10-08T12:11:03.334Z",
         "status": "unreachable",
         "httpStatus": null,
         "contentType": null,
@@ -327,24 +327,24 @@
       "publicationState": "current",
       "lastProbe": {
         "url": "https://www.cbi.ir",
-        "at": "2026-10-03T10:32:21.022Z",
+        "at": "2026-10-08T12:11:13.828Z",
         "status": "ok",
         "httpStatus": 200,
         "contentType": "text/html; charset=utf-8",
         "etag": null,
         "lastModified": null,
-        "hash": "883c8068a697a79e",
+        "hash": "a34c7ec6ed119089",
         "title": "صفحه نخست",
-        "bytes": 89691,
+        "bytes": 89609,
         "signals": [
           "گزارش اقتصادی",
           "بخشنامه"
         ],
         "error": null
       },
-      "previousHash": "44c5ca656250631c",
+      "previousHash": "883c8068a697a79e",
       "pendingHumanReview": true,
-      "reviewReason": "اثرانگشت صفحه از 44c5ca656250631c به 883c8068a697a79e تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
+      "reviewReason": "اثرانگشت صفحه از 883c8068a697a79e به a34c7ec6ed119089 تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
     },
     {
       "id": "cbi-reserve-lending",
@@ -374,22 +374,22 @@
       "publicationState": "current",
       "lastProbe": {
         "url": "https://www.cbi.ir",
-        "at": "2026-10-03T10:32:22.604Z",
+        "at": "2026-10-08T12:11:18.573Z",
         "status": "ok",
         "httpStatus": 200,
         "contentType": "text/html; charset=utf-8",
         "etag": null,
         "lastModified": null,
-        "hash": "a4ffd4d9a6f7b521",
+        "hash": "0452287bec81b2af",
         "title": "صفحه نخست",
-        "bytes": 89691,
+        "bytes": 89609,
         "signals": [
           "گزارش اقتصادی",
           "بخشنامه"
         ],
         "error": null
       },
-      "previousHash": "f0111b2be5b3869b",
+      "previousHash": "a4ffd4d9a6f7b521",
       "pendingHumanReview": false,
       "reviewReason": null
     },
@@ -428,7 +428,7 @@
       "publicationState": "current",
       "lastProbe": {
         "url": "https://tax.gov.ir",
-        "at": "2026-10-03T10:32:33.093Z",
+        "at": "2026-10-08T12:11:29.061Z",
         "status": "unreachable",
         "httpStatus": null,
         "contentType": null,
@@ -472,7 +472,7 @@
       "publicationState": "current",
       "lastProbe": {
         "url": "https://www.amar.org.ir",
-        "at": "2026-10-03T10:32:43.588Z",
+        "at": "2026-10-08T12:11:39.555Z",
         "status": "unreachable",
         "httpStatus": null,
         "contentType": null,
@@ -516,7 +516,7 @@
       "publicationState": "current",
       "lastProbe": {
         "url": "https://www.iranianasnaf.ir",
-        "at": "2026-10-03T10:32:44.464Z",
+        "at": "2026-10-08T12:11:40.190Z",
         "status": "unreachable",
         "httpStatus": null,
         "contentType": null,
@@ -562,7 +562,7 @@
       "publicationState": "current",
       "lastProbe": {
         "url": "https://tax.gov.ir",
-        "at": "2026-10-03T10:33:05.075Z",
+        "at": "2026-10-08T12:12:01.042Z",
         "status": "unreachable",
         "httpStatus": null,
         "contentType": null,
@@ -606,10 +606,10 @@
       "limitation": "بدون DATABASE_URL هیچ رقم واقعی شعبه وارد سامانه نمی‌شود.",
       "expectedPeriod": "1405-06",
       "expectedPeriodLabel": "شهریور ۱۴۰۵",
-      "publicationState": "due",
+      "publicationState": "current",
       "lastProbe": {
         "url": "internal://bank/pos-metrics",
-        "at": "2026-10-03T10:33:15.570Z",
+        "at": "2026-10-08T12:12:11.535Z",
         "status": "skipped",
         "httpStatus": null,
         "contentType": null,
@@ -649,10 +649,10 @@
       "limitation": "در حالت استاتیک نمایش داده نمی‌شود؛ ساختن رسوب از روی الگوی رسته حذف شد.",
       "expectedPeriod": "1405-06",
       "expectedPeriodLabel": "شهریور ۱۴۰۵",
-      "publicationState": "due",
+      "publicationState": "current",
       "lastProbe": {
         "url": "internal://bank/casa-float",
-        "at": "2026-10-03T10:33:15.570Z",
+        "at": "2026-10-08T12:12:11.535Z",
         "status": "skipped",
         "httpStatus": null,
         "contentType": null,
@@ -700,21 +700,21 @@
       "publicationState": "due",
       "lastProbe": {
         "url": "https://www.ecoiran.com",
-        "at": "2026-10-03T10:33:15.570Z",
+        "at": "2026-10-08T12:12:11.535Z",
         "status": "ok",
         "httpStatus": 200,
         "contentType": "text/html; charset=UTF-8",
         "etag": null,
-        "lastModified": "Sat, 03 Oct 2026 10:32:14 +0000",
-        "hash": "982c52f735284067",
+        "lastModified": "Thu, 08 Oct 2026 12:11:33 +0000",
+        "hash": "0affafab49441ef3",
         "title": "اکوایران | تصویر اقتصاد ایران",
-        "bytes": 497245,
+        "bytes": 504885,
         "signals": [],
         "error": null
       },
-      "previousHash": "7dd7e89e75467851",
+      "previousHash": "982c52f735284067",
       "pendingHumanReview": true,
-      "reviewReason": "اثرانگشت صفحه از 7dd7e89e75467851 به 982c52f735284067 تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
+      "reviewReason": "اثرانگشت صفحه از 982c52f735284067 به 0affafab49441ef3 تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
     }
   ],
   "taxonomy": [
@@ -1164,6 +1164,20 @@
   },
   "changelog": [
     {
+      "at": "2026-10-08T12:12:14.126Z",
+      "jalali": "۱۶ مهر ۱۴۰۵",
+      "kind": "review",
+      "title": "پلکان کارمزد خرید کارتی بانک مرکزی",
+      "detail": "اثرانگشت صفحه از 883c8068a697a79e به a34c7ec6ed119089 تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
+    },
+    {
+      "at": "2026-10-08T12:12:14.126Z",
+      "jalali": "۱۶ مهر ۱۴۰۵",
+      "kind": "review",
+      "title": "آینه خبری کشف انتشار گزارش شاپرک",
+      "detail": "اثرانگشت صفحه از 982c52f735284067 به 0affafab49441ef3 تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
+    },
+    {
       "at": "2026-10-03T10:33:22.954Z",
       "jalali": "۱۱ مهر ۱۴۰۵",
       "kind": "review",
@@ -1245,22 +1259,22 @@
       "code": "REVIEW_cbi-pos-fee",
       "severity": "warning",
       "title": "بازبینی انسانی: پلکان کارمزد خرید کارتی بانک مرکزی",
-      "detail": "اثرانگشت صفحه از 44c5ca656250631c به 883c8068a697a79e تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
+      "detail": "اثرانگشت صفحه از 883c8068a697a79e به a34c7ec6ed119089 تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
     },
     {
       "code": "REVIEW_shaparak-news-mirror",
       "severity": "warning",
       "title": "بازبینی انسانی: آینه خبری کشف انتشار گزارش شاپرک",
-      "detail": "اثرانگشت صفحه از 7dd7e89e75467851 به 982c52f735284067 تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
+      "detail": "اثرانگشت صفحه از 982c52f735284067 به 0affafab49441ef3 تغییر کرده است. ارقام مدل خودکار عوض نشد؛ بازبینی کنید."
     },
     {
       "code": "PUBLICATION_WINDOW_OPEN",
       "severity": "info",
       "title": "پنجره واکشی ماهانه باز است",
-      "detail": "پایش ماهانه پایانه و تراکنش شعبه (شهریور ۱۴۰۵)؛ مانده روزانه حساب جاری پذیرنده (CASA) (شهریور ۱۴۰۵)؛ آینه خبری کشف انتشار گزارش شاپرک (شهریور ۱۴۰۵)"
+      "detail": "گزارش اقتصادی ماهانه شاپرک (شهریور ۱۴۰۵)؛ آینه خبری کشف انتشار گزارش شاپرک (شهریور ۱۴۰۵)"
     }
   ],
-  "generatedAt": "2026-10-03T10:33:22.954Z",
-  "jalaliGenerated": "۱۱ مهر ۱۴۰۵",
-  "contentFingerprint": "GBI-ΠBank-1.8.0::1405-05::0.23::0.0002::shaparak-monthly:unreachable:waiting|shaparak-terms:unreachable:current|shaparak-mcc:unreachable:current|cbi-pos-fee:883c8068a697a79e:current|cbi-reserve-lending:a4ffd4d9a6f7b521:current|inta-coefficients:unreachable:current|isic-amar:unreachable:current|chamber-guilds:unreachable:current|tax-moodian:unreachable:current|bank-internal-pos:skipped:due|bank-casa-float:skipped:due|shaparak-news-mirror:982c52f735284067:due::مرداد ۱۴۰۵: رشد مبلغ شبکه شاپرک"
+  "generatedAt": "2026-10-08T12:12:14.126Z",
+  "jalaliGenerated": "۱۶ مهر ۱۴۰۵",
+  "contentFingerprint": "GBI-ΠBank-1.8.0::1405-05::0.23::0.0002::shaparak-monthly:unreachable:due|shaparak-terms:unreachable:current|shaparak-mcc:unreachable:current|cbi-pos-fee:a34c7ec6ed119089:current|cbi-reserve-lending:0452287bec81b2af:current|inta-coefficients:unreachable:current|isic-amar:unreachable:current|chamber-guilds:unreachable:current|tax-moodian:unreachable:current|bank-internal-pos:skipped:current|bank-casa-float:skipped:current|shaparak-news-mirror:0affafab49441ef3:due::مرداد ۱۴۰۵: رشد مبلغ شبکه شاپرک"
 }
